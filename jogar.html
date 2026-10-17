@@ -17,6 +17,8 @@
 <script>window.EE_PROD=true</script>
 <style>
 html,body{background:#05030a;margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
+/* sem seleção de texto nem menu de copiar/colar no toque longo, dentro e fora do PWA */
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 body{-webkit-tap-highlight-color:transparent}
 /* a vitrine da previa nao existe na versao de producao */
 body>.wrap{display:none!important}
@@ -767,6 +769,7 @@ button.chip.nem:hover{border-color:#ff7ab0}
         <div class="meta-head"><button class="back" data-back>‹ <span data-i18n="menu">Menu</span></button><h3 data-i18n="upgrades">Melhorias</h3><span class="cur g" data-gold></span></div>
         <p class="meta-sub" data-i18n="upgSub">O ouro das partidas vira força permanente para todos os personagens. Nada aqui regenera vida: as curas continuam vindo só do Fruto do Eclipse e da Presa Vampírica.</p>
         <div class="upg-grid" id="upgGrid"></div>
+        <button class="go" id="upgContinue" hidden></button>
         <div class="meta-foot"><span id="upgSum"></span><button class="go ghost" id="upgRefund" data-i18n="refund">Reembolsar tudo</button></div>
       </div>
     </div>
@@ -3854,6 +3857,7 @@ const UPGRADES=[
  {id:'revive',name:'Segunda Chance',icon:'hour',c:[44,100,70],max:1,base:10000,per:'Revive uma vez por partida com metade da vida',fx:l=>l?'1 revive por partida':'—'}
 ];
 const upgCost=(U,l)=>Math.round(U.base*Math.pow(l+1,1.6)/10)*10;
+let PEND_REALM=null;// reino esperando depois da loja de melhorias pós-vitória (null = tela normal)
 function renderUpg(flash){const g=$('upgGrid');g.innerHTML='';let spent=0;
   for(const U of UPGRADES){const l=upgLv(U.id);for(let i=0;i<l;i++)spent+=upgCost(U,i);const maxed=l>=U.max;const cost=upgCost(U,l);
     const el=document.createElement('div');el.className='upg'+(maxed?' maxed':'')+(flash===U.id?' bought':'');
@@ -3862,7 +3866,10 @@ function renderUpg(flash){const g=$('upgGrid');g.innerHTML='';let spent=0;
     el.querySelector('button').addEventListener('click',()=>{if(maxed||META.gold<cost)return;META.upg[U.id]=l+1;setGold(META.gold-cost);sfxPick&&sfxPick();applyUpgLive();renderUpg(U.id)});
     g.appendChild(el);requestAnimationFrame(()=>paintIcon(el.querySelector('canvas'),U.icon,U.c))}
   $('upgSum').textContent=`${fmt(spent)} ${T('invested')} · ${UPGRADES.reduce((a,U)=>a+upgLv(U.id),0)}/${UPGRADES.reduce((a,U)=>a+U.max,0)} ${T('levels')}`;
-  $('upgRefund').onclick=()=>{if(!spent)return;META.upg={};setGold(META.gold+spent);applyUpgLive();renderUpg()}}
+  $('upgRefund').onclick=()=>{if(!spent)return;META.upg={};setGold(META.gold+spent);applyUpgLive();renderUpg()};
+  const uc=$('upgContinue');if(PEND_REALM!=null){uc.hidden=false;uc.textContent=tf('continueToRealm',{n:ROMAN[PEND_REALM],name:realmName(PEND_REALM)});
+    uc.onclick=()=>{const rl=PEND_REALM;PEND_REALM=null;uc.hidden=true;startRun(rl,false);if(window.__eeScreen&&window.__eeScreen.game)window.__eeScreen.game()}}
+  else uc.hidden=true}
 // efeitos aplicados na cena ao vivo
 function applyUpgLive(){const H=sc.hero;const C=CHARS[CHAR_SEL];const nm=Math.round(100*C.hpMul*(1+.06*upgLv('vigor')));const k=H.hp/H.max;H.max=nm;H.hp=Math.min(nm,Math.max(1,Math.round(nm*k)))}
 {const _dm=dmgMul;dmgMul=function(){return _dm()*(1+.05*upgLv('forca'))}}
@@ -4038,6 +4045,8 @@ addEventListener('keydown',e=>{if(sc.mode!=='play')return;const k=e.key.toLowerC
   if((k==='escape'||k==='p')&&!$('lvlOv').hidden===false&&$('chestOv').hidden){if(!$('pauseOv').hidden)closePause();else if($('endOv').hidden&&$('startOv').hidden)openPause();e.preventDefault()}});
 addEventListener('keyup',e=>{KEYS[e.key.toLowerCase()]=false});
 addEventListener('keydown',e=>{if(sc.mode!=='play'||$('lvlOv').hidden||!'123'.includes(e.key)||e.key==='')return;const c=$('lvlOvCards').children[+e.key-1];if(c){c.click();e.preventDefault()}});
+// sem menu de clique direito / toque longo (salvar imagem, copiar) em nenhum lugar da página
+addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('blur',()=>{for(const k in KEYS)KEYS[k]=false;if(sc.mode==='play'&&!sc.paused)openPause()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&sc.mode==='play'&&!sc.paused)openPause()});
 // joystick virtual: toque ou arraste em qualquer ponto da cena
@@ -4120,10 +4129,11 @@ function endRun(kind){const r=sc.run;if(!r||r.ended)return;r.ended=true;sc.pause
     <div class="ro-stats"><div><span>${T('time')}</span><b>${fmtTime(r.t)}</b></div><div><span>${T('kills')}</span><b>${sc.kills}</b></div><div><span>${T('bestCombo')}</span><b>${r.maxCombo}</b></div><div><span>${T('lv')}</span><b>${sc.level}</b></div><div><span>Elites</span><b>${r.elites}</b></div><div><span>${T('realmsDone')}</span><b>${r.endless?r.realms:(win?1:0)}</b></div></div>
     <div class="ro-gold">◆ <b id="goldCount">0</b> ${T('gold')}</div>
     <div class="ro-lines">${lines.map(([ic,txt])=>ic==='char'?`<div class="ro-unlock"><canvas data-ci="${txt}"></canvas><div><span>${T('charUnlocked')}</span><b>${CHARS[txt].name}</b><small>${CHARS[txt].diff}</small></div></div>`:`<div><i>${ic}</i><span>${txt}</span></div>`).join('')}</div>
-    <div class="ro-btns">${win&&!r.endless&&r.realm<9?`<button class="ro-go" id="enNext">${T('nextRealm')}</button>`:''}<button class="${win&&r.realm<9&&!r.endless?'ro-ghost':'ro-go'}" id="enAgain">${T('playAgain')}</button><button class="ro-ghost" id="enWatch">${T('justWatch')}</button></div></div>`;
+    <div class="ro-btns">${win&&!r.endless&&r.realm<9?`<button class="ro-go" id="enNext">${T('nextRealm')}</button><button class="ro-ghost" id="enShop">${T('shopBeforeNext')}</button>`:''}<button class="${win&&r.realm<9&&!r.endless?'ro-ghost':'ro-go'}" id="enAgain">${T('playAgain')}</button><button class="ro-ghost" id="enWatch">${T('justWatch')}</button></div></div>`;
   ov.querySelectorAll('.ro-unlock canvas').forEach(c=>{const i=+c.dataset.ci;requestAnimationFrame(()=>drawCharArt(c,i,0,false));sfxEvolve&&setTimeout(sfxEvolve,600)});
   const gc=$('goldCount');const t0=performance.now();const tick=()=>{const k=Math.min(1,(performance.now()-t0)/1100);gc.textContent=Math.round(g*ease(k)).toLocaleString('pt-BR');if(k<1)requestAnimationFrame(tick)};tick();
   if($('enNext'))$('enNext').onclick=()=>startRun(r.realm+1,false);$('enAgain').onclick=()=>startRun(r.startRealm,r.endless);$('enWatch').onclick=()=>{ov.hidden=true;sc.menuPause=false;setMode('watch');applyChar(CHAR_SEL);setPhase(sc.phase);sc.paused=false};
+  if($('enShop'))$('enShop').onclick=()=>{ov.hidden=true;sc.menuPause=false;setMode('watch');applyChar(CHAR_SEL);setPhase(sc.phase);sc.paused=false;PEND_REALM=r.realm+1;showTab('upg');document.querySelector('.tabs,#tabUpg')&&$('tabUpg').scrollIntoView&&$('tabUpg').scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})};
   (($('enNext')||$('enAgain'))).focus({preventScroll:true});if(win)sfxBossDie&&0;if(typeof submitScore==='function'&&sc.daily_run)submitScore(r,g)}
 /* ---------- desbloqueio real dos personagens ---------- */
 function charProgress(id){const S=META.stats;switch(id){case 'cacadora':return [META.flags.cac?1:0,1];case 'ceifadora':return [Math.min(10000,S.kills),10000];case 'guardiao':return [META.flags.g4?1:0,1];case 'bardo':return [Math.min(100,S.bestCombo),100];
@@ -4549,7 +4559,9 @@ function wrapText(ctx,txt,x,y,maxW,lh){const words=txt.split(' ');let line='',yy
 sc.cv.addEventListener('pointerdown',()=>{if(sc.rintro)skipIntro()});addEventListener('keydown',e=>{if(sc.rintro&&!STORY_ST)skipIntro()});
 
 $('oStory').addEventListener('click',()=>{document.querySelector('.stage').scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});setTimeout(()=>openStory(null),RM?0:400)});
-Object.assign(I18N,{dangerZone:['Progresso salvo','Saved progress','Progreso guardado','Progression enregistrée'],
+Object.assign(I18N,{shopBeforeNext:['Comprar melhorias','Buy upgrades','Comprar mejoras','Acheter des améliorations'],
+  continueToRealm:['Continuar para o Reino {n} · {name}','Continue to Realm {n} · {name}','Continuar al Reino {n} · {name}','Continuer vers le Royaume {n} · {name}'],
+  dangerZone:['Progresso salvo','Saved progress','Progreso guardado','Progression enregistrée'],
   resetNote:['Apaga ouro, melhorias, personagens desbloqueados, estrelas e conquistas deste navegador. Não tem como desfazer.','Erases gold, upgrades, unlocked characters, stars and achievements saved in this browser. This cannot be undone.','Borra el oro, las mejoras, los personajes desbloqueados, las estrellas y los logros guardados en este navegador. No se puede deshacer.','Efface l’or, les améliorations, les personnages débloqués, les étoiles et les succès enregistrés dans ce navigateur. Impossible à annuler.'],
   resetSave:['Reiniciar progresso salvo','Reset saved progress','Reiniciar progreso guardado','Réinitialiser la progression enregistrée'],
   resetConfirm:['Apagar todo o progresso salvo deste navegador? Essa ação não pode ser desfeita.','Erase all progress saved in this browser? This action cannot be undone.','¿Borrar todo el progreso guardado en este navegador? Esta acción no se puede deshacer.','Effacer toute la progression enregistrée dans ce navigateur ? Cette action est irréversible.']});
@@ -6442,12 +6454,16 @@ if(window.__dbg)Object.assign(window.__dbg,{chestRoll,chestApply});
 const FS_T={on:['Tela cheia','Full screen','Pantalla completa','Plein écran'],off:['Sair da tela cheia','Exit full screen','Salir de pantalla completa','Quitter le plein écran']};
 const FSB=document.createElement('button');FSB.type='button';FSB.className='pbtn fs-btn';FSB.innerHTML='<span class="fs-ic" aria-hidden="true"></span>';
 const STAGE=document.querySelector('.stage');
-function fsOn(){return document.body.classList.contains('ee-app')}
+// 'ee-app' é o modo de app (sempre ligado na produção, nunca sai) e fica separado de
+// 'ee-fs' (só o estado de tela cheia de verdade, que liga/desliga). Antes os dois
+// usavam a mesma classe: se a tela cheia falhasse ou fosse fechada pelo sistema,
+// a trava de rolagem da página inteira ia junto e a tela "destravava" sozinha.
+function fsOn(){return document.body.classList.contains('ee-fs')}
 // capa preta que cobre a troca por uma fração de segundo: sem ela dava pra ver a página "normal" pulando atrás por um instante
 const FS_COVER=document.createElement('div');FS_COVER.className='fs-cover';document.body.appendChild(FS_COVER);
 function fsSet(on,init){
   if(!init){FS_COVER.classList.add('show');}
-  document.documentElement.classList.toggle('ee-app',on);document.body.classList.toggle('ee-app',on);FSB.setAttribute('aria-label',on?FS_T.off[LI()]:FS_T.on[LI()]);FSB.title=FSB.getAttribute('aria-label');FSB.classList.toggle('on',on);
+  document.documentElement.classList.toggle('ee-fs',on);document.body.classList.toggle('ee-fs',on);FSB.setAttribute('aria-label',on?FS_T.off[LI()]:FS_T.on[LI()]);FSB.title=FSB.getAttribute('aria-label');FSB.classList.toggle('on',on);
   try{scrollTo(0,0)}catch(e){}
   try{if(on){const el=document.documentElement;const rq=el.requestFullscreen||el.webkitRequestFullscreen;if(rq&&!document.fullscreenElement){const p=rq.call(el,{navigationUI:'hide'});if(p&&p.catch)p.catch(()=>{})}
       try{const o=screen.orientation;if(o&&o.lock&&matchMedia('(pointer:coarse)').matches){const p=o.lock('landscape');if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
@@ -6478,8 +6494,8 @@ FSB.addEventListener('click',()=>FSB.classList.remove('hint'));
 .stage>.fs-btn.float{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:30;width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(10,7,17,.8);border:1px solid rgba(255,255,255,.25);color:#e9e2f7;cursor:pointer}
 .fs-btn.hint{animation:fsHint 1.4s ease-in-out infinite;border-color:#ffd36b!important;color:#ffd36b!important}
 @keyframes fsHint{0%,100%{box-shadow:0 0 0 0 rgba(255,211,107,.6)}50%{box-shadow:0 0 0 8px rgba(255,211,107,0)}}
-html.ee-app,body.ee-app{overflow:hidden!important;overscroll-behavior:none;touch-action:none;background:#05030a!important}
-body.ee-app .stage{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;margin:0!important;border:0!important;border-radius:0!important;z-index:2147483000!important}
+html.ee-app,body.ee-app,body[data-scr="game"]{overflow:hidden!important;overscroll-behavior:none;touch-action:none;background:#05030a!important}
+body.ee-app .stage,body[data-scr="game"] .stage{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;margin:0!important;border:0!important;border-radius:0!important;z-index:2147483000!important}
 .fs-cover{position:fixed;inset:0;background:#05030a;z-index:2147483647;opacity:0;pointer-events:none;transition:opacity .18s linear}
 .fs-cover.show{opacity:1}
 @media (prefers-reduced-motion:reduce){.fs-cover{transition:none}}

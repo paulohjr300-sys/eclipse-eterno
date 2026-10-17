@@ -393,7 +393,7 @@ body.playing{overflow:hidden}
           <p>Instalado, ele abre em tela cheia como um app, direto no jogo, e continua funcionando sem internet depois da primeira vez.</p>
           <p class="how" id="appHow">No iPhone: toque em Compartilhar e depois em Adicionar à Tela de Início.</p>
         </div>
-        <button type="button" class="btn btn-line" id="installBtn" hidden>Instalar o app</button>
+        <button type="button" class="btn btn-line" id="installBtn">Instalar o app</button>
       </div>
     </div>
   </section>
@@ -510,10 +510,19 @@ body.playing{overflow:hidden}
 (function(){
   const b=document.getElementById('installBtn'),how=document.getElementById('appHow');let ev=null;
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  if(!ios)how.textContent='No Android e no computador: use o botão ao lado ou o menu do navegador, em "Instalar app".';
-  addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;b.hidden=false});
+  const standalone=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone;
+  if(standalone){b.hidden=true;how.textContent='Já instalado. Procure o Eclipse Eterno na sua tela inicial.'}
+  else if(!ios)how.textContent='Toque no botão. Se não abrir direto, use o menu do navegador (⋮ ou ☰) e escolha "Instalar app" ou "Adicionar à tela inicial".';
+  // o navegador só avisa quando ele mesmo decide oferecer a instalação (pode nunca avisar
+  // numa primeira visita). O botão fica sempre clicável: usa o aviso nativo quando ele chega,
+  // senão mostra o passo a passo manual pra instalar do mesmo jeito.
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e});
   addEventListener('appinstalled',()=>{b.hidden=true;how.textContent='Instalado. Procure o Eclipse Eterno na sua tela inicial.'});
-  b.addEventListener('click',()=>{if(!ev)return;ev.prompt();ev.userChoice.finally(()=>{ev=null;b.hidden=true})});
+  b.addEventListener('click',()=>{
+    if(ev){ev.prompt();ev.userChoice.finally(()=>{ev=null});return}
+    if(ios){alert('No iPhone: toque no ícone de Compartilhar (quadrado com uma seta pra cima) na barra do Safari e depois em "Adicionar à Tela de Início".');return}
+    alert('Abra o menu do navegador (geralmente ⋮ ou ☰, no canto da tela) e procure "Instalar app" ou "Adicionar à tela inicial".');
+  });
   if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 })();
 
