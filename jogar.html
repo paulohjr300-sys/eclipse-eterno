@@ -819,6 +819,10 @@ button.chip.nem:hover{border-color:#ff7ab0}
             <button class="ro-ghost" id="oTut" data-i18n="tips">Mostrar o tutorial de novo</button>
             <button class="ro-ghost" id="oStory" data-i18n="story">Rever a história</button>
           </section>
+          <section class="opt-card"><h4 data-i18n="dangerZone">Progresso salvo</h4>
+            <p class="opt-note" data-i18n="resetNote">Apaga ouro, melhorias, personagens desbloqueados, estrelas e conquistas deste navegador. Não tem como desfazer.</p>
+            <button class="ro-ghost danger" id="oReset" data-i18n="resetSave">Reiniciar progresso salvo</button>
+          </section>
         </div>
       </div>
     </div>
@@ -4545,6 +4549,11 @@ function wrapText(ctx,txt,x,y,maxW,lh){const words=txt.split(' ');let line='',yy
 sc.cv.addEventListener('pointerdown',()=>{if(sc.rintro)skipIntro()});addEventListener('keydown',e=>{if(sc.rintro&&!STORY_ST)skipIntro()});
 
 $('oStory').addEventListener('click',()=>{document.querySelector('.stage').scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});setTimeout(()=>openStory(null),RM?0:400)});
+Object.assign(I18N,{dangerZone:['Progresso salvo','Saved progress','Progreso guardado','Progression enregistrée'],
+  resetNote:['Apaga ouro, melhorias, personagens desbloqueados, estrelas e conquistas deste navegador. Não tem como desfazer.','Erases gold, upgrades, unlocked characters, stars and achievements saved in this browser. This cannot be undone.','Borra el oro, las mejoras, los personajes desbloqueados, las estrellas y los logros guardados en este navegador. No se puede deshacer.','Efface l’or, les améliorations, les personnages débloqués, les étoiles et les succès enregistrés dans ce navigateur. Impossible à annuler.'],
+  resetSave:['Reiniciar progresso salvo','Reset saved progress','Reiniciar progreso guardado','Réinitialiser la progression enregistrée'],
+  resetConfirm:['Apagar todo o progresso salvo deste navegador? Essa ação não pode ser desfeita.','Erase all progress saved in this browser? This action cannot be undone.','¿Borrar todo el progreso guardado en este navegador? Esta acción no se puede deshacer.','Effacer toute la progression enregistrée dans ce navigateur ? Cette action est irréversible.']});
+$('oReset').addEventListener('click',()=>{if(!confirm(T('resetConfirm')))return;try{localStorage.removeItem('ee_meta4')}catch(e){}location.reload()});
 /* ================= ascensão, suprema dos personagens, relatório da partida, reino secreto e final verdadeiro ================= */
 Object.assign(I18N,{
   asc:['Ascensão','Ascension','Ascensión','Ascension'],ascNone:['Sem ascensão: o reino como ele é','No ascension: the realm as it is','Sin ascensión: el reino tal como es','Sans ascension : le royaume tel quel'],
