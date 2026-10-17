@@ -2,43 +2,127 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#05030a">
 <title>Eclipse Eterno</title>
 <meta name="description" content="Eclipse Eterno - roguelite de sobrevivencia. Dez reinos, oito herois, reliquias amaldicoadas.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Eclipse Eterno">
+<script>window.EE_PROD=true</script>
 <style>
-html,body{background:#05030a;margin:0}
+html,body{background:#05030a;margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
+body{-webkit-tap-highlight-color:transparent}
 /* a vitrine da previa nao existe na versao de producao */
 body>.wrap{display:none!important}
 #ee-game{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#05030a}
 #ee-game>.stage{width:100%;height:100%;max-width:none;border:0;margin:0}
-/* tela de menu: cobre o jogo, com rolagem propria */
-#ee-menu{position:fixed;inset:0;z-index:2147483100;overflow-y:auto;overflow-x:hidden;background:#05030a;
-  touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-#ee-menu .ui-frame{min-height:100vh;min-height:100dvh;border:0;overflow:visible;border-radius:0}
-#ee-menu .meta-wrap{min-height:100vh;min-height:100dvh}
-/* textos e abas de desenvolvimento nao aparecem no jogo publicado */
+
+/* ---------- tela de menu: ocupa a tela inteira e NAO rola a pagina ---------- */
+#ee-menu{position:fixed;inset:0;z-index:2147483100;overflow:hidden;background:#05030a}
+#ee-menu>section{position:absolute;inset:0;display:block;padding:0;margin:0;gap:0;max-width:none}
 #ee-menu .sec-head,#ee-menu .tabs,#ee-menu>section>p{display:none!important}
-#ee-menu>section{display:block;padding:0;margin:0;gap:0;max-width:none}
+#ee-menu .ui-frame{position:absolute;inset:0;min-height:0;height:auto;border:0;border-radius:0;overflow:hidden}
 body[data-scr="game"] #ee-menu{display:none}
-/* botoes de ida e volta entre as duas telas */
+
+/* menu principal: cabe na tela; se a tela for muito baixa, so a lista rola por dentro */
+#ee-menu #uiMenu{display:flex;flex-direction:column}
+#ee-menu #uiMenu .menu{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));align-content:start}
+.ee-mob{display:none!important}
+.ee-install[hidden]{display:none!important}
+@media (max-width:760px){
+  #ee-menu #uiMenu .menu{gap:12px;padding-left:16px;padding-right:16px}
+  #ee-menu #uiMenu .logo{margin-bottom:12px}
+  #ee-menu #uiMenu .logo-k{font-size:40px}
+  #ee-menu #uiMenu .logo-k2{font-size:17px}
+  #ee-menu #uiMenu .emblem{width:92px;height:92px;right:-6px;top:-18px}
+  #ee-menu #uiMenu .menu-nav{max-width:none;gap:6px}
+  #ee-menu #uiMenu .mbtn{font-size:17px;padding:11px 14px;min-height:46px;align-items:center}
+  #ee-menu #uiMenu .mbtn.primary{font-size:22px;padding:10px 14px;margin-bottom:4px;align-items:flex-start}
+  #ee-menu #uiMenu .mbtn:hover,#ee-menu #uiMenu .mbtn:focus-visible{transform:none}
+  #ee-menu #uiMenu .menu-right{gap:8px}
+  #ee-menu #uiMenu .menu-right>.panel:not(.herop){display:none}
+  #ee-menu #uiMenu .panel.herop{grid-template-columns:58px minmax(0,1fr);padding:10px;gap:10px}
+  #ee-menu #uiMenu .herop canvas{width:58px;height:66px}
+  #ee-menu #uiMenu .herop #menuHeroDiff{display:none}
+  #ee-menu #uiMenu .herop .ph{font-size:18px}
+  #ee-menu #uiMenu .herop .go{padding:8px 12px;min-height:40px}
+  #ee-menu #uiMenu .topbar{justify-content:flex-start}
+  #ee-menu #uiMenu .realm-strip,#ee-menu #uiMenu .bgname{display:none}
+  .ee-mob{display:flex!important}
+}
+@media (min-width:761px) and (max-height:620px){
+  #ee-menu #uiMenu .realm-strip,#ee-menu #uiMenu .bgname{display:none}
+  #ee-menu #uiMenu .menu{padding-top:14px}
+  #ee-menu #uiMenu .logo{margin-bottom:10px}
+  #ee-menu #uiMenu .mbtn{padding:7px 14px}
+}
+@media (max-width:760px) and (max-height:700px){
+  #ee-menu #uiMenu .panel.herop{display:none}
+  #ee-menu #uiMenu .mbtn{min-height:42px;padding:9px 14px}
+}
+
+/* telas internas (personagens, melhorias, livro, conquistas, desafio, opcoes):
+   um painel na frente, cabecalho fixo com o botao Menu, conteudo rola por dentro */
+#ee-menu .ui-frame.meta .meta-wrap,#ee-menu #uiChars .chars{position:absolute;inset:0;width:auto;height:auto;overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-top:0;padding-bottom:max(24px,env(safe-area-inset-bottom))}
+#ee-menu #uiChars .chars{display:flex;flex-direction:column;align-items:stretch;gap:14px}
+#ee-menu .meta-head{position:sticky;top:0;z-index:25;flex-wrap:nowrap;
+  margin:0 calc(-1 * max(16px,3vw));padding:max(10px,env(safe-area-inset-top)) max(16px,3vw) 10px;
+  background:rgba(7,5,12,.95);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid #2a2140}
+#ee-menu #uiChars .meta-head{margin:0 calc(-1 * max(16px,2.5vw));padding-left:max(16px,2.5vw);padding-right:max(16px,2.5vw)}
+#ee-menu .meta-head h3{font-size:22px;width:auto;order:0;margin:0 auto 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#ee-menu .meta-head .back{flex:none;min-height:44px;padding:8px 16px;font-size:16px;cursor:pointer}
+#ee-menu .meta-head .cur{flex:none;font-size:12px;padding:5px 8px}
+@media (max-width:520px){#ee-menu .meta-head h3{font-size:17px}#ee-menu .meta-head .cur.s{display:none}}
+
+/* livro: no celular o detalhe abre como uma folha na frente, sem precisar rolar */
+#ee-sheetBg{display:none}
+@media (max-width:760px){
+  #ee-menu #bookDetail{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:60;max-height:74%;overflow-y:auto;overscroll-behavior:contain;
+    transform:translateY(110%);transition:transform .22s ease-out;border-left:0;border-right:0;border-bottom:0;
+    padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(0,0,0,.65)}
+  #ee-menu #uiBook.ee-sheet #bookDetail{transform:none}
+  #ee-menu #uiBook.ee-sheet #ee-sheetBg{display:block;position:fixed;inset:0;z-index:59;background:rgba(4,2,8,.62)}
+  #ee-menu #bookDetail .ee-sheetX{align-self:stretch;min-height:44px;margin-top:6px;font-family:'Silkscreen','Pixelify Sans',ui-monospace,monospace;font-weight:700;font-size:14px;
+    background:transparent;color:#e9e2f7;border:1px solid #3a3054;cursor:pointer}
+}
+@media (min-width:761px){#ee-menu #bookDetail .ee-sheetX{display:none}}
+@media (prefers-reduced-motion:reduce){#ee-menu #bookDetail{transition:none}}
+
+/* notebook e monitor: menus e janelas da partida um pouco maiores */
+@media (min-width:1100px) and (min-height:640px){
+  #ee-menu .ui-frame{zoom:1.12}
+  #ee-game .run-ov .ro-box,#ee-game .lvl-ov .lo-box,#ee-game .chest-ov .ch-box{zoom:1.12}
+}
+@media (min-width:1500px) and (min-height:820px){#ee-menu .ui-frame{zoom:1.22}#ee-game .run-ov .ro-box,#ee-game .lvl-ov .lo-box,#ee-game .chest-ov .ch-box{zoom:1.2}}
+/* botao para voltar a uma partida em andamento */
+#ee-toGame{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483200;
+  display:none;align-items:center;gap:6px;font-family:'Silkscreen','Pixelify Sans',ui-monospace,monospace;font-weight:700;font-size:15px;
+  padding:12px 20px;border:1px solid #f2c14e;background:#f2c14e;color:#140e04;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+body[data-scr="menu"].ee-running.ee-onmain #ee-toGame{display:inline-flex}
 #ee-toMenu{display:none}
-body[data-scr="game"].ee-idle #ee-toMenu{display:inline-flex}
-#ee-toGame{position:fixed;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));z-index:2147483200;
-  display:none;align-items:center;gap:6px;font-family:'Silkscreen','Pixelify Sans',ui-monospace,monospace;font-weight:600;font-size:14px;
-  padding:9px 14px;border:1px solid #3a3054;background:rgba(10,7,17,.9);color:#e9e2f7;cursor:pointer}
-#ee-toGame:hover{border-color:#5ef0ff;color:#dffbff}
-body[data-scr="menu"].ee-running #ee-toGame{display:inline-flex}
-.ee-back{position:absolute;left:max(16px,env(safe-area-inset-left));top:16px;z-index:5}
-body[data-scr="menu"].ee-running .ee-back{top:64px}
-/* enquanto o jogo monta, a tela fica preta (evita ver a pagina antiga piscando) */
+
+/* enquanto o jogo monta, a tela fica preta */
 #ee-boot{position:fixed;inset:0;background:#05030a;z-index:2147483646;display:flex;align-items:center;justify-content:center;transition:opacity .35s linear}
 #ee-boot.gone{opacity:0;pointer-events:none}
-#ee-boot i{width:26px;height:26px;border:2px solid #2b2340;border-top-color:#5ef0ff;border-radius:50%;animation:eeSpin .8s linear infinite}
-@keyframes eeSpin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){#ee-boot i{animation:none}}
+#ee-boot img{width:96px;height:96px;image-rendering:pixelated;animation:eePulse 1.4s ease-in-out infinite}
+@keyframes eePulse{50%{opacity:.55;transform:scale(.96)}}
+@media (prefers-reduced-motion:reduce){#ee-boot img{animation:none}}
+
+/* aviso de instalar no iPhone */
+#ee-ios{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:2147483300;background:#0d0a16;border:1px solid #5ef0ff;
+  color:#e9e2f7;padding:14px 16px;font:14px/1.5 'Chakra Petch',system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.7)}
+#ee-ios b{color:#5ef0ff}
+#ee-ios button{float:right;margin:-4px -6px 0 8px;background:none;border:0;color:#e9e2f7;font-size:20px;cursor:pointer;min-width:36px;min-height:36px}
 </style>
-<div id="ee-boot"><i></i></div>
+<div id="ee-boot"><img src="icon-192.png" alt=""></div>
 
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -790,6 +874,8 @@ button.chip.nem:hover{border-color:#ff7ab0}
 (()=>{
 const DPR=Math.min(2,window.devicePixelRatio||1);
 const RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// versão publicada (site): sem textos e atalhos de teste da prévia
+const PROD=!!window.EE_PROD;
 // números de equilíbrio num lugar só (o bot de teste usa estes valores)
 const TUNE={bossBase:420,bossPer:95,dmg:1.35,dmgBoss:1,dmgTime:.35,dmgTimeT:1000,xpLate:1.9,xpFrom:6,dist:1,nemExtra:30,nemFar:12,nemSpeedUp:.15,campMax:20,campCd:45,hordeMin:48,hordeMax:70,hordeBase:10,hordeGrow:30,hordeCap:22,hordeFirst:70,grace:120,xpRealm:.06};
 const FONT="'Silkscreen','Pixelify Sans', ui-monospace, monospace";
@@ -852,9 +938,9 @@ pow:{thorns:['Ancestral Thornbush','Thorny roots tear through the ground in wave
 wep:{orb:['Orbiting Blades',['3 blades spin around you','+1 blade','Damage 10 → 14','+1 blade and wider orbit','Spin 40% faster'],'Blade Cyclone','6 blades in two orbits, the outer ones golden and spinning the other way'],bolt:['Chain Lightning',['Lightning that jumps between 3 enemies','+2 jumps','Damage 12 → 17','25% shorter cooldown','+3 jumps and stuns'],'Eternal Storm','The lightning jumps through 3 more monsters'],whip:['Shadow Whip',['Arc strike in front of you','Hits both sides','Damage 14 → 20','30% larger area','Leaves a mark that explodes'],'Eclipse Scythe','Strike on both sides, 40% larger'],boom:['Rune Boomerang',['Goes and returns through enemies','+1 boomerang','30% longer range','Damage 9 → 13','+1 boomerang and faster return'],'Rune Constellation','Two extra boomerangs per throw'],flame:['Fire Aura',['Burns everything near you','20% larger area','Damage per second 6 → 9','Burning enemies are slowed','30% larger area'],'Solar Crown','The aura grows 50% and burns faster'],meteor:['Meteors',['A meteor falls on a random enemy','+1 meteor','25% larger blast','Damage 20 → 28','+2 meteors'],'Rain of the End','Two extra meteors in every shower'],arrow:['Homing Arrows',['Shoots the nearest enemy','+1 arrow','Pierces 1 enemy','30% faster shots','+2 arrows'],'Feather Swarm','More arrows per shot and much faster shots'],mine:['Ice Mines',['Mines that freeze when they explode','+1 mine','Freeze lasts longer','25% larger area','+2 mines'],'Eternal Winter','Four extra mines on the ground']},
 pas:{heart:['Ruby Heart','max health'],feather:['Swift Feather','speed'],lens:['Eclipse Lens','area'],hour:['Rune Hourglass','less cooldown'],magnet:['Rune Magnet','pickup range'],clover:['Black Clover','luck'],twin:['Twin Gem','chance of an extra projectile'],claw:['Abyss Claw','damage'],fang:['Vampire Fang','']},
 cur:{blood:['Blood Pact','+100% damage','No lifesteal and heals are halved'],glass:['Glass Cannon','+80% damage and +30% area','Max health is halved'],frenzy:['Frenzy','+60% attack speed','Enemies are 25% faster'],greed:['Greed','+100% gold and XP','Enemies have 50% more health'],crowd:['Crowd','+2 projectiles on shooting weapons','50% more enemies spawn'],hunger:['Starving','Collecting XP heals you','Magnet reduced to almost zero']},
-chr:{vigia:['Eclipse Warden','Eclipse Light','Sees 50% farther in the dark and charges altars 2× faster.',''],cacadora:['Rune Huntress','Huntress Eye','Critical hits ricochet to another monster. Runs 20% faster, but has 10% less health.','Clear Realm I without rerolling'],ceifadora:['Reaper','Harvest','Every kill fills the Reap bar. When full, she unleashes a spinning strike that sweeps the screen.','Defeat 5,000 monsters in total'],guardiao:['Stone Guardian','Stone Skin','35% more health and a shield that blocks one hit and takes 12 seconds to reform. Moves 15% slower.','Win Realm IV without dropping below half health'],bardo:['Eclipse Bard','Rhythm','Every 8 kills in a row plays a chord that pushes nearby monsters. The soundtrack gains an extra layer.','Reach a 100-kill combo'],alquimista:['Wandering Alchemist','Calculated Pact','Starts with a curse of your choice, and each curse grants +50% gold instead of +25%.','Win a realm with 3 active curses'],domadora:['Beast Tamer','Companion','A spirit wolf fights at your side and gets stronger every level.','Clear Realm VII'],semrosto:['The Faceless','Echo','When defeating an elite, absorbs its echo: gains an extra (random) weapon for 30 seconds and fights with both at once.','Secret: find the broken mask in the Void Citadel']},
+chr:{vigia:['Eclipse Warden','Eclipse Light','Sees 50% farther in the dark and charges altars 2× faster.',''],cacadora:['Rune Huntress','Huntress Eye','Critical hits ricochet to another monster. Runs 20% faster, but has 10% less health.','Clear Realm I without rerolling'],ceifadora:['Reaper','Harvest','Every kill fills the Reap bar. When full, she unleashes a spinning strike that sweeps the screen.','Defeat 10,000 monsters in total'],guardiao:['Stone Guardian','Stone Skin','35% more health and a shield that blocks one hit and takes 12 seconds to reform. Moves 15% slower.','Win Realm IV without dropping below half health'],bardo:['Eclipse Bard','Rhythm','Every 8 kills in a row plays a chord that pushes nearby monsters. The soundtrack gains an extra layer.','Reach a 1,500-kill combo'],alquimista:['Wandering Alchemist','Calculated Pact','Starts with a curse of your choice, and each curse grants +50% gold instead of +25%.','Win a realm with 3 active curses'],domadora:['Beast Tamer','Companion','A spirit wolf fights at your side and gets stronger every level.','Clear Realm VII'],semrosto:['The Faceless','Echo','When defeating an elite, absorbs its echo: gains an extra (random) weapon for 30 seconds and fights with both at once.','Secret: find the broken mask in the Void Citadel']},
 upg:{vigor:['Vigor','+6% max health'],forca:['Strength','+5% damage on every weapon'],agil:['Agility','+3% speed'],ima:['Magnet','+15% gem pull range'],sorte:['Luck','+5% chance of chests and Eclipse Fruit'],ganancia:['Greed','+10% gold per run'],cresc:['Growth','+5% experience'],armadura:['Armor','-1 damage per hit (minimum 1)'],rerrolar:['Reroll','+1 reroll per run'],banir:['Banish','+1 banish per run'],fruto:['Fruit Blessing','The Eclipse Fruit heals 10% more'],revive:['Second Chance','Revive once per run with half health']},
-ach:{a_first:['First Blood','Defeat your first monster','',''],a_reaper:['Reaper','Defeat 5,000 monsters in total','','Unlocks: Reaper'],a_combo:['Storm Hands','Reach a 100-kill combo','',''],a_combo25:['Momentum','Reach a 25-kill combo','',''],a_elite:['Elite Hunter','Defeat 25 elites','','Cosmetic: Golden Aura'],a_boss3:['Giant Slayer','Defeat 3 bosses','',''],a_boss10:['End of Kings','Defeat all 10 bosses','','Title: Crownbreaker'],a_walk:['Wanderer','Unlock 3 realms','',''],a_map:['Cartographer','Unlock all 10 realms','','Unlocks: Beast Tamer'],a_chest:['Looter','Open 20 chests','',''],a_altar:['Devotee','Activate 30 altars','','Cosmetic: Candle Trail'],a_book50:['Librarian','Complete 50% of the Book of Discoveries','',''],a_upg:['Forged in the Eclipse','Buy 15 upgrade levels','',''],a_pact:['Calculated Pact','Win a realm with 3 active curses','','Unlocks: Wandering Alchemist'],a_days:['Blood Routine','Complete the daily challenge 7 days in a row','','Title: Dawn Guardian'],a_daily:['Master of the Day','Win 10 daily challenges','','Relic: Broken Hourglass'],a_nem:['Short Breath','Survive 60 seconds with the Eclipsed hunting you','','Cosmetic: Eclipse Cloak'],a_nem2:['What Does Not Die','Survive 5 minutes with the Eclipsed hunting you','','Title: Unreachable'],a_mask:['???','Something glows deep in the Void Citadel','Broken Mask','Unlocks: The Faceless'],a_total:['???','Win Realm X with all 3 stars','Total Eclipse','True ending']},
+ach:{a_first:['A Thousand Souls','Defeat 1,000 monsters in total','',''],a_reaper:['Reaper','Defeat 10,000 monsters in total','','Unlocks: Reaper'],a_combo:['Storm Hands','Reach a 1,500-kill combo','',''],a_combo25:['Momentum','Reach a 300-kill combo','',''],a_elite:['Elite Hunter','Defeat 40 elites','','Cosmetic: Golden Aura'],a_boss3:['Giant Slayer','Defeat 3 bosses','',''],a_boss10:['End of Kings','Defeat all 10 bosses','','Title: Crownbreaker'],a_walk:['Wanderer','Unlock 5 realms','',''],a_map:['Cartographer','Unlock all 10 realms','','Unlocks: Beast Tamer'],a_chest:['Looter','Open 60 chests','',''],a_altar:['Devotee','Activate 80 altars','','Cosmetic: Candle Trail'],a_book50:['Librarian','Complete 50% of the Book of Discoveries','',''],a_upg:['Forged in the Eclipse','Buy 15 upgrade levels','',''],a_pact:['Calculated Pact','Win a realm with 3 active curses','','Unlocks: Wandering Alchemist'],a_days:['Blood Routine','Complete the daily challenge 7 days in a row','','Title: Dawn Guardian'],a_daily:['Master of the Day','Win 10 daily challenges','','Relic: Broken Hourglass'],a_nem:['Short Breath','Survive 90 seconds with the Eclipsed hunting you','','Cosmetic: Eclipse Cloak'],a_nem2:['What Does Not Die','Survive 5 minutes with the Eclipsed hunting you','','Title: Unreachable'],a_mask:['???','Something glows deep in the Void Citadel','Broken Mask','Unlocks: The Faceless'],a_total:['???','Win Realm X with all 3 stars','Total Eclipse','True ending']},
 dm:{night:['Endless Night','The light around you drops 40%. Monsters come out of the dark.'],xp3:['XP ×3','You level up three times faster.'],elite20:['Elites every 20s','The realm elite shows up twice as often.'],nem150:['Eclipsed at 2:30','The nemesis wakes up in half the usual time.'],both:['Fury from the start','The boss starts using both powers.'],blood:['Fixed Blood Pact','Double damage, but heals are halved.'],glass:['Fixed Glass Cannon','Much more damage, much less health.']},
 dn:['Endless Night','Blood Tide','Crimson Eclipse','Bone Vigil','Broken Sky','Ancient Hunger','Crown of Ashes','Hungry Moon','Last Lighthouse'],
 lore:['The mother tree of the Grove. The Eclipse rotted her roots, and the sap heart that guided the fireflies now calls the spores.','A queen who ruled the catacombs. The Eclipse raised her from the tomb, and with her scepter she raises the skeletons of her old subjects.','Guardian of the ancient forges. Its magma core overflowed and melted the ruins around it; the ember beasts are born from its cracks.','A knight who sealed the Abyss with his own sword. The ice climbed the blade and froze him standing, still on guard.','The voice of the black sun. Everything that fell in the other realms answers its call, and the faceless mask hides the whole Eclipse.','Mother of every toad in the marsh. She carries the lantern that lures the drowned and hatches on her back the eggs that become swarms.','Keeper of the desert’s secret. The Eclipse split her face in half, and the loose half still floats, trying to return.','Lord of the harpies. His throne was the sky itself; when the sky broke, he became the storm that remained.','The living furnace that built the automatons. With no one to shut it down, it keeps producing its own army.','King of the drowned reef. The coral crown is all that remains of the kingdom that stood above the waves.'],
@@ -871,9 +957,9 @@ pow:{thorns:['Espinar Ancestral','Raíces con espinas rasgan el suelo en oleadas
 wep:{orb:['Hojas Orbitales',['3 hojas giran a tu alrededor','+1 hoja','Daño 10 → 14','+1 hoja y órbita mayor','Giro 40% más rápido'],'Ciclón de Hojas','6 hojas en dos órbitas, las de fuera doradas y girando al revés'],bolt:['Rayo en Cadena',['Rayo que salta entre 3 enemigos','+2 saltos','Daño 12 → 17','Recarga 25% menor','+3 saltos y aturde'],'Tormenta Eterna','El rayo salta a 3 monstruos más'],whip:['Látigo de Sombra',['Golpe en arco frente a ti','Golpea a ambos lados','Daño 14 → 20','Área 30% mayor','Deja una marca que explota'],'Guadaña del Eclipse','Golpe a ambos lados, 40% mayor'],boom:['Bumerán Rúnico',['Va y vuelve atravesando enemigos','+1 bumerán','Alcance 30% mayor','Daño 9 → 13','+1 bumerán y vuelve más rápido'],'Constelación Rúnica','Dos bumeranes extra por lanzamiento'],flame:['Aura de Fuego',['Quema todo a tu alrededor','Área 20% mayor','Daño por segundo 6 → 9','Los enemigos en llamas se ralentizan','Área 30% mayor'],'Corona Solar','El aura crece 50% y quema más rápido'],meteor:['Meteoros',['Un meteoro cae sobre un enemigo al azar','+1 meteoro','Explosión 25% mayor','Daño 20 → 28','+2 meteoros'],'Lluvia del Fin','Dos meteoros extra en cada lluvia'],arrow:['Flechas Teledirigidas',['Dispara al enemigo más cercano','+1 flecha','Atraviesa 1 enemigo','Disparo 30% más rápido','+2 flechas'],'Enjambre de Plumas','Más flechas por disparo y disparos mucho más rápidos'],mine:['Minas de Hielo',['Minas que congelan al explotar','+1 mina','La congelación dura más','Área 25% mayor','+2 minas'],'Invierno Eterno','Cuatro minas extra en el suelo']},
 pas:{heart:['Corazón de Rubí','de vida máxima'],feather:['Pluma Veloz','de velocidad'],lens:['Lente del Eclipse','de área'],hour:['Reloj Rúnico','menos recarga'],magnet:['Imán Rúnico','de alcance de recogida'],clover:['Trébol Negro','de suerte'],twin:['Gema Gemela','de probabilidad de proyectil extra'],claw:['Garra del Abismo','de daño'],fang:['Colmillo Vampírico','']},
 cur:{blood:['Pacto de Sangre','+100% de daño','Sin robo de vida y las curas valen la mitad'],glass:['Cañón de Cristal','+80% de daño y +30% de área','La vida máxima cae a la mitad'],frenzy:['Frenesí','+60% de velocidad de ataque','Enemigos 25% más rápidos'],greed:['Codicia','+100% de oro y XP','Enemigos con 50% más vida'],crowd:['Multitud','+2 proyectiles en las armas que disparan','Aparecen 50% más enemigos'],hunger:['Hambriento','Recoger XP te cura','Imán reducido casi a cero']},
-chr:{vigia:['Vigía del Eclipse','Luz del Eclipse','Ve 50% más lejos en la oscuridad y carga altares 2× más rápido.',''],cacadora:['Cazadora de Runas','Ojo de Cazadora','Los críticos rebotan a otro monstruo. Corre 20% más rápido, pero tiene 10% menos vida.','Supera el Reino I sin volver a tirar'],ceifadora:['Segadora','Cosecha','Cada baja llena la barra de Siega. Llena, lanza un golpe giratorio que barre la pantalla.','Derrota 5.000 monstruos en total'],guardiao:['Guardián de Piedra','Piel de Piedra','35% más vida y un escudo que bloquea un golpe y tarda 12 segundos en rehacerse. Anda 15% más lento.','Gana el Reino IV sin bajar de la mitad de la vida'],bardo:['Bardo del Eclipse','Ritmo','Cada 8 bajas seguidas toca un acorde que empuja a los monstruos cercanos. La música gana una capa extra.','Alcanza un combo de 100 bajas'],alquimista:['Alquimista Errante','Pacto Calculado','Empieza con una maldición a elegir, y cada maldición da +50% de oro en vez de +25%.','Gana un reino con 3 maldiciones activas'],domadora:['Domadora de Bestias','Compañero','Un lobo espiritual lucha a tu lado y se fortalece cada nivel.','Supera el Reino VII'],semrosto:['El Sin Rostro','Eco','Al derrotar a un élite, absorbe su eco: gana un arma extra (al azar) durante 30 segundos y lucha con ambas a la vez.','Secreto: encuentra la máscara rota en la Ciudadela del Vacío']},
+chr:{vigia:['Vigía del Eclipse','Luz del Eclipse','Ve 50% más lejos en la oscuridad y carga altares 2× más rápido.',''],cacadora:['Cazadora de Runas','Ojo de Cazadora','Los críticos rebotan a otro monstruo. Corre 20% más rápido, pero tiene 10% menos vida.','Supera el Reino I sin volver a tirar'],ceifadora:['Segadora','Cosecha','Cada baja llena la barra de Siega. Llena, lanza un golpe giratorio que barre la pantalla.','Derrota 10.000 monstruos en total'],guardiao:['Guardián de Piedra','Piel de Piedra','35% más vida y un escudo que bloquea un golpe y tarda 12 segundos en rehacerse. Anda 15% más lento.','Gana el Reino IV sin bajar de la mitad de la vida'],bardo:['Bardo del Eclipse','Ritmo','Cada 8 bajas seguidas toca un acorde que empuja a los monstruos cercanos. La música gana una capa extra.','Alcanza un combo de 1.500 bajas'],alquimista:['Alquimista Errante','Pacto Calculado','Empieza con una maldición a elegir, y cada maldición da +50% de oro en vez de +25%.','Gana un reino con 3 maldiciones activas'],domadora:['Domadora de Bestias','Compañero','Un lobo espiritual lucha a tu lado y se fortalece cada nivel.','Supera el Reino VII'],semrosto:['El Sin Rostro','Eco','Al derrotar a un élite, absorbe su eco: gana un arma extra (al azar) durante 30 segundos y lucha con ambas a la vez.','Secreto: encuentra la máscara rota en la Ciudadela del Vacío']},
 upg:{vigor:['Vigor','+6% de vida máxima'],forca:['Fuerza','+5% de daño en todas las armas'],agil:['Agilidad','+3% de velocidad'],ima:['Imán','+15% de alcance para atraer gemas'],sorte:['Suerte','+5% de probabilidad de cofres y Fruto del Eclipse'],ganancia:['Codicia','+10% de oro por partida'],cresc:['Crecimiento','+5% de experiencia'],armadura:['Armadura','-1 de daño por golpe (mínimo 1)'],rerrolar:['Volver a tirar','+1 tirada extra por partida'],banir:['Destierro','+1 destierro por partida'],fruto:['Bendición del Fruto','El Fruto del Eclipse cura un 10% más'],revive:['Segunda Oportunidad','Revive una vez por partida con la mitad de la vida']},
-ach:{a_first:['Primera Sangre','Derrota a tu primer monstruo','',''],a_reaper:['Segador','Derrota 5.000 monstruos en total','','Desbloquea: Segadora'],a_combo:['Manos de Tormenta','Alcanza un combo de 100 bajas','',''],a_combo25:['Impulso','Alcanza un combo de 25 bajas','',''],a_elite:['Cazador de Élites','Derrota 25 élites','','Aspecto: Aura Dorada'],a_boss3:['Matagigantes','Derrota 3 jefes','',''],a_boss10:['Fin de los Reyes','Derrota a los 10 jefes','','Título: Rompecoronas'],a_walk:['Caminante','Desbloquea 3 reinos','',''],a_map:['Cartógrafo','Desbloquea los 10 reinos','','Desbloquea: Domadora de Bestias'],a_chest:['Saqueador','Abre 20 cofres','',''],a_altar:['Devoto','Activa 30 altares','','Aspecto: Rastro de Velas'],a_book50:['Bibliotecario','Completa el 50% del Libro de Descubrimientos','',''],a_upg:['Forjado en el Eclipse','Compra 15 niveles de Mejoras','',''],a_pact:['Pacto Calculado','Gana un reino con 3 maldiciones activas','','Desbloquea: Alquimista Errante'],a_days:['Rutina de Sangre','Completa el desafío diario 7 días seguidos','','Título: Guardián del Alba'],a_daily:['Maestro del Día','Gana 10 desafíos diarios','','Reliquia: Reloj Roto'],a_nem:['Aliento Corto','Sobrevive 60 segundos con el Eclipsado cazándote','','Aspecto: Capa del Eclipse'],a_nem2:['Lo que no Muere','Sobrevive 5 minutos con el Eclipsado cazándote','','Título: Inalcanzable'],a_mask:['???','Algo brilla al fondo de la Ciudadela del Vacío','Máscara Rota','Desbloquea: El Sin Rostro'],a_total:['???','Gana el Reino X con las 3 estrellas','Eclipse Total','Final verdadero']},
+ach:{a_first:['Mil Almas','Derrota 1.000 monstruos en total','',''],a_reaper:['Segador','Derrota 10.000 monstruos en total','','Desbloquea: Segadora'],a_combo:['Manos de Tormenta','Alcanza un combo de 1.500 bajas','',''],a_combo25:['Impulso','Alcanza un combo de 300 bajas','',''],a_elite:['Cazador de Élites','Derrota 40 élites','','Aspecto: Aura Dorada'],a_boss3:['Matagigantes','Derrota 3 jefes','',''],a_boss10:['Fin de los Reyes','Derrota a los 10 jefes','','Título: Rompecoronas'],a_walk:['Caminante','Desbloquea 5 reinos','',''],a_map:['Cartógrafo','Desbloquea los 10 reinos','','Desbloquea: Domadora de Bestias'],a_chest:['Saqueador','Abre 60 cofres','',''],a_altar:['Devoto','Activa 80 altares','','Aspecto: Rastro de Velas'],a_book50:['Bibliotecario','Completa el 50% del Libro de Descubrimientos','',''],a_upg:['Forjado en el Eclipse','Compra 15 niveles de Mejoras','',''],a_pact:['Pacto Calculado','Gana un reino con 3 maldiciones activas','','Desbloquea: Alquimista Errante'],a_days:['Rutina de Sangre','Completa el desafío diario 7 días seguidos','','Título: Guardián del Alba'],a_daily:['Maestro del Día','Gana 10 desafíos diarios','','Reliquia: Reloj Roto'],a_nem:['Aliento Corto','Sobrevive 90 segundos con el Eclipsado cazándote','','Aspecto: Capa del Eclipse'],a_nem2:['Lo que no Muere','Sobrevive 5 minutos con el Eclipsado cazándote','','Título: Inalcanzable'],a_mask:['???','Algo brilla al fondo de la Ciudadela del Vacío','Máscara Rota','Desbloquea: El Sin Rostro'],a_total:['???','Gana el Reino X con las 3 estrellas','Eclipse Total','Final verdadero']},
 dm:{night:['Noche sin Fin','La luz a tu alrededor baja un 40%. Los monstruos salen de la oscuridad.'],xp3:['XP ×3','Subes de nivel tres veces más rápido.'],elite20:['Élites cada 20 s','El élite del reino aparece el doble de seguido.'],nem150:['Eclipsado a los 2:30','El némesis despierta en la mitad del tiempo normal.'],both:['Furia desde el inicio','El jefe ya empieza usando los dos poderes.'],blood:['Pacto de Sangre fijo','Daño doble, pero las curas valen la mitad.'],glass:['Cañón de Cristal fijo','Mucho más daño, mucha menos vida.']},
 dn:['Noche sin Fin','Marea de Sangre','Eclipse Carmesí','Vigilia de Huesos','Cielo Partido','Hambre Antigua','Corona de Cenizas','Luna Hambrienta','Último Faro'],
 lore:['El árbol madre del Bosque. El Eclipse pudrió sus raíces, y el corazón de savia que guiaba a las luciérnagas ahora llama a las esporas.','Reina que gobernaba las catacumbas. El Eclipse la levantó de la tumba, y con el cetro levanta los esqueletos de sus antiguos súbditos.','Guardián de las forjas antiguas. Su núcleo de magma se desbordó y fundió las ruinas; las bestias de brasa nacen de sus grietas.','Caballero que selló el Abismo con su propia espada. El hielo subió por la hoja y lo dejó de pie, aún de guardia.','La voz del sol negro. Todo lo que cayó en los otros reinos responde a su llamada, y la máscara sin rostro esconde el Eclipse entero.','Madre de todos los sapos del pantano. Lleva la linterna que atrae a los ahogados e incuba en el lomo los huevos que se vuelven enjambres.','Guardiana del secreto del desierto. El Eclipse le partió el rostro, y la mitad suelta aún flota intentando volver.','Señor de las arpías. Su trono era el propio cielo; cuando el cielo se partió, se convirtió en la tormenta que quedó.','El horno vivo que fabricaba autómatas. Sin nadie que lo apague, sigue produciendo su propio ejército.','Rey del arrecife ahogado. La corona de coral es todo lo que queda del reino que existía sobre las olas.'],
@@ -890,9 +976,9 @@ pow:{thorns:['Roncier Ancestral','Des racines épineuses déchirent le sol en va
 wep:{orb:['Lames Orbitales',['3 lames tournent autour de vous','+1 lame','Dégâts 10 → 14','+1 lame et orbite plus large','Rotation 40% plus rapide'],'Cyclone de Lames','6 lames sur deux orbites, celles du dehors dorées et tournant à l’envers'],bolt:['Éclair en Chaîne',['Éclair qui saute entre 3 ennemis','+2 sauts','Dégâts 12 → 17','Recharge 25% plus courte','+3 sauts et étourdit'],'Tempête Éternelle','L’éclair saute sur 3 monstres de plus'],whip:['Fouet d’Ombre',['Coup en arc devant vous','Frappe des deux côtés','Dégâts 14 → 20','Zone 30% plus grande','Laisse une marque qui explose'],'Faux de l’Éclipse','Coup des deux côtés, 40% plus grand'],boom:['Boomerang Runique',['Va et vient à travers les ennemis','+1 boomerang','Portée 30% plus grande','Dégâts 9 → 13','+1 boomerang et retour plus rapide'],'Constellation Runique','Deux boomerangs en plus par lancer'],flame:['Aura de Feu',['Brûle tout près de vous','Zone 20% plus grande','Dégâts par seconde 6 → 9','Les ennemis en feu ralentissent','Zone 30% plus grande'],'Couronne Solaire','L’aura grandit de 50% et brûle plus vite'],meteor:['Météores',['Un météore tombe sur un ennemi au hasard','+1 météore','Explosion 25% plus grande','Dégâts 20 → 28','+2 météores'],'Pluie de la Fin','Deux météores en plus à chaque pluie'],arrow:['Flèches Guidées',['Tire sur l’ennemi le plus proche','+1 flèche','Transperce 1 ennemi','Tir 30% plus rapide','+2 flèches'],'Essaim de Plumes','Plus de flèches par tir et des tirs bien plus rapides'],mine:['Mines de Glace',['Des mines qui gèlent en explosant','+1 mine','Le gel dure plus longtemps','Zone 25% plus grande','+2 mines'],'Hiver Éternel','Quatre mines en plus au sol']},
 pas:{heart:['Cœur de Rubis','de vie max'],feather:['Plume Véloce','de vitesse'],lens:['Lentille de l’Éclipse','de zone'],hour:['Sablier Runique','de recharge en moins'],magnet:['Aimant Runique','de portée de collecte'],clover:['Trèfle Noir','de chance'],twin:['Gemme Jumelle','de chance de projectile en plus'],claw:['Griffe de l’Abîme','de dégâts'],fang:['Croc Vampirique','']},
 cur:{blood:['Pacte de Sang','+100% de dégâts','Pas de vol de vie et les soins sont divisés par deux'],glass:['Canon de Verre','+80% de dégâts et +30% de zone','La vie max est divisée par deux'],frenzy:['Frénésie','+60% de vitesse d’attaque','Ennemis 25% plus rapides'],greed:['Cupidité','+100% d’or et d’XP','Ennemis avec 50% de vie en plus'],crowd:['Foule','+2 projectiles sur les armes de tir','50% d’ennemis en plus'],hunger:['Affamé','Ramasser de l’XP vous soigne','Aimant réduit presque à zéro']},
-chr:{vigia:['Veilleuse de l’Éclipse','Lumière de l’Éclipse','Voit 50% plus loin dans le noir et charge les autels 2× plus vite.',''],cacadora:['Chasseuse de Runes','Œil de Chasseuse','Les coups critiques ricochent sur un autre monstre. Court 20% plus vite, mais a 10% de vie en moins.','Terminer le Royaume I sans relancer'],ceifadora:['Faucheuse','Moisson','Chaque élimination remplit la barre de Fauche. Pleine, elle libère un coup tournoyant qui balaie l’écran.','Vaincre 5 000 monstres au total'],guardiao:['Gardien de Pierre','Peau de Pierre','35% de vie en plus et un bouclier qui bloque un coup et met 12 secondes à se reformer. Avance 15% plus lentement.','Gagner le Royaume IV sans passer sous la moitié de la vie'],bardo:['Barde de l’Éclipse','Rythme','Toutes les 8 éliminations d’affilée, joue un accord qui repousse les monstres proches. La musique gagne une couche en plus.','Atteindre un combo de 100 éliminations'],alquimista:['Alchimiste Errante','Pacte Calculé','Commence avec une malédiction au choix, et chaque malédiction rapporte +50% d’or au lieu de +25%.','Gagner un royaume avec 3 malédictions actives'],domadora:['Dompteuse de Bêtes','Compagnon','Un loup spirituel combat à vos côtés et se renforce à chaque niveau.','Terminer le Royaume VII'],semrosto:['Le Sans-Visage','Écho','En battant un élite, absorbe son écho : gagne une arme en plus (au hasard) pendant 30 secondes et combat avec les deux.','Secret : trouver le masque brisé dans la Citadelle du Néant']},
+chr:{vigia:['Veilleuse de l’Éclipse','Lumière de l’Éclipse','Voit 50% plus loin dans le noir et charge les autels 2× plus vite.',''],cacadora:['Chasseuse de Runes','Œil de Chasseuse','Les coups critiques ricochent sur un autre monstre. Court 20% plus vite, mais a 10% de vie en moins.','Terminer le Royaume I sans relancer'],ceifadora:['Faucheuse','Moisson','Chaque élimination remplit la barre de Fauche. Pleine, elle libère un coup tournoyant qui balaie l’écran.','Vaincre 10 000 monstres au total'],guardiao:['Gardien de Pierre','Peau de Pierre','35% de vie en plus et un bouclier qui bloque un coup et met 12 secondes à se reformer. Avance 15% plus lentement.','Gagner le Royaume IV sans passer sous la moitié de la vie'],bardo:['Barde de l’Éclipse','Rythme','Toutes les 8 éliminations d’affilée, joue un accord qui repousse les monstres proches. La musique gagne une couche en plus.','Atteindre un combo de 1 500 éliminations'],alquimista:['Alchimiste Errante','Pacte Calculé','Commence avec une malédiction au choix, et chaque malédiction rapporte +50% d’or au lieu de +25%.','Gagner un royaume avec 3 malédictions actives'],domadora:['Dompteuse de Bêtes','Compagnon','Un loup spirituel combat à vos côtés et se renforce à chaque niveau.','Terminer le Royaume VII'],semrosto:['Le Sans-Visage','Écho','En battant un élite, absorbe son écho : gagne une arme en plus (au hasard) pendant 30 secondes et combat avec les deux.','Secret : trouver le masque brisé dans la Citadelle du Néant']},
 upg:{vigor:['Vigueur','+6% de vie max'],forca:['Force','+5% de dégâts sur toutes les armes'],agil:['Agilité','+3% de vitesse'],ima:['Aimant','+15% de portée pour attirer les gemmes'],sorte:['Chance','+5% de chance de coffres et de Fruit de l’Éclipse'],ganancia:['Cupidité','+10% d’or par partie'],cresc:['Croissance','+5% d’expérience'],armadura:['Armure','-1 dégât par coup (minimum 1)'],rerrolar:['Relance','+1 relance par partie'],banir:['Bannissement','+1 bannissement par partie'],fruto:['Bénédiction du Fruit','Le Fruit de l’Éclipse soigne 10% de plus'],revive:['Seconde Chance','Revenez une fois par partie avec la moitié de la vie']},
-ach:{a_first:['Premier Sang','Vaincre votre premier monstre','',''],a_reaper:['Faucheur','Vaincre 5 000 monstres au total','','Débloque : Faucheuse'],a_combo:['Mains de Tempête','Atteindre un combo de 100 éliminations','',''],a_combo25:['Élan','Atteindre un combo de 25 éliminations','',''],a_elite:['Chasseur d’Élites','Vaincre 25 élites','','Apparence : Aura Dorée'],a_boss3:['Tueur de Géants','Vaincre 3 boss','',''],a_boss10:['Fin des Rois','Vaincre les 10 boss','','Titre : Brise-Couronnes'],a_walk:['Vagabond','Débloquer 3 royaumes','',''],a_map:['Cartographe','Débloquer les 10 royaumes','','Débloque : Dompteuse de Bêtes'],a_chest:['Pillard','Ouvrir 20 coffres','',''],a_altar:['Dévot','Activer 30 autels','','Apparence : Traînée de Bougies'],a_book50:['Bibliothécaire','Compléter 50% du Livre des Découvertes','',''],a_upg:['Forgé dans l’Éclipse','Acheter 15 niveaux d’Améliorations','',''],a_pact:['Pacte Calculé','Gagner un royaume avec 3 malédictions actives','','Débloque : Alchimiste Errante'],a_days:['Routine de Sang','Réussir le défi quotidien 7 jours d’affilée','','Titre : Gardien de l’Aube'],a_daily:['Maître du Jour','Gagner 10 défis quotidiens','','Relique : Sablier Brisé'],a_nem:['Souffle Court','Survivre 60 secondes avec l’Éclipsé à vos trousses','','Apparence : Cape de l’Éclipse'],a_nem2:['Ce qui ne Meurt pas','Survivre 5 minutes avec l’Éclipsé à vos trousses','','Titre : Insaisissable'],a_mask:['???','Quelque chose brille au fond de la Citadelle du Néant','Masque Brisé','Débloque : Le Sans-Visage'],a_total:['???','Gagner le Royaume X avec les 3 étoiles','Éclipse Totale','Vraie fin']},
+ach:{a_first:['Mille Âmes','Vaincre 1 000 monstres au total','',''],a_reaper:['Faucheur','Vaincre 10 000 monstres au total','','Débloque : Faucheuse'],a_combo:['Mains de Tempête','Atteindre un combo de 1 500 éliminations','',''],a_combo25:['Élan','Atteindre un combo de 300 éliminations','',''],a_elite:['Chasseur d’Élites','Vaincre 40 élites','','Apparence : Aura Dorée'],a_boss3:['Tueur de Géants','Vaincre 3 boss','',''],a_boss10:['Fin des Rois','Vaincre les 10 boss','','Titre : Brise-Couronnes'],a_walk:['Vagabond','Débloquer 5 royaumes','',''],a_map:['Cartographe','Débloquer les 10 royaumes','','Débloque : Dompteuse de Bêtes'],a_chest:['Pillard','Ouvrir 60 coffres','',''],a_altar:['Dévot','Activer 80 autels','','Apparence : Traînée de Bougies'],a_book50:['Bibliothécaire','Compléter 50% du Livre des Découvertes','',''],a_upg:['Forgé dans l’Éclipse','Acheter 15 niveaux d’Améliorations','',''],a_pact:['Pacte Calculé','Gagner un royaume avec 3 malédictions actives','','Débloque : Alchimiste Errante'],a_days:['Routine de Sang','Réussir le défi quotidien 7 jours d’affilée','','Titre : Gardien de l’Aube'],a_daily:['Maître du Jour','Gagner 10 défis quotidiens','','Relique : Sablier Brisé'],a_nem:['Souffle Court','Survivre 90 secondes avec l’Éclipsé à vos trousses','','Apparence : Cape de l’Éclipse'],a_nem2:['Ce qui ne Meurt pas','Survivre 5 minutes avec l’Éclipsé à vos trousses','','Titre : Insaisissable'],a_mask:['???','Quelque chose brille au fond de la Citadelle du Néant','Masque Brisé','Débloque : Le Sans-Visage'],a_total:['???','Gagner le Royaume X avec les 3 étoiles','Éclipse Totale','Vraie fin']},
 dm:{night:['Nuit sans Fin','La lumière autour de vous baisse de 40%. Les monstres surgissent du noir.'],xp3:['XP ×3','Vous montez de niveau trois fois plus vite.'],elite20:['Élites toutes les 20 s','L’élite du royaume apparaît deux fois plus souvent.'],nem150:['Éclipsé à 2:30','Le némésis s’éveille en deux fois moins de temps.'],both:['Fureur dès le début','Le boss commence avec ses deux pouvoirs.'],blood:['Pacte de Sang imposé','Dégâts doublés, mais soins divisés par deux.'],glass:['Canon de Verre imposé','Beaucoup plus de dégâts, beaucoup moins de vie.']},
 dn:['Nuit sans Fin','Marée de Sang','Éclipse Écarlate','Veillée des Os','Ciel Brisé','Faim Ancienne','Couronne de Cendres','Lune Affamée','Dernier Phare'],
 lore:['L’arbre-mère du Bois. L’Éclipse a pourri ses racines, et le cœur de sève qui guidait les lucioles appelle désormais les spores.','Une reine qui régnait sur les catacombes. L’Éclipse l’a tirée du tombeau, et de son sceptre elle relève les squelettes de ses anciens sujets.','Gardien des forges anciennes. Son noyau de magma a débordé et fondu les ruines alentour ; les bêtes de braise naissent de ses fissures.','Un chevalier qui a scellé l’Abîme de sa propre épée. La glace a gravi la lame et l’a figé debout, toujours de garde.','La voix du soleil noir. Tout ce qui est tombé dans les autres royaumes répond à son appel, et le masque sans visage cache l’Éclipse entière.','Mère de tous les crapauds du marais. Elle porte la lanterne qui attire les noyés et couve sur son dos les œufs qui deviennent des essaims.','Gardienne du secret du désert. L’Éclipse lui a fendu le visage, et la moitié détachée flotte encore en essayant de revenir.','Seigneur des harpies. Son trône était le ciel lui-même ; quand le ciel s’est brisé, il est devenu la tempête qui reste.','Le four vivant qui fabriquait les automates. Sans personne pour l’éteindre, il continue de produire sa propre armée.','Roi du récif englouti. La couronne de corail est tout ce qui reste du royaume qui existait au-dessus des vagues.'],
@@ -966,7 +1052,7 @@ const CHARS=[
   mission:'Conclua o Reino I sem usar rerrolagem',prog:[0,1],
   pal:{o:[150,40,6,1],h:[140,40,30],d:[30,30,22],e:[80,100,70,1],c:[130,35,22],C:[130,40,14],g:[30,60,45,1],r:[90,100,60,1],k:[28,30,22,1],w:[28,45,32,1],q:[45,20,80,1],Q:[90,100,70,1]},glow:'erQ',item:'bow'},
  {id:'ceifadora',name:'Ceifadora',weapon:'whip',diff:'Colheita',diffTxt:'Cada abate enche a barra de Ceifa. Cheia, ela solta um golpe giratório que varre a tela.',stats:{Vida:3,Velocidade:3,Dano:5,Sorte:2},hpMul:1,spdMul:1,crit:.1,
-  mission:'Derrote 5.000 monstros no total',prog:[4212,5000],
+  mission:'Derrote 10.000 monstros no total',prog:[0,10000],
   pal:{o:[280,30,4,1],h:[270,10,12],d:[45,15,78],e:[0,100,60,1],c:[280,20,10],C:[280,25,6],g:[0,60,40,1],r:[0,100,55,1],k:[0,0,14,1],w:[20,20,18,1],q:[220,10,80,1],Q:[280,100,70,1]},glow:'erQ',item:'scythe'},
  {id:'guardiao',name:'Guardião de Pedra',weapon:'mine',diff:'Pele de Pedra',diffTxt:'35% mais vida e um escudo que bloqueia um golpe e leva 12 segundos para se refazer. Anda 15% mais devagar.',stats:{Vida:5,Velocidade:2,Dano:3,Sorte:2},hpMul:1.35,spdMul:.85,crit:.08,
   mission:'Vença o Reino IV sem cair abaixo de metade da vida',prog:[0,1],
@@ -2534,9 +2620,9 @@ function scenePick(i,el){if(sc.picking)return;sc.picking=true;sc.pickT=performan
   try{[...$('lvlOvCards').children].forEach((e,j)=>e.classList.add(j===i?'picked':'faded'));applyPick(sc.build,o);if(o.id==='heart'){const hv=Math.round(10*RAR_F[o.rar||0]);H.max+=hv;H.hp+=hv}const slot=hudSlotRect(o);pickFx(el,o,slot)}catch(err){console.warn(err)}}
 // se trocar de personagem com uma escolha aberta, as cartas são refeitas para a nova build
 function refreshLevelOffer(){const ov=$('lvlOv');if(ov.hidden||sc.picking)return;sc.level--;sceneLevelUp()}
-function hudSlotRect(o){const r=sc.cv.getBoundingClientRect();const w=o.kind==='up'||o.kind==='new';const id=o.id;let idx,top;
-  if(w){idx=Math.max(0,sc.build.weapons.findIndex(x=>x.id===id));top=r.bottom-32}else if(o.kind==='curse'){idx=sc.build.passives.length+1+Math.max(0,sc.build.curses.indexOf(id));top=r.bottom-52}else{idx=Math.max(0,sc.build.passives.findIndex(x=>x.id===id));top=r.bottom-52}
-  return {left:r.left+14+idx*20,top,width:17,height:17}}
+function hudSlotRect(o){const r=sc.cv.getBoundingClientRect();const L=hudIL(r.width,r.height);const w=o.kind==='up'||o.kind==='new';const id=o.id;let idx,top;
+  if(w){idx=Math.max(0,sc.build.weapons.findIndex(x=>x.id===id));top=r.top+L.wy}else if(o.kind==='curse'){idx=sc.build.passives.length+1+Math.max(0,sc.build.curses.indexOf(id));top=r.top+L.py}else{idx=Math.max(0,sc.build.passives.findIndex(x=>x.id===id));top=r.top+L.py}
+  return {left:r.left+L.x(idx),top,width:L.S,height:L.S}}
 /* --- atualização da cena --- */
 let visProps=[];
 function update(dt){
@@ -2716,6 +2802,7 @@ function render(dt){
   if(OPT.nums)for(const n of sc.nums){const life=n.big?1.7:1.25;const sx=(n.x-cx)*S,sy=(n.y-cy)*S-n.t*36+(n.big?Math.max(0,.15-n.t)*-80:0);const pop=n.t<.12?1+(.12-n.t)*(n.big?9:5):1;ctx.globalAlpha=Math.min(1,(life-n.t)*3);
     ctx.save();ctx.translate(sx,sy);ctx.rotate(n.rot||0);ctx.font=`700 ${Math.round((n.big?21:13)*pop)}px ${FONT}`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.85)';ctx.strokeText(n.txt,0,0);ctx.fillStyle=n.color;ctx.fillText(n.txt,0,0);ctx.restore()}ctx.globalAlpha=1;
   const vg=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*.35,w/2,h/2,Math.max(w,h)*.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=vg;ctx.fillRect(0,0,w,h);
+  if(window.__EE_NOHUD)return;// prints limpos para a landing page
   ctx.font=`700 13px ${FONT}`;ctx.textAlign='left';ctx.fillStyle=C3(P.rune,8);const RMN=sc.run&&sc.run.secret&&sc.mode==='play'?'XI':ROMAN[sc.phase];ctx.fillText(w<560?`${T('realm')} ${RMN}`:`${T('realm')} ${RMN} · ${realmName(sc.phase).toUpperCase()}`,14,22);
   ctx.font=`500 12px ${FONT}`;ctx.fillStyle='#d9d1e8';ctx.fillText('◆ '+(sc.boss?T('stage')+' 3/3 · '+T('defeat')+' '+sc.boss.name:sc.stage?stageLabel():sc.obj&&!sc.obj.done?sc.obj.label():T('objDone')),14,40);
   ctx.textAlign='right';ctx.font=`700 13px ${FONT}`;ctx.fillStyle='#ece6f6';ctx.fillText(`${sc.kills} ${T('kills')} · ${T('lv')} ${sc.level}`,w-14,22);let ry=w<560?64:40;
@@ -2740,10 +2827,10 @@ function render(dt){
     if(k<.3){const a=.12+.1*Math.sin(sc.t*8);const g=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*.3,w/2,h/2,Math.max(w,h)*.7);g.addColorStop(0,'rgba(120,0,10,0)');g.addColorStop(1,`rgba(170,0,20,${a})`);ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}
     if(sc.cold>0){const g=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*.25,w/2,h/2,Math.max(w,h)*.7);g.addColorStop(0,'rgba(180,230,255,0)');g.addColorStop(1,`rgba(200,240,255,${.45*sc.cold})`);ctx.fillStyle=g;ctx.fillRect(0,0,w,h);if(sc.cold>.5){ctx.textAlign='left';ctx.font=`600 11px ${FONT}`;ctx.fillStyle='#d8f6ff';ctx.fillText('❄ Nevasca: volte para a luz da Lanterna',14,yy+12)}}}
   // armas e passivos (canto inferior esquerdo)
-  {ctx.imageSmoothingEnabled=false;const drawIcon=(name,c,x,y,lv)=>{ctx.fillStyle='rgba(10,7,17,.8)';ctx.fillRect(x-1,y-1,19,19);ctx.drawImage(iconOf(name,c),x,y,17,17);if(lv){ctx.font=`700 9px ${FONT}`;ctx.textAlign='right';ctx.fillStyle='#000';ctx.fillText(lv===5?'M':lv,x+18,y+18);ctx.fillStyle='#fff';ctx.fillText(lv===5?'M':lv,x+17,y+17)}};
-    sc.build.weapons.forEach((wp,i)=>{const W=WEAPONS.find(x=>x.id===wp.id);if(W)drawIcon(evolvedW(wp.id)&&wp.id==='orb'?'cyclone':W.icon,evolvedW(wp.id)?[44,95,60]:W.c,14+i*20,h-32,wp.lv)});
-    sc.build.passives.forEach((pp,i)=>{const Pd=PASSIVES.find(x=>x.id===pp.id);if(Pd)drawIcon(Pd.icon,Pd.c,14+i*20,h-52,pp.lv)});
-    sc.build.curses.forEach((id,i)=>{const Cd=CURSES.find(x=>x.id===id);if(Cd)drawIcon(Cd.icon,CURSE_C,14+(sc.build.passives.length+1+i)*20,h-52,0)});ctx.imageSmoothingEnabled=true}
+  {ctx.imageSmoothingEnabled=false;const L=hudIL(w,h),S=L.S;const drawIcon=(name,c,x,y,lv)=>{ctx.fillStyle='rgba(10,7,17,.82)';ctx.fillRect(x-2,y-2,S+4,S+4);ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;ctx.strokeRect(x-1.5,y-1.5,S+3,S+3);ctx.drawImage(iconOf(name,c),x,y,S,S);if(lv){const fs=Math.round(S*.42);ctx.font=`700 ${fs}px ${FONT}`;ctx.textAlign='right';ctx.fillStyle='#000';ctx.fillText(lv===5?'M':lv,x+S+2,y+S+2);ctx.fillStyle='#fff';ctx.fillText(lv===5?'M':lv,x+S+1,y+S+1)}};
+    sc.build.weapons.forEach((wp,i)=>{const W=WEAPONS.find(x=>x.id===wp.id);if(W)drawIcon(evolvedW(wp.id)&&wp.id==='orb'?'cyclone':W.icon,evolvedW(wp.id)?[44,95,60]:W.c,L.x(i),L.wy,wp.lv)});
+    sc.build.passives.forEach((pp,i)=>{const Pd=PASSIVES.find(x=>x.id===pp.id);if(Pd)drawIcon(Pd.icon,Pd.c,L.x(i),L.py,pp.lv)});
+    sc.build.curses.forEach((id,i)=>{const Cd=CURSES.find(x=>x.id===id);if(Cd)drawIcon(Cd.icon,CURSE_C,L.x(sc.build.passives.length+1+i),L.py,0)});ctx.imageSmoothingEnabled=true}
   // setas para objetivos fora da tela
   if(false){const T=[];const o=sc.obj;if(o&&!o.done)T.push(...o.targets());for(const c of sc.chests)T.push({x:c.x,y:c.y-12,c:[44,95,60],t:'Baú'});for(const f of sc.hearts)T.push({x:f.x,y:f.y-12,c:[350,85,62],t:'Cura'});
     for(const tg of T){const sx=(tg.x-cx)*S,sy=(tg.y-cy)*S;const m=30;const col3=C3(tg.c,12);
@@ -2757,6 +2844,9 @@ function render(dt){
   if(sc.lowfx){ctx.textAlign='right';ctx.font=`500 11px ${FONT}`;ctx.fillStyle='rgba(236,230,246,.6)';ctx.fillText('Efeitos reduzidos',w-14,h-14)}
 }
 
+
+// tamanho dos ícones de armas e passivos no HUD (maiores no celular também)
+function hudIL(w,h){const S=w<520?30:34,st=S+(w<520?4:5),bot=w<520?16:14;const wy=h-bot-S;return {S,st,x:i=>14+i*st,wy,py:wy-S-10}}
 /* ================= poderes dos chefes: 20 efeitos de zona, 2 por chefe ================= */
 const TAU=Math.PI*2;
 const POWERS={
@@ -3745,7 +3835,7 @@ const UPGRADES=[
  {id:'rerrolar',name:'Rerrolagem',icon:'twin',c:[275,90,70],max:3,base:600,per:'+1 rerrolagem por partida',fx:l=>`+${l} rerrolagens`},
  {id:'banir',name:'Banimento',icon:'jaw',c:[0,60,50],max:2,base:700,per:'+1 banimento por partida',fx:l=>`+${l} banimentos`},
  {id:'fruto',name:'Bênção do Fruto',icon:'fang',c:[350,85,62],max:3,base:500,per:'O Fruto do Eclipse cura +10% a mais',fx:l=>`Fruto cura +${l*10}%`},
- {id:'revive',name:'Segunda Chance',icon:'hour',c:[44,100,70],max:1,base:2500,per:'Revive uma vez por partida com metade da vida',fx:l=>l?'1 revive por partida':'—'}
+ {id:'revive',name:'Segunda Chance',icon:'hour',c:[44,100,70],max:1,base:10000,per:'Revive uma vez por partida com metade da vida',fx:l=>l?'1 revive por partida':'—'}
 ];
 const upgCost=(U,l)=>Math.round(U.base*Math.pow(l+1,1.6)/10)*10;
 function renderUpg(flash){const g=$('upgGrid');g.innerHTML='';let spent=0;
@@ -3778,7 +3868,7 @@ const BOOK_CATS=[
  {id:'nem',name:'Nêmesis',items:()=>[{id:'n_ecl',name:'O Eclipsado',role:'Nêmesis',desc:'Surge aos 5 minutos em todos os reinos. Não morre, anda devagar e mata com um toque.',spr:()=>nemSpr(PHASES[0].rune[0]).c}]}
 ];
 // o que a prévia já "conhece": reinos I a III, primeiras armas e o que aparecer na cena
-function baseSeen(id){const m=/^(m|b|p)_(.*)$/.exec(id);if(m){if(m[1]==='m')return realmOfKey(m[2])<=2;if(m[1]==='b')return +m[2]<=2;if(m[1]==='p'){const bi=BOSS_POWERS.findIndex(p=>p.includes(m[2]));return bi<=2}}
+function baseSeen(id){if(PROD)return id==='h_vigia';const m=/^(m|b|p)_(.*)$/.exec(id);if(m){if(m[1]==='m')return realmOfKey(m[2])<=2;if(m[1]==='b')return +m[2]<=2;if(m[1]==='p'){const bi=BOSS_POWERS.findIndex(p=>p.includes(m[2]));return bi<=2}}
   if(id.startsWith('w_'))return ['w_orb','w_bolt','w_whip','w_flame','w_mine'].includes(id);if(id.startsWith('s_'))return PASSIVES.findIndex(p=>'s_'+p.id===id)<6;if(id.startsWith('c_'))return CURSES.findIndex(c=>'c_'+c.id===id)<3;
   if(id.startsWith('h_'))return id==='h_vigia';if(id.startsWith('f_'))return id==='f_orb';return false}
 const isSeen=id=>!!META.seen[id]||baseSeen(id);
@@ -3806,23 +3896,23 @@ const S0={kills:4212,combo:63,bosses:3,elites:18,chests:14,realms:3,curses3:1,da
 function stat(k){const S=META.stats,play=sc.mode==='play'&&sc.run;switch(k){case 'kills':return S.kills+(play?sc.kills:0);case 'combo':return Math.max(S.bestCombo,play?sc.run.maxCombo:0);case 'bosses':return S.bosses;case 'elites':return S.elites;case 'chests':return S.chests;case 'realms':return META.realmsOpen;case 'curses3':return Math.max(S.maxCurses,play?sc.build.curses.length:0);case 'altars':return S.altars;case 'nemSurv':return Math.floor(S.nemSurv||0);
   case 'book':return Math.floor(bookCounts().seen/bookCounts().total*100);case 'upg':return UPGRADES.reduce((a,U)=>a+upgLv(U.id),0);case 'days':return META.daily.streak;case 'dailyWins':return META.daily.wins}return 0}
 const ACHS=[
- {id:'a_first',cat:'Combate',name:'Primeiro Sangue',desc:'Derrote seu primeiro monstro',k:'kills',goal:1,rew:{gold:100}},
- {id:'a_reaper',cat:'Combate',name:'Ceifador',desc:'Derrote 5.000 monstros no total',k:'kills',goal:5000,rew:{gold:1000,txt:'Libera: Ceifadora'}},
- {id:'a_combo',cat:'Combate',name:'Mãos de Tempestade',desc:'Alcance um combo de 100 abates',k:'combo',goal:100,rew:{gold:800}},
- {id:'a_combo25',cat:'Combate',name:'Embalo',desc:'Alcance um combo de 25 abates',k:'combo',goal:25,rew:{gold:300}},
- {id:'a_elite',cat:'Combate',name:'Caçador de Elites',desc:'Derrote 25 elites',k:'elites',goal:25,rew:{gold:1200,txt:'Visual: Aura Dourada'}},
+ {id:'a_first',cat:'Combate',name:'Mil Almas',desc:'Derrote 1.000 monstros no total',k:'kills',goal:1000,rew:{gold:300}},
+ {id:'a_reaper',cat:'Combate',name:'Ceifador',desc:'Derrote 10.000 monstros no total',k:'kills',goal:10000,rew:{gold:2000,txt:'Libera: Ceifadora'}},
+ {id:'a_combo',cat:'Combate',name:'Mãos de Tempestade',desc:'Alcance um combo de 1.500 abates',k:'combo',goal:1500,rew:{gold:2500}},
+ {id:'a_combo25',cat:'Combate',name:'Embalo',desc:'Alcance um combo de 300 abates',k:'combo',goal:300,rew:{gold:600}},
+ {id:'a_elite',cat:'Combate',name:'Caçador de Elites',desc:'Derrote 40 elites',k:'elites',goal:40,rew:{gold:1200,txt:'Visual: Aura Dourada'}},
  {id:'a_boss3',cat:'Combate',name:'Matador de Gigantes',desc:'Derrote 3 chefes',k:'bosses',goal:3,rew:{gold:600}},
  {id:'a_boss10',cat:'Combate',name:'Fim dos Reis',desc:'Derrote os 10 chefes',k:'bosses',goal:10,rew:{gold:5000,txt:'Título: Quebra-Coroas'}},
- {id:'a_walk',cat:'Exploração',name:'Andarilho',desc:'Libere 3 reinos',k:'realms',goal:3,rew:{gold:400}},
+ {id:'a_walk',cat:'Exploração',name:'Andarilho',desc:'Libere 5 reinos',k:'realms',goal:5,rew:{gold:800}},
  {id:'a_map',cat:'Exploração',name:'Cartógrafo',desc:'Libere os 10 reinos',k:'realms',goal:10,rew:{gold:4000,txt:'Libera: Domadora de Feras'}},
- {id:'a_chest',cat:'Exploração',name:'Saqueador',desc:'Abra 20 baús',k:'chests',goal:20,rew:{gold:700}},
- {id:'a_altar',cat:'Exploração',name:'Devoto',desc:'Ative 30 altares',k:'altars',goal:30,rew:{gold:600,txt:'Visual: Rastro de Velas'}},
+ {id:'a_chest',cat:'Exploração',name:'Saqueador',desc:'Abra 60 baús',k:'chests',goal:60,rew:{gold:1000}},
+ {id:'a_altar',cat:'Exploração',name:'Devoto',desc:'Ative 80 altares',k:'altars',goal:80,rew:{gold:600,txt:'Visual: Rastro de Velas'}},
  {id:'a_book50',cat:'Exploração',name:'Bibliotecário',desc:'Complete 50% do Livro de Descobertas',k:'book',goal:50,unit:'%',rew:{gold:1500}},
  {id:'a_upg',cat:'Exploração',name:'Forjado no Eclipse',desc:'Compre 15 níveis de Melhorias',k:'upg',goal:15,rew:{gold:1000}},
  {id:'a_pact',cat:'Desafio',name:'Pacto Calculado',desc:'Vença um reino com 3 maldições ativas',k:'curses3',goal:3,rew:{gold:900,txt:'Libera: Alquimista Errante'}},
  {id:'a_days',cat:'Desafio',name:'Rotina de Sangue',desc:'Complete o desafio diário 7 dias seguidos',k:'days',goal:7,rew:{gold:2000,txt:'Título: Guardião da Aurora'}},
  {id:'a_daily',cat:'Desafio',name:'Mestre do Dia',desc:'Vença 10 desafios diários',k:'dailyWins',goal:10,rew:{gold:1500,txt:'Relíquia: Ampulheta Partida'}},
- {id:'a_nem',cat:'Desafio',name:'Fôlego Curto',desc:'Sobreviva 60 segundos com o Eclipsado caçando você',k:'nemSurv',goal:60,unit:'s',rew:{gold:800,txt:'Visual: Capa do Eclipse'}},
+ {id:'a_nem',cat:'Desafio',name:'Fôlego Curto',desc:'Sobreviva 90 segundos com o Eclipsado caçando você',k:'nemSurv',goal:90,unit:'s',rew:{gold:800,txt:'Visual: Capa do Eclipse'}},
  {id:'a_nem2',cat:'Desafio',name:'O Que Não Morre',desc:'Sobreviva 5 minutos com o Eclipsado caçando você',k:'nemSurv',goal:300,unit:'s',rew:{gold:3000,txt:'Título: Inalcançável'}},
  {id:'a_mask',cat:'Segredo',name:'???',secret:'Máscara Partida',desc:'Algo brilha no fundo da Cidadela do Vazio',k:'none',goal:1,rew:{txt:'Libera: O Sem-Rosto'}},
  {id:'a_total',cat:'Segredo',name:'???',secret:'Eclipse Total',desc:'Vença o Reino X com as 3 estrelas',k:'none',goal:1,rew:{gold:10000,txt:'Final verdadeiro'}}
@@ -3858,8 +3948,8 @@ let dailyResult=null;
 function renderDaily(){const D=todayDaily();const P=PHASES[D.ri];const done=META.daily.last===D.key;const active=sc.daily&&sc.daily.key===D.key;
   $('dailyBox').innerHTML=`<div class="dcard"><span class="dk">Desafio de hoje · Reino ${ROMAN[D.ri]} · ${P.name}</span><span class="dn">${D.name}</span>
     <span class="dk">Regras do dia</span><div class="dmods">${D.mods.map(m=>`<div class="dmod"><b>${m.name}</b><span>${m.desc}</span></div>`).join('')}</div>
-    <span class="dk">Objetivo</span><p style="margin:0;color:#e9e2f7">Derrote ${BOSSES[P.boss].name} sem desistir da partida. Na prévia, aceite e use "Invocar chefe" para chegar nele mais rápido.</p>
-    <div class="dbtns"><button id="dAccept" ${done?'disabled':''}>${done?'Concluído hoje':active?'Em andamento na cena':'Aceitar desafio'}</button><button class="ghost" id="dSim" ${done?'disabled':''}>Simular vitória</button></div>
+    <span class="dk">Objetivo</span><p style="margin:0;color:#e9e2f7">Derrote ${BOSSES[P.boss].name} sem desistir da partida.${PROD?'':' Na prévia, aceite e use "Invocar chefe" para chegar nele mais rápido.'}</p>
+    <div class="dbtns"><button id="dAccept" ${done?'disabled':''}>${done?'Concluído hoje':active?'Em andamento na cena':'Aceitar desafio'}</button><button class="ghost" id="dSim" ${done?'disabled':''} ${PROD?'hidden':''}>Simular vitória</button></div>
     ${dailyResult?`<div class="dresult"><b>Desafio concluído!</b><div class="drew">${dailyResult}</div></div>`:''}</div>
    <div class="dcard"><span class="dk">O que você ganha</span><div class="drew">${rewList(D)}</div>
     <span class="dk">Sequência de dias · ${META.daily.streak} seguidos</span><div class="streak">${STREAK_REW.map((r,i)=>`<div class="sd${i<META.daily.streak?' done':''}${i===Math.min(6,META.daily.streak)&&!done?' today':''}"><span>Dia ${i+1}</span><b>${i<META.daily.streak?'✓':'◆'}</b><small>${fmt(r[0])}${r[1]?'<br>'+r[1]:''}</small></div>`).join('')}</div>
@@ -4020,7 +4110,7 @@ function endRun(kind){const r=sc.run;if(!r||r.ended)return;r.ended=true;sc.pause
   if($('enNext'))$('enNext').onclick=()=>startRun(r.realm+1,false);$('enAgain').onclick=()=>startRun(r.startRealm,r.endless);$('enWatch').onclick=()=>{ov.hidden=true;sc.menuPause=false;setMode('watch');applyChar(CHAR_SEL);setPhase(sc.phase);sc.paused=false};
   (($('enNext')||$('enAgain'))).focus({preventScroll:true});if(win)sfxBossDie&&0;if(typeof submitScore==='function'&&sc.daily_run)submitScore(r,g)}
 /* ---------- desbloqueio real dos personagens ---------- */
-function charProgress(id){const S=META.stats;switch(id){case 'cacadora':return [META.flags.cac?1:0,1];case 'ceifadora':return [Math.min(5000,S.kills),5000];case 'guardiao':return [META.flags.g4?1:0,1];case 'bardo':return [Math.min(100,S.bestCombo),100];
+function charProgress(id){const S=META.stats;switch(id){case 'cacadora':return [META.flags.cac?1:0,1];case 'ceifadora':return [Math.min(10000,S.kills),10000];case 'guardiao':return [META.flags.g4?1:0,1];case 'bardo':return [Math.min(100,S.bestCombo),100];
   case 'alquimista':return [Math.min(3,S.maxCurses),3];case 'domadora':return [Math.min(7,Math.max(0,...META.cleared.map(i=>i+1))),7];case 'semrosto':return META.flags.mask?[1,1]:null}return null}
 function syncChars(){for(const C of CHARS){if(C.id==='vigia'){C.unlocked=true;continue}C.unlocked=!!META.unl[C.id];const p=charProgress(C.id);if(p||C.prog)C.prog=p}}
 function checkUnlocks(){const out=[];for(const C of CHARS){if(C.id==='vigia'||META.unl[C.id])continue;const p=charProgress(C.id);if(p&&p[0]>=p[1]){META.unl[C.id]=1;out.push(C.id);markSeen('h_'+C.id)}}syncChars();return out}
@@ -4045,9 +4135,12 @@ function drawPlayHud(dt){const ctx=sc.ctx;const {w,h}=fit(sc.cv);ctx.setTransfor
   {const narrow=w<560;const ty=narrow?h-14:22;const txt=fmtTime(r.t)+(narrow&&r.endless?' · '+T('cycle')+' '+(r.cycle+1):'');ctx.textAlign='center';ctx.font=`700 ${narrow?14:16}px ${FONT}`;ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillText(txt,w/2+1,ty+1);ctx.fillStyle='#f3edff';ctx.fillText(txt,w/2,ty);
   if(r.endless&&!narrow){ctx.font=`600 11px ${FONT}`;ctx.fillStyle='#ffd36b';ctx.fillText(T('cycle')+' '+(r.cycle+1)+' · '+r.realms+' '+T('realmsDone').toLowerCase(),w/2,37)}}
   if(JOY.on){ctx.globalAlpha=.35;ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(JOY.ox,JOY.oy,42,0,TAU);ctx.stroke();const dx=JOY.x-JOY.ox,dy=JOY.y-JOY.oy,d=Math.hypot(dx,dy),m=Math.min(d,42);ctx.globalAlpha=.55;ctx.fillStyle='#5ef0ff';ctx.beginPath();ctx.arc(JOY.ox+(d?dx/d*m:0),JOY.oy+(d?dy/d*m:0),16,0,TAU);ctx.fill();ctx.globalAlpha=1}
-  if(TUT&&!sc.paused){const S=TUT_STEPS[TUT.i];if(S){const txt=T(S.k+(S.k==='tutMove'&&matchMedia('(pointer:coarse)').matches?'T':''));ctx.font=`600 14px ${FONT}`;const tw=Math.min(w-32,ctx.measureText(txt).width+40);const x=(w-tw)/2,y=h-(w<560?178:92);
-      ctx.fillStyle='rgba(10,7,17,.88)';ctx.fillRect(x,y,tw,40);ctx.strokeStyle=TUT.flash>0?'#ffd36b':'#5ef0ff';ctx.lineWidth=1;ctx.strokeRect(x+.5,y+.5,tw-1,39);ctx.fillStyle='#f3edff';ctx.textAlign='center';ctx.fillText(txt,w/2,y+18);
-      ctx.font=`500 10px ${FONT}`;ctx.fillStyle='#9c91b3';ctx.fillText(T('tutorial')+' '+(TUT.i+1)+'/'+TUT_STEPS.length,w/2,y+33);if(TUT.flash>0)TUT.flash-=dt*2}}
+  if(TUT&&!sc.paused){const S=TUT_STEPS[TUT.i];if(S){const txt=T(S.k+(S.k==='tutMove'&&matchMedia('(pointer:coarse)').matches?'T':''));const fs=w<560?14:16;ctx.font=`600 ${fs}px ${FONT}`;
+      // quebra o texto em linhas para nunca sair da caixa
+      const maxW=Math.min(w-32,560)-32;const words=txt.split(' ');const lines=[];let cur='';for(const wd of words){const tryL=cur?cur+' '+wd:wd;if(ctx.measureText(tryL).width>maxW&&cur){lines.push(cur);cur=wd}else cur=tryL}if(cur)lines.push(cur);
+      const lh=Math.round(fs*1.35);const tw=Math.min(w-32,Math.max(...lines.map(l=>ctx.measureText(l).width))+40);const bh=lines.length*lh+30;const x=(w-tw)/2,y=w<560?Math.round(h*.2):h-96-(lines.length-1)*lh;
+      ctx.fillStyle='rgba(10,7,17,.9)';ctx.fillRect(x,y,tw,bh);ctx.strokeStyle=TUT.flash>0?'#ffd36b':'#5ef0ff';ctx.lineWidth=1;ctx.strokeRect(x+.5,y+.5,tw-1,bh-1);ctx.fillStyle='#f3edff';ctx.textAlign='center';lines.forEach((l,k)=>ctx.fillText(l,w/2,y+8+lh*(k+.8)));
+      ctx.font=`500 11px ${FONT}`;ctx.fillStyle='#9c91b3';ctx.fillText(T('tutorial')+' '+(TUT.i+1)+'/'+TUT_STEPS.length,w/2,y+bh-8);if(TUT.flash>0)TUT.flash-=dt*2}}
   if(sc.mask){const cx=camPos();const S=w<520?2:3;const sx=(sc.mask.x-cx.x)*S+w/2,sy=(sc.mask.y-cx.y)*S+h/2;if(false){const ax=Math.max(20,Math.min(w-20,sx)),ay=Math.max(60,Math.min(h-20,sy));ctx.fillStyle='#d59bff';ctx.beginPath();ctx.arc(ax,ay,6,0,TAU);ctx.fill()}}}
 
 /* ---------- sons próprios de cada ataque de chefe ---------- */
@@ -4989,23 +5082,23 @@ function drawMap(dt){MAP.a+=(MAP.open?1:-1)*dt*7;MAP.a=Math.max(0,Math.min(1,MAP
       case 'elite':ctx.fillStyle=cs;ctx.beginPath();ctx.arc(ex,ey,3,0,TAU);ctx.fill();break;
       case 'chest':ctx.fillStyle=cs;ctx.fillRect(ex-4,ey-3,8,6);ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(ex-4,ey-1,8,1);break;
       case 'heart':ctx.fillStyle=cs;ctx.beginPath();ctx.arc(ex-2,ey-1,2.4,0,TAU);ctx.arc(ex+2,ey-1,2.4,0,TAU);ctx.fill();ctx.beginPath();ctx.moveTo(ex-4.3,ey);ctx.lineTo(ex,ey+4.5);ctx.lineTo(ex+4.3,ey);ctx.fill();break;
-      case 'boss':{const pu=1+.2*Math.sin(t*6);ctx.fillStyle=cs;ctx.beginPath();ctx.arc(ex,ey,7*pu,0,TAU);ctx.fill();ctx.fillStyle='#120610';ctx.font=`700 9px ${FONT}`;ctx.textAlign='center';ctx.fillText('☠',ex,ey+3);break}
+      case 'boss':{const pu=1+.2*Math.sin(t*6);ctx.fillStyle=cs;ctx.beginPath();ctx.arc(ex,ey,9*pu,0,TAU);ctx.fill();ctx.fillStyle='#120610';ctx.font=`700 12px ${FONT}`;ctx.textAlign='center';ctx.fillText('☠',ex,ey+4);break}
       case 'nem':{ctx.strokeStyle=cs;ctx.lineWidth=2;ctx.beginPath();ctx.arc(ex,ey,6+2*Math.sin(t*5),0,TAU);ctx.stroke();ctx.fillStyle=cs;ctx.beginPath();ctx.arc(ex,ey,3,0,TAU);ctx.fill();ctx.lineWidth=1;break}
-      case 'icon':ctx.fillStyle=cs;ctx.beginPath();ctx.arc(ex,ey,7,0,TAU);ctx.fill();ctx.fillStyle='#120c1c';ctx.font=`700 9px ${FONT}`;ctx.textAlign='center';ctx.fillText(p.ic,ex,ey+3);break;
+      case 'icon':ctx.fillStyle=cs;ctx.beginPath();ctx.arc(ex,ey,9,0,TAU);ctx.fill();ctx.fillStyle='#120c1c';ctx.font=`700 11px ${FONT}`;ctx.textAlign='center';ctx.fillText(p.ic,ex,ey+4);break;
       case 'flag':ctx.strokeStyle=cs;ctx.beginPath();ctx.moveTo(ex,ey+5);ctx.lineTo(ex,ey-7);ctx.stroke();ctx.fillStyle=cs;ctx.beginPath();ctx.moveTo(ex,ey-7);ctx.lineTo(ex+7,ey-4);ctx.lineTo(ex,ey-1);ctx.fill();break;
       case 'obj':{const pu=p.done?1:1+.25*Math.sin(t*4+p.x);ctx.save();ctx.translate(ex,ey);ctx.rotate(Math.PI/4);if(p.done){ctx.strokeStyle=cs;ctx.lineWidth=1.5;ctx.strokeRect(-4,-4,8,8)}else{ctx.fillStyle=col(c[0],c[1],c[2],.25);ctx.fillRect(-8*pu,-8*pu,16*pu,16*pu);ctx.fillStyle=cs;ctx.fillRect(-4.5,-4.5,9,9)}ctx.restore();
         if(p.done){ctx.fillStyle=cs;ctx.font=`700 9px ${FONT}`;ctx.textAlign='center';ctx.fillText('✓',ex,ey+3)}
-        else if(!clipped){const dist=Math.round(Math.hypot(p.x-H.x,p.y-H.y)/8);ctx.font=`600 10px ${FONT}`;ctx.textAlign='center';ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillText(dist+'m',ex+1,ey+19);ctx.fillStyle='#f3edff';ctx.fillText(dist+'m',ex,ey+18)}break}}
+        else if(!clipped){const dist=Math.round(Math.hypot(p.x-H.x,p.y-H.y)/8);ctx.font=`600 12px ${FONT}`;ctx.textAlign='center';ctx.fillStyle='rgba(0,0,0,.75)';ctx.fillText(dist+'m',ex+1,ey+22);ctx.fillStyle='#f3edff';ctx.fillText(dist+'m',ex,ey+21)}break}}
     if(clipped&&p.k!=='danger'&&p.k!=='ring'){ctx.globalAlpha=A*.6;ctx.strokeStyle=cs;ctx.beginPath();ctx.arc(ex,ey,9,0,TAU);ctx.stroke()}}
   ctx.globalAlpha=A;
   // você
   {const [hx,hy]=toS(H.x,H.y);const v=inputVec();const ang=(v[0]||v[1])?Math.atan2(v[1],v[0]):(H.dir<0?Math.PI:0);ctx.save();ctx.translate(hx,hy);ctx.rotate(ang);ctx.fillStyle='#ffffff';ctx.shadowColor='#5ef0ff';ctx.shadowBlur=8;ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-5,-5);ctx.lineTo(-2,0);ctx.lineTo(-5,5);ctx.closePath();ctx.fill();ctx.restore()}
   ctx.restore();
   // título e legenda
-  ctx.textAlign='left';ctx.font=`700 12px ${FONT}`;ctx.fillStyle=col(rc[0],rc[1],80);ctx.fillText(`${T('map').toUpperCase()} · ${T('realm')} ${sc.run&&sc.run.secret?'XI':ROMAN[sc.phase]} · ${realmName(sc.phase)}`,x0+12,y0+18);
-  ctx.textAlign='right';ctx.font=`500 10px ${FONT}`;ctx.fillStyle='#9c91b3';ctx.fillText(matchMedia('(pointer:coarse)').matches||pw<520?'':T('mapHint'),x0+pw-12,y0+18);
+  ctx.textAlign='left';ctx.font=`700 15px ${FONT}`;ctx.fillStyle=col(rc[0],rc[1],80);ctx.fillText(`${T('map').toUpperCase()} · ${T('realm')} ${sc.run&&sc.run.secret?'XI':ROMAN[sc.phase]} · ${realmName(sc.phase)}`,x0+14,y0+22);
+  ctx.textAlign='right';ctx.font=`500 12px ${FONT}`;ctx.fillStyle='#9c91b3';ctx.fillText(matchMedia('(pointer:coarse)').matches||pw<520?'':T('mapHint'),x0+pw-14,y0+22);
   {const items=[['obj',T('mObj'),oc()],['chest',T('mChest'),[44,100,62]],['heart',T('mHeart'),[350,85,62]],['altar',T('mAltar'),[185,100,62]],['elite',T('mElite'),[44,95,60]],['boss',T('mBoss'),[355,90,58]],['nem',T('mNem'),[285,90,62]],['danger',T('mDanger'),[355,90,55]]];
-    ctx.font=`500 10px ${FONT}`;ctx.textAlign='left';let lx=x0+12,ly=y0+ph-10;for(const [kk,lab,c] of items){const wd=ctx.measureText(lab).width+20;if(lx+wd>x0+pw-8){lx=x0+12;ly-=14}ctx.fillStyle=col(c[0],c[1],c[2]);if(kk==='obj'){ctx.save();ctx.translate(lx+4,ly-3);ctx.rotate(Math.PI/4);ctx.fillRect(-3,-3,6,6);ctx.restore()}else if(kk==='danger'){ctx.fillStyle=col(c[0],c[1],c[2],.35);ctx.beginPath();ctx.arc(lx+4,ly-3,4,0,TAU);ctx.fill()}else if(kk==='altar'){ctx.strokeStyle=col(c[0],c[1],c[2]);ctx.beginPath();ctx.arc(lx+4,ly-3,3,0,TAU);ctx.stroke()}else{ctx.beginPath();ctx.arc(lx+4,ly-3,3,0,TAU);ctx.fill()}ctx.fillStyle='#cfc6e4';ctx.fillText(lab,lx+11,ly);lx+=wd}}
+    ctx.font=`500 13px ${FONT}`;ctx.textAlign='left';let lx=x0+14,ly=y0+ph-12;for(const [kk,lab,c] of items){const wd=ctx.measureText(lab).width+26;if(lx+wd>x0+pw-8){lx=x0+14;ly-=19}ctx.fillStyle=col(c[0],c[1],c[2]);if(kk==='obj'){ctx.save();ctx.translate(lx+4,ly-3);ctx.rotate(Math.PI/4);ctx.fillRect(-3,-3,6,6);ctx.restore()}else if(kk==='danger'){ctx.fillStyle=col(c[0],c[1],c[2],.35);ctx.beginPath();ctx.arc(lx+4,ly-3,4,0,TAU);ctx.fill()}else if(kk==='altar'){ctx.strokeStyle=col(c[0],c[1],c[2]);ctx.beginPath();ctx.arc(lx+4,ly-3,3,0,TAU);ctx.stroke()}else{ctx.beginPath();ctx.arc(lx+4,ly-3,3,0,TAU);ctx.fill()}ctx.fillStyle='#e2daf2';ctx.fillText(lab,lx+13,ly);lx+=wd}}
   ctx.restore();
   function oc(){const c=(P.objCfg&&P.objCfg.c)||rc;return c}}
 
@@ -5932,16 +6025,16 @@ const RFLASH={};const RFLY=[];
 const RSRC={relicRoot:'raiz',relicSoul:'lanterna',relicFire:'brasa',relicMud:'lodo',relicSun:'espelho',relicBolt:'pena'};
 {const _ah=areaHit;areaHit=function(x,y,r,d,src,...a){const id=RSRC[src];if(id)RFLASH[id]=performance.now();return _ah(x,y,r,d,src,...a)}}
 {const _tr=takeRelic;takeRelic=function(id){const ov=$('relicOv');const open=ov&&!ov.hidden;_tr(id);if(open)RFLY.push({id,t0:performance.now()})}}
-function hudSlot(ctx,x,y,id,now){const R=RELICS[id],c=R.c;const f=RFLASH[id]?Math.max(0,1-(now-RFLASH[id])/600):0;const S=22;
+function hudSlot(ctx,x,y,id,now){const R=RELICS[id],c=R.c;const f=RFLASH[id]?Math.max(0,1-(now-RFLASH[id])/600):0;const S=28;
   ctx.fillStyle='rgba(8,6,14,.72)';ctx.fillRect(x,y,S,S);ctx.strokeStyle=col(c[0],c[1],Math.min(85,c[2]+f*25),.55+.45*f);ctx.lineWidth=1;ctx.strokeRect(x+.5,y+.5,S-1,S-1);
   ctx.fillStyle=col(c[0],c[1],c[2],.18+.3*f);ctx.fillRect(x+1,y+S-5,S-2,4);
   if(f>0){ctx.save();ctx.globalCompositeOperation='lighter';const g=ctx.createRadialGradient(x+S/2,y+S/2,0,x+S/2,y+S/2,S);g.addColorStop(0,col(c[0],c[1],c[2],.6*f));g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(x-S/2,y-S/2,S*2,S*2);ctx.restore()}
-  const k=1+.15*f;ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(x+S/2,y+S/2);ctx.scale(k,k);ctx.drawImage(relicCv(id),-8,-8,16,16);ctx.restore()}
+  const k=1+.15*f;ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(x+S/2,y+S/2);ctx.scale(k,k);ctx.drawImage(relicCv(id),-12,-12,24,24);ctx.restore()}
 drawRelicHud=safeFn('reliquias-hud',function(){const r=sc.run;if(sc.mode!=='play'||!r||!r.relics||!r.relics.length||sc.rintro)return;const ctx=sc.ctx;ctx.setTransform(DPR,0,0,DPR,0,0);const now=performance.now();
-  const W=ctx.canvas.width/DPR,H=ctx.canvas.height/DPR;const y=86;const slotX=i=>12+i*25;
+  const W=ctx.canvas.width/DPR,H=ctx.canvas.height/DPR;const y=86;const slotX=i=>12+i*32;
   r.relics.forEach((id,i)=>{const fl=RFLY.find(q=>q.id===id);if(fl&&now-fl.t0<1500)return;hudSlot(ctx,slotX(i),y,id,now)});
   for(let n=RFLY.length-1;n>=0;n--){const q=RFLY[n];const t=(now-q.t0)/1000;if(t>1.5||!r.relics.includes(q.id)){RFLY.splice(n,1);continue}const i=r.relics.indexOf(q.id);const R=RELICS[q.id],c=R.c;
-    const sx=W/2,sy=H*.5-52,tx=slotX(i)+11,ty=y+11;let px,py,sc2,a=1;
+    const sx=W/2,sy=H*.5-52,tx=slotX(i)+14,ty=y+14;let px,py,sc2,a=1;
     if(t<.7){const k=Math.min(1,t/.25);px=sx;py=sy-10*Math.sin(t*6);sc2=4*(k<1?.6+.4*ease(k):1);a=k}else{const k=ease(Math.min(1,(t-.7)/.8));px=sx+(tx-sx)*k;py=sy+(ty-sy)*k-Math.sin(k*Math.PI)*40;sc2=4+(1-4)*k}
     ctx.save();ctx.globalAlpha=a;ctx.globalCompositeOperation='lighter';const g=ctx.createRadialGradient(px,py,0,px,py,sc2*14);g.addColorStop(0,col(c[0],c[1],c[2],.55));g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(px-sc2*14,py-sc2*14,sc2*28,sc2*28);
     if(t<.7){ctx.strokeStyle=col(c[0],c[1],80,.5*(1-t/.7));ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,py,sc2*8+t*60,0,TAU);ctx.stroke();for(let j=0;j<8;j++){const an=j/8*TAU+t*2;ctx.fillStyle=col(c[0],c[1],85,.8*(1-t/.7));ctx.fillRect(px+Math.cos(an)*(sc2*10+t*40),py+Math.sin(an)*(sc2*10+t*40),2,2)}}
@@ -6082,11 +6175,11 @@ function evoBlast(id){const H=sc.hero;const R=170;const c=[44,100,62];
 // ===== HUD: molduras das armas por patamar, texto de patamar e véu da evolução =====
 function heroScr(){const {w,h}=fit(sc.cv);const S=w<520?2:3;const CP=camPos();return [(sc.hero.x-CP.x)*S+w/2,(sc.hero.y-CP.y)*S+h/2]}
 function drawWTierHud(){if(sc.mode!=='play'||!sc.run||sc.rintro)return;const ctx=sc.ctx;const {w,h}=fit(sc.cv);ctx.setTransform(DPR,0,0,DPR,0,0);
-  sc.build.weapons.forEach((wp,i)=>{const t=wTier(wp.id);if(!t)return;const x=14+i*20,y=h-32;const c=t>=3?[44,100,62]:WCOL[wp.id];const pul=.6+.4*Math.sin(sc.t*(t>=2?5:3)+i);
-    ctx.strokeStyle=col(c[0],c[1],c[2]+(t>=2?10:0),t===1?.55:.7+.3*pul);ctx.lineWidth=1;ctx.strokeRect(x-1.5,y-1.5,20,20);
-    if(t>=2){ctx.save();ctx.globalCompositeOperation='lighter';ctx.shadowColor=col(c[0],c[1],c[2]);ctx.shadowBlur=6*pul;ctx.strokeRect(x-1.5,y-1.5,20,20);ctx.restore()}
-    for(let s=0;s<Math.min(3,t);s++){ctx.fillStyle=t>=3?'#ffe08a':col(c[0],c[1],80);ctx.fillRect(x+1+s*4,y-4,3,2)}
-    if(t>=3){const a=sc.t*2+i;const px=x+8.5+Math.cos(a)*11,py=y+8.5+Math.sin(a)*11;ctx.fillStyle='#fff6c8';ctx.fillRect(Math.round(px),Math.round(py),1,1)}});
+  const L=hudIL(w,h),S=L.S;sc.build.weapons.forEach((wp,i)=>{const t=wTier(wp.id);if(!t)return;const x=L.x(i),y=L.wy;const c=t>=3?[44,100,62]:WCOL[wp.id];const pul=.6+.4*Math.sin(sc.t*(t>=2?5:3)+i);
+    ctx.strokeStyle=col(c[0],c[1],c[2]+(t>=2?10:0),t===1?.55:.7+.3*pul);ctx.lineWidth=1;ctx.strokeRect(x-2.5,y-2.5,S+5,S+5);
+    if(t>=2){ctx.save();ctx.globalCompositeOperation='lighter';ctx.shadowColor=col(c[0],c[1],c[2]);ctx.shadowBlur=6*pul;ctx.strokeRect(x-2.5,y-2.5,S+5,S+5);ctx.restore()}
+    for(let s=0;s<Math.min(3,t);s++){ctx.fillStyle=t>=3?'#ffe08a':col(c[0],c[1],80);ctx.fillRect(x+1+s*6,y-6,5,3)}
+    if(t>=3){const a=sc.t*2+i;const px=x+S/2+Math.cos(a)*(S*.65),py=y+S/2+Math.sin(a)*(S*.65);ctx.fillStyle='#fff6c8';ctx.fillRect(Math.round(px),Math.round(py),1,1)}});
   const P=WT.pop;if(P){const k=P.t/3.2;const W=WEAPONS.find(x=>x.id===P.id);const c=WCOL[P.id]||[44,100,62];const a=k<.1?k/.1:k>.75?(1-k)/.25:1;const sc2=k<.12?.7+.3*ease(k/.12):1;
     ctx.save();ctx.globalAlpha=a;const hs=heroScr();ctx.translate(hs[0],hs[1]-78-k*14);ctx.scale(sc2,sc2);ctx.textAlign='center';ctx.font=`700 ${w<520?13:16}px ${FONT}`;ctx.fillStyle='#000';ctx.fillText(TIER_TXT[P.tier][LI()],1,1);ctx.fillStyle=col(c[0],c[1],Math.min(90,c[2]+20));ctx.fillText(TIER_TXT[P.tier][LI()],0,0);
     ctx.font=`500 ${w<520?11:12}px ${FONT}`;ctx.fillStyle='#000';ctx.fillText(W?W.name:'',1,17);ctx.fillStyle='#f3edff';ctx.fillText(W?W.name:'',0,16);
@@ -6209,7 +6302,7 @@ if(window.__dbg)window.__dbg.startRunZ=function(...a){return startRun(...a)};
 // ===== Liberar personagens: missões de verdade, uma por personagem =====
 const MISSIONS={
  cacadora:['Vença o Reino II sem rerrolar e sem cair abaixo de metade da vida','Clear Realm II without rerolling and without dropping below half health','Supera el Reino II sin rerrolar y sin bajar de la mitad de vida','Terminez le Royaume II sans relancer et sans passer sous la moitié de vos PV'],
- ceifadora:['Derrote 5.000 monstros somando todas as partidas','Defeat 5,000 monsters across all runs','Derrota 5.000 monstruos sumando todas las partidas','Vainquez 5 000 monstres sur l’ensemble des parties'],
+ ceifadora:['Derrote 10.000 monstros somando todas as partidas','Defeat 10,000 monsters across all runs','Derrota 10.000 monstruos sumando todas las partidas','Vainquez 10 000 monstres sur l’ensemble des parties'],
  guardiao:['Vença o Reino IV sem cair abaixo de metade da vida','Clear Realm IV without dropping below half health','Supera el Reino IV sin bajar de la mitad de vida','Terminez le Royaume IV sans passer sous la moitié de vos PV'],
  bardo:['Conquiste 3 Tocas de Campeão (o mini-chefe marcado com ☠ no mapa)','Conquer 3 Champion’s Lairs (the mini-boss marked ☠ on the map)','Conquista 3 Guaridas del Campeón (el minijefe marcado con ☠ en el mapa)','Conquérez 3 Antres du Champion (le mini-boss marqué ☠ sur la carte)'],
  alquimista:['Vença um reino com 3 maldições ativas ao mesmo tempo','Clear a realm with 3 curses active at once','Supera un reino con 3 maldiciones activas a la vez','Terminez un royaume avec 3 malédictions actives en même temps'],
@@ -6219,7 +6312,7 @@ const UNL_T={how:['Como liberar','How to unlock','Cómo desbloquear','Comment d�
   test:['Liberado agora só pelo modo de teste. No jogo normal:','Unlocked only by test mode. In the normal game:','Desbloqueado solo por el modo de prueba. En el juego normal:','Débloqué uniquement par le mode test. En jeu normal :'],
   base:['Personagem inicial: já vem liberado','Starting character: always unlocked','Personaje inicial: siempre desbloqueado','Personnage de départ : toujours débloqué']};
 charProgress=function(id){const S=META.stats,F=META.flags;switch(id){
-  case 'cacadora':return [F.cac2?1:0,1];case 'ceifadora':return [Math.min(5000,S.kills||0),5000];case 'guardiao':return [F.g4?1:0,1];
+  case 'cacadora':return [F.cac2?1:0,1];case 'ceifadora':return [Math.min(10000,S.kills||0),10000];case 'guardiao':return [F.g4?1:0,1];
   case 'bardo':return [Math.min(3,S.lairs||0),3];case 'alquimista':return [F.cur3?1:0,1];
   case 'domadora':return [META.cleared.includes(6)?1:0,1];case 'semrosto':return F.mask?[1,1]:null}return null};
 function applyMissions(){for(const C of CHARS){const m=MISSIONS[C.id];if(m)C.mission=m[LI()]}}
@@ -6444,6 +6537,328 @@ function allyTick(dt){
 {const _u=update;update=function(dt){_u(dt);if(sc.mode==='play'&&!sc.paused&&sc.hitstop<=0)allyTick(dt)}}
 {const _sr=startRun;startRun=function(realm,endless){sc.allies.length=0;_sr(realm,endless)}}
 if(window.__dbg)Object.assign(window.__dbg,{spawnAlly,allyTick,spawnEnemy,kill,OPT});
+/* ================= personagens: tocar no herói já escolhe; um modal mostra o que ele faz ================= */
+Object.assign(I18N,{
+  seeDetails:['Ver detalhes','See details','Ver detalles','Voir les détails'],
+  lessDetails:['Menos detalhes','Fewer details','Menos detalles','Moins de détails'],
+  chosenL:['Escolhido','Selected','Elegido','Choisi'],
+  closeL:['Fechar','Close','Cerrar','Fermer'],
+  playWith:['Jogar com ele','Play as this hero','Jugar con él','Jouer avec lui'],
+  lockedHow:['Bloqueado · veja como liberar','Locked · see how to unlock','Bloqueado · mira cómo liberarlo','Verrouillé · voir comment le débloquer'],
+  midRun:['Termine a partida atual para trocar de herói.','Finish the current run to switch heroes.','Termina la partida actual para cambiar de héroe.','Terminez la partie en cours pour changer de héros.']
+});
+if(PROD){
+  I18N.endlessLocked=['Libera ao vencer o Reino X.','Unlocks after beating Realm X.','Se libera al vencer el Reino X.','Se débloque après le Royaume X.'];
+}
+/* o "modo teste" fica escondido: só aparece depois de tocar 30 vezes no título "Opções" */
+{
+  if(!OPT.devShown&&OPT.testAll){OPT.testAll=false;try{saveOpt()}catch(e){}}
+  const rows=()=>{const t=$('oTest');if(!t)return [];const row=t.closest('.opt-row');const nt=row&&row.nextElementSibling;return [row,nt&&nt.dataset&&nt.dataset.i18n==='testNote'?nt:null].filter(Boolean)};
+  const sync=()=>rows().forEach(el=>el.style.display=OPT.devShown?'':'none');
+  sync();{const _ro=renderOpt;renderOpt=function(){_ro();sync()}}
+  const h=document.querySelector('#uiOpt .meta-head h3');let n=0,last=0;
+  if(h)h.addEventListener('click',()=>{const now=performance.now();n=now-last>1500?1:n+1;last=now;if(n>=30&&!OPT.devShown){OPT.devShown=true;try{saveOpt()}catch(e){}sync();uiSfx('reveal');const r=rows()[0];if(r)r.scrollIntoView&&r.scrollIntoView({block:'center'})}});
+}
+{
+  const st=document.createElement('style');st.textContent=`
+#uiChars .chars{grid-template-columns:1fr}
+#uiChars .char-grid{max-width:760px;width:100%;margin:0 auto}
+.cm-ov{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(4,2,8,.74);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.cm-ov[hidden]{display:none}
+.cm-box{position:relative;width:min(560px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;background:#0d0a16;border:1px solid var(--cc,#5ef0ff);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 0 40px var(--ccg,rgba(94,240,255,.25));padding:16px;display:flex;flex-direction:column;gap:12px;animation:cmIn .18s ease-out}
+@keyframes cmIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.cm-box .char-detail{border:0;background:none;padding:0;grid-template-columns:minmax(0,150px) minmax(0,1fr)}
+.cm-box .cd-art canvas{height:180px}
+.cm-box .cd-name{padding-right:34px}
+.cm-box:not(.more) .cd-diff span,.cm-box:not(.more) .stats,.cm-box:not(.more) .unl-how{display:none}
+.cm-box:not(.more) .cd-diff{padding:8px 10px}
+.cm-box .cd-actions{display:none}
+.cm-box.locked .cd-actions{display:${PROD?'none':'flex'}}
+.cm-x{position:absolute;right:10px;top:10px;z-index:2;width:36px;height:36px;display:grid;place-items:center;font-size:18px;line-height:1;background:rgba(10,7,17,.9);border:1px solid var(--line);color:#e9e2f7;cursor:pointer}
+.cm-x:hover,.cm-x:focus-visible{border-color:var(--rune);outline:none}
+.cm-note{margin:0;font-size:13px;color:#ffcf7a}
+.cm-btns{display:flex;gap:8px;flex-wrap:wrap}
+.cm-btns button{flex:1 1 160px;min-height:46px;font-family:var(--display);font-weight:700;font-size:15px;cursor:pointer;padding:10px 14px}
+#cmPlay{background:var(--gold);color:#140e04;border:1px solid var(--gold)}
+#cmMore{background:transparent;color:var(--gold);border:1px solid rgba(242,193,78,.55)}
+#cmPlay:hover,#cmPlay:focus-visible{filter:brightness(1.08);outline:none}
+#cmMore:hover,#cmMore:focus-visible{border-color:var(--gold);outline:none}
+@media (max-width:760px){.cm-box .char-detail{grid-template-columns:1fr}.cm-box .cd-art canvas{height:150px}.cm-box.more .cd-art canvas{height:110px}}
+@media (prefers-reduced-motion:reduce){.cm-box{animation:none}}`;
+  document.head.appendChild(st);
+
+  const fr=$('uiChars'),det=$('charDetail');
+  const ov=document.createElement('div');ov.className='cm-ov';ov.id='charModal';ov.hidden=true;ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');
+  ov.innerHTML=`<div class="cm-box"><button type="button" class="cm-x" id="cmX">✕</button><p class="cm-note" id="cmNote" hidden></p><div class="cm-btns"><button type="button" id="cmPlay"></button><button type="button" id="cmMore"></button></div></div>`;
+  fr.appendChild(ov);
+  const box=ov.querySelector('.cm-box');box.insertBefore(det,box.querySelector('#cmNote'));
+  const running=()=>{const pb=$('pauseBtn');return sc.mode==='play'&&pb&&!pb.hidden};
+  function labels(){const C=CHARS[charView];$('cmX').setAttribute('aria-label',T('closeL'));$('cmPlay').textContent=T('playWith');$('cmMore').textContent=box.classList.contains('more')?T('lessDetails'):T('seeDetails');
+    $('cmPlay').hidden=!C.unlocked||running();ov.setAttribute('aria-label',C.secret&&!C.unlocked?'???':C.name);
+    const tag=det.querySelector('.cd-tag');if(tag){if(C.unlocked&&charView===CHAR_SEL){tag.textContent='✓ '+T('chosenL');tag.style.color='#7dffb8'}else if(!C.unlocked)tag.textContent=T('lockedHow')}}
+  function openCM(){box.classList.remove('more');box.classList.toggle('locked',!CHARS[charView].unlocked);box.style.setProperty('--cc',col(...CHARS[charView].pal.e));box.style.setProperty('--ccg',col(...CHARS[charView].pal.e,.3));
+    ov.hidden=false;labels();box.scrollTop=0;try{$('cmPlay').hidden?$('cmMore').focus({preventScroll:true}):$('cmPlay').focus({preventScroll:true})}catch(e){}}
+  function closeCM(){if(ov.hidden)return;ov.hidden=true;const b=$('charGrid').children[charView];if(b)try{b.focus({preventScroll:true})}catch(e){}}
+  function pick(i){charView=i;const C=CHARS[i];const note=$('cmNote');note.hidden=true;
+    if(C.unlocked&&i!==CHAR_SEL){if(running()){note.textContent=T('midRun');note.hidden=false}else{applyChar(i);refreshLevelOffer();updMenuHero();uiSfx('reveal')}}else uiSfx('hover');
+    renderCharGrid();renderCharDetail();openCM()}
+  $('charGrid').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.ccard');if(!b)return;e.stopPropagation();const i=[...$('charGrid').children].indexOf(b);if(i>=0)pick(i)},true);
+  $('cmX').addEventListener('click',closeCM);
+  ov.addEventListener('click',e=>{if(e.target===ov)closeCM()});
+  $('cmMore').addEventListener('click',()=>{box.classList.toggle('more');labels()});
+  $('cmPlay').addEventListener('click',()=>{closeCM();const c=$('mContinue');if(c)c.click()});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&!ov.hidden){e.stopPropagation();closeCM()}},true);
+  // ao sair da tela de personagens o modal fecha
+  new MutationObserver(()=>{if(fr.hidden)ov.hidden=true}).observe(fr,{attributes:true,attributeFilter:['hidden']});
+  {const _rd=renderCharDetail;renderCharDetail=function(...a){_rd.apply(this,a);if(!ov.hidden)labels()}}
+  window.__charModal={open:openCM,close:closeCM,pick};
+}
+/* ================= ajustes de fluxo: progressão escondida, pausa com opções próprias, voltar ao menu,
+   cena de fundo automática, loja sem piscar, economia, escolha de poder voando, botões e textos ================= */
+Object.assign(I18N,{
+  backToMenu:['Retornar ao menu','Return to menu','Volver al menú','Retour au menu'],
+  runPaused:['partida pausada','run paused','partida en pausa','partie en pause'],
+  resumeRun:['Continuar partida','Resume run','Continuar partida','Reprendre la partie'],
+  boughtL:['✓ Comprado','✓ Bought','✓ Comprado','✓ Acheté'],
+  backL:['‹ Voltar','‹ Back','‹ Volver','‹ Retour'],
+  lockedSil:['Personagem bloqueado','Locked hero','Personaje bloqueado','Personnage verrouillé']
+});
+/* ---------- 1. Reino XI, Infinito e Ascensão só aparecem quando forem conquistados ---------- */
+{const _os=openStart;openStart=function(){_os();const ov=$('startOv');if(ov.hidden)return;const test=!!OPT.testAll;
+  const sb=ov.querySelector('.ro-r.secret');if(sb&&sb.disabled&&!test)sb.remove();
+  const cleared10=META.cleared.includes(9);
+  if(!cleared10&&!test){const md=ov.querySelector('.ro-modes');if(md&&md.querySelector('[data-m="1"]')){startEndless=false;md.remove()}}
+  const asc=ov.querySelector('.ro-asc');if(asc&&!test&&ascMax(startSel)===0)asc.remove()}}
+
+/* ---------- 2. nomes dos idiomas no idioma do jogo (Francês, Inglês...) ---------- */
+const LANG_NAMES={pt:['Português','Portuguese','Portugués','Portugais'],en:['Inglês','English','Inglés','Anglais'],es:['Espanhol','Spanish','Español','Espagnol'],fr:['Francês','French','Francés','Français']};
+function langLabels(){document.querySelectorAll('#langGrid .lang').forEach(b=>{const n=LANG_NAMES[b.dataset.lang];const ab=b.querySelector('b');if(!n||!ab)return;b.textContent='';b.appendChild(ab);b.appendChild(document.createTextNode(n[LI()]))})}
+langLabels();{const _al=applyLang;applyLang=function(){_al();langLabels()}}
+
+/* ---------- 3. pausa: opções abrem por cima do jogo; "Retornar ao menu" guarda a partida ---------- */
+const OPT_OV=document.createElement('div');OPT_OV.className='run-ov opt-ov';OPT_OV.id='optOv';OPT_OV.hidden=true;document.querySelector('.stage').appendChild(OPT_OV);
+OPT_OV.innerHTML=`<div class="ro-box oo-box"><div class="oo-head"><button class="ro-ghost oo-back" id="ooBack"></button><span class="ro-t" id="ooT"></span></div><div class="oo-body" id="ooBody"></div></div>`;
+function openGameOpt(){const grid=document.querySelector('#uiOpt .opt-grid');if(!grid)return;$('ooBody').appendChild(grid);$('ooT').textContent=T('options');$('ooBack').textContent=T('backL');
+  $('pauseOv').hidden=true;OPT_OV.hidden=false;sc.paused=true;sc.menuPause=true;$('ooBody').scrollTop=0;try{$('ooBack').focus({preventScroll:true})}catch(e){}}
+function closeGameOpt(){if(OPT_OV.hidden)return;const grid=$('ooBody').querySelector('.opt-grid');const wrap=document.querySelector('#uiOpt .meta-wrap');if(grid&&wrap)wrap.appendChild(grid);OPT_OV.hidden=true;openPause()}
+$('ooBack').addEventListener('click',closeGameOpt);
+addEventListener('keydown',e=>{if(!OPT_OV.hidden&&(e.key==='Escape'||e.key==='p'||e.key==='P')){e.stopImmediatePropagation();e.preventDefault();closeGameOpt()}},true);
+let SUSP=false;// partida guardada enquanto a pessoa está no menu
+function suspended(){return SUSP&&sc.mode==='play'&&sc.run&&!sc.run.ended}
+function toMenuFromRun(){SUSP=true;$('pauseOv').hidden=true;OPT_OV.hidden=true;sc.paused=true;sc.menuPause=true;try{saveRun&&saveRun()}catch(e){}refreshMenuMeta();showTab('menu');document.querySelector('.tabs').scrollIntoView({behavior:'auto',block:'start'})}
+{const _op=openPause;openPause=function(){if(!OPT_OV.hidden)return;_op();const ov=$('pauseOv');if(ov.hidden)return;
+  const o=$('pzOpt');if(o)o.onclick=openGameOpt;
+  if(!$('pzMenu')){const q=$('pzQuit');const b=document.createElement('button');b.className='ro-ghost';b.id='pzMenu';b.textContent=T('backToMenu');b.onclick=toMenuFromRun;if(q)q.parentNode.insertBefore(b,q)}}}
+// "Continuar" do menu volta para a partida guardada
+$('mContinue').addEventListener('click',e=>{if(!suspended())return;e.stopImmediatePropagation();SUSP=false;document.querySelector('.stage').scrollIntoView({behavior:'auto',block:'center'});openPause()},true);
+{const _sr=startRun;startRun=function(...a){SUSP=false;OPT_OV.hidden=true;return _sr(...a)}}
+{const _er=endRun;endRun=function(k){SUSP=false;return _er(k)}}
+{const _rm=refreshMenuMeta;refreshMenuMeta=function(){_rm();try{const b=$('mContinue');const lab=b&&b.querySelector('[data-i18n="continue"]');if(suspended()){if(lab)lab.textContent=T('resumeRun');$('mContS').textContent=`${T('realm')} ${sc.run.secret?'XI':ROMAN[sc.phase]} · ${fmtTime(sc.run.t)} · ${T('runPaused')}`}else if(lab)lab.textContent=T('continue')}catch(e){}}}
+window.__ee=Object.assign(window.__ee||{},{openStart:()=>{SUSP=false;openStart()},suspended,openGameOpt,closeGameOpt});
+
+/* ---------- 4. cena de fundo (sem partida): o próprio jogo escolhe os poderes e abre os baús ---------- */
+{let lvSeen=0,chSeen=0;setInterval(()=>{if(sc.mode==='play'){lvSeen=chSeen=0;return}const now=performance.now();
+  const lv=$('lvlOv');if(lv&&!lv.hidden&&!sc.picking){if(!lvSeen)lvSeen=now;else if(now-lvSeen>1400){lvSeen=0;const cards=[...$('lvlOvCards').children];let i=sc.offer?sc.offer.findIndex(o=>o.kind!=='curse'):0;if(i<0)i=0;if(cards[i])try{scenePick(i,cards[i])}catch(e){lv.hidden=true;sc.paused=false}}}else lvSeen=0;
+  const ch=$('chestOv');if(ch&&!ch.hidden){if(!chSeen)chSeen=now;else if(now-chSeen>2600){chSeen=0;try{closeChest()}catch(e){ch.hidden=true;sc.paused=false}}}else chSeen=0},250)}
+
+/* ---------- 5. loja: comprar só troca o botão, a tela não pisca ---------- */
+{const _ru=renderUpg;renderUpg=function(flash){const g=$('upgGrid');const old=[...g.children];const top=g.closest('.meta-wrap');const sy=top?top.scrollTop:0;
+  if(!flash||!old.length){_ru(flash);return}
+  _ru(flash);const fresh=[...g.children];if(fresh.length!==old.length)return;
+  fresh.forEach((nw,i)=>{const od=old[i];const was=od.className;od.className=nw.className;if(nw.classList.contains('bought')&&was.includes('bought')){od.classList.remove('bought');void od.offsetWidth;od.classList.add('bought')}
+    for(const s of ['.ud','.pips']){const a=od.querySelector(s),b=nw.querySelector(s);if(a&&b)a.replaceWith(b)}
+    const ob=od.querySelector('button'),nb=nw.querySelector('button');if(ob&&nb)ob.replaceWith(nb);
+    if(nw.classList.contains('bought')&&nb){const keep=nb.innerHTML,dis=nb.disabled;nb.innerHTML=T('boughtL');nb.disabled=true;nb.classList.add('just');setTimeout(()=>{if(!nb.isConnected)return;nb.innerHTML=keep;nb.disabled=dis;nb.classList.remove('just')},1500)}});
+  g.replaceChildren(...old);if(top)top.scrollTop=sy}}
+
+/* ---------- 6. economia: uma partida muito boa rende por volta de 3.000 de ouro ---------- */
+{const _rg=runGold;runGold=function(r,w){const g=_rg(r,w);return g<=1200?g:Math.round(1200+(g-1200)*.13)}}
+
+/* ---------- 7. conquistas secretas que nunca completavam ---------- */
+{const am=ACHS.find(a=>a.id==='a_mask');if(am)am.k='mask';const at=ACHS.find(a=>a.id==='a_total');if(at)at.k='total';
+  const _st=stat;stat=function(k){if(k==='mask')return META.flags&&META.flags.mask?1:0;if(k==='total')return META.trueEnd||(META.stars&&META.stars[9]>=3)?1:0;return _st(k)}}
+
+/* ---------- 8. personagem bloqueado: só a silhueta e o que fazer para liberar ---------- */
+{const _rd=renderCharDetail;renderCharDetail=function(...a){_rd.apply(this,a);const C=CHARS[charView];if(C.unlocked)return;const d=$('charDetail');
+  d.querySelectorAll('.cd-diff,.cd-weapon,.stats,.unl-how').forEach(el=>el.remove());const nm=d.querySelector('.cd-name');if(nm&&!C.secret)nm.textContent=C.name}}
+
+/* ---------- 9. escolha de poder: o ícone sai do card e voa até o espaço dele ---------- */
+const HUD_POP={t:0,o:null};
+pickFx=function(el,o,target,done){const rar=o.kind==='curse'?-1:o.rar;const rc=o.kind==='curse'?CURSE_C:RAR[o.rar].c;const ico=el.querySelector('.ico');const r0=ico.getBoundingClientRect();
+  sfxPick(Math.max(0,rar));if(o.kind==='curse')uiSfx('curse');
+  fxBurstAt(r0,rc,rar===3?80:rar===2?50:32,rar>=2);fxRing(r0,rc,rar===3?300:rar===2?210:150);
+  if(rar===3){flashScreen('radial-gradient(circle,rgba(255,220,130,.45),rgba(255,180,60,.1) 60%,transparent)');shakeEl(el.closest('.ui-frame,.stage'));setTimeout(()=>fxBurstAt(r0,[44,100,75],40,true),160)}
+  if(rar===2)flashScreen('radial-gradient(circle,rgba(190,120,255,.25),transparent 60%)');
+  if(o.kind==='curse'){el.classList.add('cracked');fxSmoke(el.getBoundingClientRect(),34);flashScreen('radial-gradient(circle,rgba(170,20,40,.38),rgba(30,0,6,.25) 70%)');shakeEl(el.closest('.ui-frame,.stage'))}
+  if(!target){if(done)done();return}
+  const img=document.createElement('img');img.src=ico.toDataURL();img.className='fly-ico';img.alt='';img.style.setProperty('--fc',col(rc[0],rc[1],rc[2]));
+  Object.assign(img.style,{left:r0.left+'px',top:r0.top+'px',width:r0.width+'px',height:r0.height+'px'});document.body.appendChild(img);
+  // o ícone sai de verdade do card: no lugar fica só o encaixe vazio brilhando
+  ico.classList.add('ico-gone');el.classList.add('ico-left');
+  const tx=target.left+target.width/2-(r0.left+r0.width/2),ty=target.top+target.height/2-(r0.top+r0.height/2);const s2=Math.max(.15,target.width/r0.width);const spin=rar===3?720:rar===-1?-360:360;
+  const side=tx<0?-1:1;
+  const anim=img.animate([
+    {transform:'translate(0,0) scale(1) rotate(0deg)',offset:0},
+    {transform:'translate(0,-34px) scale(1.55) rotate(-10deg)',offset:.2,easing:'ease-in-out'},
+    {transform:'translate(0,-40px) scale(1.5) rotate(6deg)',offset:.3,easing:'cubic-bezier(.5,0,.6,1)'},
+    {transform:`translate(${tx*.35-side*40}px,${ty*.35-120}px) scale(1.15) rotate(${spin*.45}deg)`,offset:.62,easing:'cubic-bezier(.4,0,.8,.6)'},
+    {transform:`translate(${tx}px,${ty}px) scale(${s2}) rotate(${spin}deg)`,offset:1}],{duration:RM?60:980,fill:'forwards'});
+  FX.follow={img,c:rc};FX.active=true;
+  anim.onfinish=()=>{img.remove();FX.follow=null;fxBurstAt(target,rc,rar>=2?30:20,false);fxRing(target,rc,rar>=2?80:56);HUD_POP.t=performance.now();HUD_POP.o=o;HUD_POP.c=rc;if(done)done()}};
+// o espaço do HUD "recebe" o ícone com um brilho
+{const _w=drawWTierHud;drawWTierHud=function(){_w();const k=(performance.now()-HUD_POP.t)/520;if(!HUD_POP.o||k>1||sc.mode!=='play')return;const o=HUD_POP.o;const ctx=sc.ctx;const {w,h}=fit(sc.cv);ctx.setTransform(DPR,0,0,DPR,0,0);const L=hudIL(w,h);
+  const wpn=o.kind==='up'||o.kind==='new';let idx,y;if(wpn){idx=Math.max(0,sc.build.weapons.findIndex(x=>x.id===o.id));y=L.wy}else if(o.kind==='curse'){idx=sc.build.passives.length+1+Math.max(0,sc.build.curses.indexOf(o.id));y=L.py}else{idx=Math.max(0,sc.build.passives.findIndex(x=>x.id===o.id));y=L.py}
+  const x=L.x(idx),S=L.S,c=HUD_POP.c||[185,100,62];const e=1-Math.pow(1-k,3);const pad=4+e*12;
+  ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=1-k;ctx.fillStyle=col(c[0],c[1],70,.5);ctx.fillRect(x-2,y-2,S+4,S+4);ctx.strokeStyle=col(c[0],c[1],75);ctx.lineWidth=2;ctx.strokeRect(x-pad,y-pad,S+pad*2,S+pad*2);ctx.restore()}}
+
+/* ---------- 10. textos da partida um pouco maiores em telas grandes ---------- */
+{const ctx=sc.ctx;const P=CanvasRenderingContext2D.prototype;const d=Object.getOwnPropertyDescriptor(P,'font');
+  if(d&&d.set){let k=1;const upd=()=>{const w=sc.cv.clientWidth||innerWidth;k=w>=1100?1.15:1};upd();addEventListener('resize',upd);
+    Object.defineProperty(ctx,'font',{configurable:true,get(){return d.get.call(this)},set(v){d.set.call(this,k===1?v:String(v).replace(/(\d+(?:\.\d+)?)px/,(m,n)=>(+n*k).toFixed(1)+'px'))}})}}
+
+/* ---------- 11. botões da partida: mapa e tela cheia em cima do pause ---------- */
+if(PROD){
+  const isFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+  const app=()=>matchMedia('(display-mode: fullscreen)').matches||matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  const touch=()=>matchMedia('(pointer:coarse)').matches;
+  fsOn=isFs;
+  fsSet=function(on){try{if(on){const el=document.documentElement;const rq=el.requestFullscreen||el.webkitRequestFullscreen;if(rq&&!isFs()){const p=rq.call(el,{navigationUI:'hide'});if(p&&p.catch)p.catch(()=>{})}}
+    else{const ex=document.exitFullscreen||document.webkitExitFullscreen;if(ex&&isFs()){const p=ex.call(document);if(p&&p.catch)p.catch(()=>{})}}}catch(e){}setTimeout(()=>dispatchEvent(new Event('resize')),120)};
+  const syncFs=()=>{FSB.classList.toggle('ee-fs-hide',isFs()||touch()||app())};
+  document.addEventListener('fullscreenchange',syncFs);document.addEventListener('webkitfullscreenchange',syncFs);setInterval(syncFs,700);syncFs();
+  FSB.classList.remove('hint');
+  // no celular a partida já abre em tela cheia (o toque em Jogar libera o pedido)
+  document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#roGo,#roCont,#pzGo');if(t&&touch()&&!app()&&!isFs())fsSet(true)},true);
+  const st=document.createElement('style');st.textContent=`.fs-btn.ee-fs-hide{display:none!important}.stage>.fs-btn.float{display:none!important}`;document.head.appendChild(st);
+}
+{const st=document.createElement('style');st.textContent=`
+.act-util{flex-direction:column;align-items:flex-end;gap:8px}
+.act-pad .pbtn{width:42px;height:42px;font-size:16px}
+@media (max-width:560px){.act-pad .pbtn{width:44px;height:44px}}
+.opt-ov{z-index:22}
+.oo-box{width:min(820px,100%);max-height:100%;display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.oo-head{display:flex;align-items:center;gap:12px}
+.oo-head .oo-back{flex:0 0 auto;width:auto;min-height:42px;padding:8px 16px}
+.oo-body{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;min-height:0}
+.oo-body .opt-grid{margin:0}
+.pcard .ico{transition:opacity .15s}
+.pcard .ico.ico-gone{opacity:0}
+.pcard.ico-left .ico{box-shadow:inset 0 0 0 1px var(--rc,#5ef0ff),0 0 18px var(--rcg,rgba(94,240,255,.4))}
+.pcard.picked{animation:pcPicked 1.1s both}
+@keyframes pcPicked{0%{transform:translateY(0) scale(1)}18%{transform:translateY(-16px) scale(1.08)}70%{transform:translateY(-14px) scale(1.06);opacity:1}100%{transform:translateY(-26px) scale(1.02);opacity:0}}
+.pcard.faded{transition:opacity .25s,transform .25s}
+.upg button.just{background:#1f3a2c!important;color:#7dffb8!important;border-color:#3b8f63!important;opacity:1!important}
+@media (prefers-reduced-motion:reduce){.pcard.picked{animation:none}}`;document.head.appendChild(st)}
+
+{const _ph=drawPlayHud;drawPlayHud=function(dt){if(window.__EE_NOHUD)return;_ph(dt)}}
+/* ================= prólogo cinematográfico: câmera lenta, fusões, partículas, legendas e cartão de título ================= */
+// a última página (o Eclipsado) sai; no lugar entra o cartão de título
+STORY[5]=['A luz não pode se apagar.','The light must not go out.','La luz no puede apagarse.','La lumière ne doit pas s’éteindre.'];
+const CINE_TINT=[[44,100,72],[25,100,60],[350,85,58],[185,100,66],[44,100,66],[185,100,72]];
+{const _d=drawStoryPage;drawStoryPage=function(i,t){if(i===5){skyGrad('#020108','#0d0719');for(let k=0;k<80;k++){const x=h2(k,1,21)*SW,y=h2(k,2,21)*SH*.82;const a=.2+.35*(.5+.5*Math.sin(t*1.3+k*1.7));sx.fillStyle=`rgba(225,215,255,${a})`;sx.fillRect(Math.round(x),Math.round(y),1,1)}ridges('#06030c',.35);return}_d(i,t)}}
+const CINE={prev:null,prevA:0,parts:[],lastI:-1,open:0,blur:null,spans:null,spanKey:''};
+function cinePageDur(S){const pages=S.pages||STORY;const txt=pages[S.i][LI()];const title=!S.epi&&S.i===pages.length-1;return title?7.2:Math.max(5.2,txt.length/30+3.6)}
+function cineTitle(c,W,H,tt,u){const cx=W/2,cy=H>W?H*.36:H*.4;const R=Math.min(W,H)*.11;const k=Math.min(1,tt/2.2),e=1-Math.pow(1-k,3);
+  c.save();c.globalCompositeOperation='lighter';
+  const g=c.createRadialGradient(cx,cy,R*.8,cx,cy,R*(2.2+.4*e));g.addColorStop(0,`rgba(255,205,120,${.55*e})`);g.addColorStop(1,'rgba(255,140,40,0)');c.fillStyle=g;c.beginPath();c.arc(cx,cy,R*2.8,0,TAU);c.fill();
+  for(let i=0;i<32;i++){const a=i/32*TAU+tt*.08;const L=R*(1.08+(.45+.35*Math.sin(i*2.3+tt*1.4))*e*(i%2?.6:1));c.strokeStyle=`rgba(255,${200+Math.floor(35*Math.sin(i))},120,${.35*e})`;c.lineWidth=Math.max(1,u*1.4);c.beginPath();c.moveTo(cx+Math.cos(a)*R*1.03,cy+Math.sin(a)*R*1.03);c.lineTo(cx+Math.cos(a)*L,cy+Math.sin(a)*L);c.stroke()}
+  c.restore();
+  c.fillStyle='#05020a';c.beginPath();c.arc(cx,cy,R,0,TAU);c.fill();c.strokeStyle=`rgba(255,228,160,${.4+.6*e})`;c.lineWidth=Math.max(1.5,u*2);c.beginPath();c.arc(cx,cy,R,0,TAU);c.stroke();
+  const ak=Math.min(1,Math.max(0,(tt-1)/1.4));if(ak>0){c.save();c.strokeStyle='rgba(94,240,255,.95)';c.shadowColor='#5ef0ff';c.shadowBlur=14*u;c.lineWidth=Math.max(1.5,u*2);c.beginPath();c.arc(cx+R*.14,cy-R*.08,R*.84,Math.PI*.62,Math.PI*.62+Math.PI*.95*ak);c.stroke();c.restore()}
+  const tk=Math.min(1,Math.max(0,(tt-1.8)/1.6));if(tk>0){const fs=Math.round(Math.min(W*.115,H*.13,150*u));c.save();c.font=`700 ${fs}px ${FONT}`;c.textBaseline='alphabetic';c.shadowColor='rgba(94,240,255,.55)';c.shadowBlur=18*u;
+    const gr=c.createLinearGradient(0,cy+R*1.5,0,cy+R*1.5+fs);gr.addColorStop(0,'#ffffff');gr.addColorStop(1,'#bff6ff');c.fillStyle=gr;c.globalAlpha=1;spacedText(c,'ECLIPSE',cx,cy+R*1.55+fs*.8,fs*.12,tk);
+    const fs2=Math.round(fs*.36);c.font=`600 ${fs2}px ${FONT}`;c.fillStyle='#5ef0ff';const t2=Math.min(1,Math.max(0,(tt-2.6)/1.4));if(t2>0)spacedText(c,'ETERNO',cx,cy+R*1.55+fs*.8+fs2*2.1,fs2*.9,t2);c.restore()}}
+function cineParts(c,W,H,dt,i,u){const P=CINE.parts;const tint=CINE_TINT[i%CINE_TINT.length];const rate=i===2?40:28;
+  const n=Math.floor(dt*rate+Math.random());for(let k=0;k<n&&P.length<160;k++){const fall=i===2;P.push({x:Math.random()*W,y:fall?-10:H+10,vx:(Math.random()-.5)*14*u,vy:(fall?1:-1)*(14+Math.random()*30)*u,t:0,life:4+Math.random()*4,s:(1+Math.random()*2)*u,ph:Math.random()*6})}
+  c.save();c.globalCompositeOperation='lighter';for(let k=P.length-1;k>=0;k--){const p=P[k];p.t+=dt;p.x+=(p.vx+Math.sin(p.t*1.3+p.ph)*8*u)*dt;p.y+=p.vy*dt;if(p.t>p.life){P.splice(k,1);continue}
+    const a=Math.sin(Math.PI*p.t/p.life)*.8;c.fillStyle=`hsla(${tint[0]},${tint[1]}%,${tint[2]}%,${a})`;c.fillRect(Math.round(p.x),Math.round(p.y),Math.ceil(p.s),Math.ceil(p.s))}c.restore()}
+storyLoop=function(now){const S=STORY_ST;if(!S)return;const dt=Math.min(.05,(now-S.last)/1000);S.last=now;S.t+=dt;CINE.open+=dt;
+  const pages=S.pages||STORY;const txt=pages[S.i][LI()];S.chars=Math.min(txt.length,S.chars+dt*30);const title=!S.epi&&S.i===pages.length-1;
+  (S.draw||drawStoryPage)(S.i,S.t);
+  const cv=$('storyCv');if(cv){fit(cv);const W=cv.width,H=cv.height,u=DPR;const c=cv.getContext('2d');
+    if(S.i!==CINE.lastI){if(CINE.lastI>=0&&W>2){const p=CINE.prev&&CINE.prev.width===W&&CINE.prev.height===H?CINE.prev:mk(W,H);const pc=p.getContext('2d');pc.clearRect(0,0,W,H);pc.drawImage(cv,0,0);CINE.prev=p;CINE.prevA=1}CINE.lastI=S.i;if(title)introSfx('title',0)}
+    c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.globalCompositeOperation='source-over';c.fillStyle='#000';c.fillRect(0,0,W,H);
+    const dur=cinePageDur(S);const p=Math.min(1,S.t/dur);const dir=S.i%2?1:-1;const portrait=H>W*1.05;
+    // fundo: a mesma cena desfocada cobrindo a tela toda
+    if(!CINE.blur)CINE.blur=mk(32,18);const bx=CINE.blur.getContext('2d');bx.imageSmoothingEnabled=true;bx.clearRect(0,0,32,18);bx.drawImage(storyCv,0,0,32,18);
+    c.imageSmoothingEnabled=true;const bk=Math.max(W/32,H/18)*1.15;c.drawImage(CINE.blur,(W-32*bk)/2,(H-18*bk)/2,32*bk,18*bk);c.fillStyle='rgba(3,2,8,.5)';c.fillRect(0,0,W,H);
+    // a cena, com câmera lenta (aproxima e desliza)
+    c.imageSmoothingEnabled=false;const z=1.04+.1*p;let k=(portrait?(W/SW)*1.7:Math.max(W/SW,H/SH))*z;
+    const aw=SW*k,ah=SH*k;const ax=(W-aw)/2+dir*(p-.5)*W*.05;const ay=portrait?H*.42-ah/2:(H-ah)/2-(p-.5)*H*.025;
+    c.globalAlpha=Math.min(1,S.t/1.1);c.drawImage(storyCv,Math.round(ax),Math.round(ay),Math.round(aw),Math.round(ah));c.globalAlpha=1;
+    if(portrait){for(const [y0,y1] of [[ay,ay+ah*.18],[ay+ah,ay+ah*.82]]){const g=c.createLinearGradient(0,y0,0,y1);g.addColorStop(0,'rgba(3,2,8,.95)');g.addColorStop(1,'rgba(3,2,8,0)');c.fillStyle=g;c.fillRect(0,Math.min(y0,y1),W,Math.abs(y1-y0))}}
+    // luz que entra pela cena
+    c.save();c.globalCompositeOperation='lighter';const tint=CINE_TINT[S.i%CINE_TINT.length];const lx=W*(.3+.4*p),ly=portrait?H*.25:H*.2;const lg=c.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.6);lg.addColorStop(0,`hsla(${tint[0]},${tint[1]}%,${tint[2]}%,${.1+.04*Math.sin(S.t*1.7)})`);lg.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=lg;c.fillRect(0,0,W,H);c.restore();
+    cineParts(c,W,H,dt,S.i,u);
+    if(title)cineTitle(c,W,H,S.t,u);
+    // fusão com a página anterior
+    if(CINE.prev&&CINE.prevA>0){c.globalAlpha=CINE.prevA*CINE.prevA;c.drawImage(CINE.prev,0,0);c.globalAlpha=1;CINE.prevA=Math.max(0,CINE.prevA-dt/1.1)}
+    // vinheta, faixas de cinema e granulado
+    vignette(c,W,H,.8);
+    if(!portrait){const bh=Math.round(H*.1*Math.min(1,CINE.open/1.2));c.fillStyle='#000';c.fillRect(0,0,W,bh);c.fillRect(0,H-bh,W,bh)}
+    if(!RM){c.fillStyle='rgba(255,255,255,.035)';for(let g=0;g<Math.round(W*H/9000);g++)c.fillRect(Math.random()*W,Math.random()*H,u,u)}
+    const fade=Math.max(0,1-CINE.open/1.4);if(fade>0){c.fillStyle=`rgba(0,0,0,${fade})`;c.fillRect(0,0,W,H)}}
+  // legendas: as palavras aparecem uma a uma
+  const tx=$('stTxt');if(tx){const key=S.i+'|'+LI()+'|'+(S.epi?1:0);if(CINE.spanKey!==key){CINE.spanKey=key;tx.innerHTML='';CINE.spans=[];let pos=0;txt.split(' ').forEach((wd,j)=>{const sp=document.createElement('span');sp.textContent=wd+' ';sp.dataset.at=pos;pos+=wd.length+1;tx.appendChild(sp);CINE.spans.push(sp)})}
+    for(const sp of CINE.spans)sp.classList.toggle('on',+sp.dataset.at<S.chars)}
+  const pips=$('stPips');if(pips){[...pips.children].forEach((el,j)=>el.style.setProperty('--p',j<S.i?1:j>S.i?0:Math.min(1,S.t/cinePageDur(S))))}
+  if(S.t>cinePageDur(S)&&S.chars>=txt.length){storyNext();if(!STORY_ST)return}
+  requestAnimationFrame(storyLoop)};
+{const _o=openStory;openStory=function(then){_o(then);const S=STORY_ST;if(!S)return;const pages=S.pages||STORY;const label=(then&&typeof then==='object'&&then.label)||T('prologue');
+  CINE.prev=null;CINE.prevA=0;CINE.parts.length=0;CINE.lastI=-1;CINE.open=0;CINE.spanKey='';
+  const ov=$('storyOv');ov.classList.add('cine');
+  ov.innerHTML=`<canvas id="storyCv" aria-hidden="true"></canvas><div class="cn-top"><div class="cn-pips" id="stPips">${pages.map(()=>'<span><i></i></span>').join('')}</div><span class="st-k cn-k">${label} · <span id="stN">1</span>/${pages.length}</span><button type="button" class="cn-skip" id="stSkip">${T('skipStory')} ›</button></div><div class="cn-sub"><p class="st-txt cn-txt" id="stTxt" aria-live="polite"></p></div><button type="button" class="cn-next" id="stNext">${T('next')}</button>`;
+  $('stNext').onclick=e=>{e.stopPropagation();storyNext()};$('stSkip').onclick=e=>{e.stopPropagation();closeStory()};ov.onclick=e=>{if(!(e.target.closest&&e.target.closest('button')))storyNext()};
+  try{$('stNext').focus({preventScroll:true})}catch(e){}
+  try{introSfx('drone',S.epi?9:0)}catch(e){}}}
+{const st=document.createElement('style');st.textContent=`
+.story-ov.cine{background:#000;display:block;cursor:pointer}
+.story-ov.cine #storyCv{position:absolute;inset:0;width:100%;height:100%;image-rendering:auto}
+.cn-top{position:absolute;left:0;right:0;top:0;z-index:2;display:flex;align-items:center;gap:14px;padding:max(14px,env(safe-area-inset-top)) max(16px,4vw) 0;pointer-events:none}
+.cn-top button{pointer-events:auto}
+.cn-pips{display:flex;gap:5px;flex:0 0 auto}
+.cn-pips span{position:relative;width:26px;height:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.cn-pips span i{position:absolute;inset:0;background:#f2c14e;transform-origin:left center;transform:scaleX(var(--p,0))}
+.cn-k{font-size:11px;letter-spacing:.24em;color:rgba(242,193,78,.85);white-space:nowrap}
+.cn-skip{margin-left:auto;background:rgba(5,3,10,.55);border:1px solid rgba(255,255,255,.22);color:#e9e2f7;font:600 13px/1 var(--display);padding:10px 14px;cursor:pointer;letter-spacing:.04em;min-height:40px}
+.cn-skip:hover,.cn-skip:focus-visible{border-color:#f2c14e;color:#ffe7a8;outline:none}
+.cn-sub{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;justify-content:center;padding:60px max(18px,6vw) calc(max(18px,env(safe-area-inset-bottom)) + 70px);pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.55) 45%,rgba(0,0,0,.8))}
+.cn-txt{margin:0;max-width:32ch;min-height:2.9em;text-align:center;font-family:var(--display);font-size:clamp(18px,2.5vw,30px);line-height:1.45;color:#f7f2ff;text-shadow:0 2px 0 #000,0 0 22px rgba(0,0,0,.95);text-wrap:balance}
+.cn-txt span{opacity:0;filter:blur(5px);transition:opacity .7s ease,filter .7s ease}
+.cn-txt span.on{opacity:1;filter:none}
+.cn-next{position:absolute;right:max(16px,4vw);bottom:max(16px,env(safe-area-inset-bottom));z-index:3;background:rgba(5,3,10,.4);border:1px solid rgba(242,193,78,.55);color:#f2c14e;font:700 14px/1 var(--display);padding:12px 18px;cursor:pointer;min-height:44px}
+.cn-next:hover,.cn-next:focus-visible{background:rgba(242,193,78,.15);outline:none}
+@media (max-width:520px){.cn-k{display:none}.cn-pips span{width:18px}.cn-sub{padding-bottom:calc(max(18px,env(safe-area-inset-bottom)) + 74px)}}
+@media (prefers-reduced-motion:reduce){.cn-txt span{transition:none;filter:none}}`;document.head.appendChild(st)}
+/* ================= trilha: cada reino com a sua melodia e a sua harmonia (os chefes já têm tema próprio) =================
+   Cada nota: [grau da escala, passo inicial (16 avos), duração em passos]. O Reino X segue com o Tema do Eclipse. */
+const REALM_THEMES=[
+ // I · Bosque: flauta que passeia, frases longas
+ [[[0,0,4],[2,4,2],[4,6,2],[5,8,6],[4,14,2]],[[3,0,4],[2,4,4],[0,8,8]],[[4,0,3],[5,3,1],[7,4,4],[6,8,4],[4,12,4]],[[5,0,4],[4,4,2],[2,6,2],[1,8,8]]],
+ // II · Catacumbas: canto lento, meio-tom frígio
+ [[[4,0,8],[5,8,8]],[[4,0,4],[3,4,4],[4,8,8]],[[6,0,6],[5,6,2],[4,8,4],[3,12,4]],[[2,0,4],[1,4,4],[0,8,8]]],
+ // III · Brasa: golpes curtos e sincopados
+ [[[0,0,2],[0,3,1],[2,4,2],[3,6,2],[4,8,6],[3,14,2]],[[2,0,2],[0,2,2],[1,4,4],[0,8,8]],[[4,0,2],[4,3,1],[5,4,2],[6,6,2],[7,8,6],[6,14,2]],[[5,0,2],[4,2,2],[3,4,4],[0,8,8]]],
+ // IV · Gelo: notas altas e espaçadas
+ [[[7,0,8],[4,8,8]],[[6,0,4],[5,4,4],[2,8,8]],[[7,0,4],[9,4,4],[8,8,8]],[[6,0,6],[4,6,2],[4,8,8]]],
+ // V · Pântano: balanço arrastado
+ [[[0,0,3],[2,3,3],[3,6,2],[4,8,3],[3,11,1],[2,12,4]],[[0,0,6],[1,6,2],[0,8,8]],[[4,0,3],[6,3,3],[7,6,2],[6,8,3],[4,11,1],[3,12,4]],[[2,0,4],[3,4,2],[2,6,2],[0,8,8]]],
+ // VI · Deserto: ornamentos rápidos
+ [[[4,0,2],[5,2,1],[4,3,1],[3,4,4],[4,8,8]],[[2,0,2],[3,2,1],[2,3,1],[1,4,4],[0,8,8]],[[4,0,4],[6,4,2],[7,6,2],[6,8,2],[5,10,2],[4,12,4]],[[3,0,2],[2,2,2],[1,4,4],[0,8,8]]],
+ // VII · Céu: trompa heroica, saltos largos
+ [[[0,0,4],[4,4,4],[7,8,6],[6,14,2]],[[5,0,4],[4,4,4],[2,8,8]],[[3,0,4],[5,4,4],[7,8,4],[9,12,4]],[[8,0,6],[7,6,2],[7,8,8]]],
+ // VIII · Fundição: martelo repetido
+ [[[0,0,2],[0,2,2],[0,4,2],[3,6,2],[2,8,2],[2,10,2],[0,12,4]],[[1,0,2],[1,2,2],[1,4,2],[4,6,2],[3,8,2],[3,10,2],[1,12,4]],[[4,0,2],[4,2,2],[4,4,2],[7,6,2],[6,8,2],[6,10,2],[4,12,4]],[[3,0,4],[2,4,4],[0,8,8]]],
+ // IX · Recife: ondas lentas
+ [[[2,0,6],[4,6,2],[5,8,8]],[[4,0,4],[2,4,4],[1,8,8]],[[2,0,6],[4,6,2],[6,8,6],[5,14,2]],[[4,0,8],[0,8,8]]],
+ null];
+const REALM_ENDS=[[[2,0,4],[1,4,4],[0,8,8]],[[2,0,4],[1,4,4],[0,8,8]],[[3,0,2],[1,2,2],[0,4,4],[0,8,8]],[[4,0,8],[7,8,8]],[[2,0,4],[1,4,4],[0,8,8]],[[2,0,2],[1,2,2],[0,4,4],[0,8,8]],[[5,0,4],[4,4,4],[7,8,8]],[[2,0,4],[1,4,4],[0,8,8]],[[2,0,8],[0,8,8]],null];
+// harmonias diferentes para cada reino (antes quase todos usavam a mesma)
+[[[0,'m'],[8,'M'],[3,'M'],[10,'M']],[[0,'m'],[1,'M'],[0,'m'],[8,'M']],[[0,'m'],[10,'M'],[8,'M'],[7,'M']],[[0,'s'],[5,'s'],[8,'s'],[3,'s']],[[0,'m'],[5,'m'],[8,'M'],[7,'M']],
+ [[0,'m'],[1,'M'],[10,'m'],[0,'m']],[[3,'M'],[10,'M'],[0,'m'],[8,'M']],[[0,'m'],[0,'m'],[8,'M'],[7,'M']],[[0,'m'],[3,'M'],[8,'M'],[5,'m']],null].forEach((p,i)=>{if(p&&REALM_MUS[i])REALM_MUS[i].prog=p});
+{const _tb=themeBar;themeBar=function(b){const T=REALM_THEMES[AU.realm];if(!T)return _tb(b);const c=b%8;if(c===7)return REALM_ENDS[AU.realm]||_tb(b);
+  // segunda volta da frase sobe um grau nos compassos do meio, para não soar repetido
+  const bar=T[c%4];return c===5||c===6?bar.map(([d,s,l])=>[Math.min(9,d+2),s,l]):bar}}
 /* ================= loop ================= */
 updMenuHero();renderMedals();
 for(let i=0;i<12;i++)spawnEnemy(PHASES[0].monsters[i%PHASES[0].monsters.length]);
@@ -6475,6 +6890,7 @@ function start(){
   var tabs=document.querySelector('.tabs');
   if(!stage||!tabs||!document.getElementById('uiMenu')){return setTimeout(start,60)}
   var body=document.body;
+  function $(id){return document.getElementById(id)}
 
   /* ---- 1. monta as duas telas ---- */
   var game=document.createElement('div');game.id='ee-game';
@@ -6482,20 +6898,18 @@ function start(){
   body.insertBefore(menu,body.firstChild);
   body.insertBefore(game,body.firstChild);
   game.appendChild(stage);
-  /* move a secao inteira das telas de menu (e nao so os quadros): o jogo usa um detector
-     de visibilidade nessa secao para decidir se desenha o menu, entao ela precisa ficar visivel */
+  /* a secao inteira das telas de menu vai junto: o jogo usa um detector de visibilidade nela */
   menu.appendChild(tabs.parentElement||tabs);
-  Array.prototype.forEach.call(document.querySelectorAll('.ui-frame'),function(f){
-    if(!menu.contains(f))menu.appendChild(f)});
-
-  document.documentElement.classList.add('ee-app');
-  body.classList.add('ee-app');
+  Array.prototype.forEach.call(document.querySelectorAll('.ui-frame'),function(f){if(!menu.contains(f))menu.appendChild(f)});
+  document.documentElement.classList.add('ee-app');body.classList.add('ee-app');
 
   /* ---- 2. troca de tela ---- */
-  function showGame(){body.dataset.scr='game';try{scrollTo(0,0)}catch(e){}resize()}
-  function showMenu(){body.dataset.scr='menu';menu.scrollTop=0;resize()}
   function resize(){dispatchEvent(new Event('resize'))}
+  function showGame(){body.dataset.scr='game';resize()}
+  function showMenu(){body.dataset.scr='menu';resize()}
   window.__eeScreen={game:showGame,menu:showMenu};
+  var tabMenu=$('tabMenu');
+  function goMenu(){if(tabMenu)tabMenu.click();showMenu()}
 
   /* ---- 3. o jogo navega por scrollIntoView; aqui isso vira troca de tela ---- */
   var origSIV=Element.prototype.scrollIntoView;
@@ -6507,68 +6921,104 @@ function start(){
     return origSIV.apply(this,arguments);
   };
 
-  /* ---- 4. abrir uma aba do menu = ir para a tela de menu ---- */
+  /* ---- 4. abrir uma tela do menu = mostrar o painel dela, sempre do topo ---- */
+  function scroller(f){return f.querySelector('.meta-wrap')||f.querySelector('.chars')||f.querySelector('.menu')}
+  function onFrames(){
+    var vis=null;
+    Array.prototype.forEach.call(document.querySelectorAll('#ee-menu .ui-frame'),function(f){if(!f.hidden)vis=f});
+    body.classList.toggle('ee-onmain',!!(vis&&vis.id==='uiMenu'));
+    return vis;
+  }
   var mo=new MutationObserver(function(muts){
     for(var i=0;i<muts.length;i++){var t=muts[i].target;
-      if(t.classList&&t.classList.contains('ui-frame')&&!t.hidden){showMenu();break}}
+      if(t.classList&&t.classList.contains('ui-frame')&&!t.hidden){var s=scroller(t);if(s)s.scrollTop=0;if(t.id!=='uiBook'){var b=$('uiBook');if(b)b.classList.remove('ee-sheet')}showMenu();break}}
+    onFrames();
   });
-  Array.prototype.forEach.call(document.querySelectorAll('.ui-frame'),function(f){
-    mo.observe(f,{attributes:true,attributeFilter:['hidden']})});
+  Array.prototype.forEach.call(document.querySelectorAll('.ui-frame'),function(f){mo.observe(f,{attributes:true,attributeFilter:['hidden']})});
 
   /* ---- 5. qualquer tela do jogo (inicio, pausa, fim, nivel, bau) = ir para o jogo ---- */
-  var ovs=['startOv','endOv','pauseOv','lvlOv','chestOv','storyOv'];
-  var mo2=new MutationObserver(function(muts){
-    for(var i=0;i<muts.length;i++){if(!muts[i].target.hidden){showGame();break}}
-  });
-  ovs.forEach(function(id){var el=document.getElementById(id);if(el)mo2.observe(el,{attributes:true,attributeFilter:['hidden']})});
+  var mo2=new MutationObserver(function(muts){for(var i=0;i<muts.length;i++){if(!muts[i].target.hidden){showGame();break}}});
+  ['startOv','endOv','pauseOv','lvlOv','chestOv','storyOv'].forEach(function(id){var el=$(id);if(el)mo2.observe(el,{attributes:true,attributeFilter:['hidden']})});
 
-  /* ---- 6. "Reinos" no menu abre a selecao de reino, nao a vitrine ---- */
+  /* ---- 6. atalhos do menu ---- */
   document.addEventListener('click',function(e){
     var t=e.target&&e.target.closest?e.target.closest('#mRealms'):null;
-    if(t){e.stopPropagation();e.preventDefault();var c=document.getElementById('mContinue');if(c)c.click()}
+    if(t){e.stopPropagation();e.preventDefault();showGame();if(window.__ee&&__ee.openStart)__ee.openStart();else{var c=$('mContinue');if(c)c.click()}}
   },true);
-  /* "Voltar ao menu" (inicio/fim) e escolher personagem voltam para o menu */
   document.addEventListener('click',function(e){
-    var t=e.target&&e.target.closest?e.target.closest('#roWatch,#enWatch,#cdPick,#cdTry'):null;
-    if(t)setTimeout(showMenu,0);
+    var t=e.target&&e.target.closest?e.target.closest('#roWatch,#enWatch'):null;
+    if(t)setTimeout(goMenu,0);
   },true);
 
-  /* ---- 6b. telas sem botao de voltar (personagens) ganham um ---- */
-  var toMenuTab=document.getElementById('tabMenu');
-  Array.prototype.forEach.call(document.querySelectorAll('#ee-menu .ui-frame'),function(f){
-    if(f.id==='uiMenu'||f.querySelector('[data-back]'))return;
-    var bk=document.createElement('button');
-    bk.type='button';bk.className='back ee-back';bk.innerHTML='\u2039 Menu';
-    bk.addEventListener('click',function(){if(toMenuTab)toMenuTab.click()});
-    f.insertBefore(bk,f.firstChild);
-  });
+  /* ---- 7. cabecalho fixo com "Menu" em todas as telas; a de personagens nao tinha ---- */
+  var chars=document.querySelector('#uiChars .chars');
+  if(chars&&!chars.querySelector('.meta-head')){
+    var hd=document.createElement('div');hd.className='meta-head ee-chead';
+    hd.innerHTML='<button type="button" class="back ee-hback">‹ <span data-i18n="menu">Menu</span></button><h3 data-i18n="chars">Personagens</h3>';
+    chars.insertBefore(hd,chars.firstChild);
+    var tc=$('tabChars');if(tc)hd.querySelector('h3').textContent=tc.textContent;
+    hd.querySelector('.ee-hback').addEventListener('click',goMenu);
+  }
 
-  /* ---- 7. botao de menu dentro do jogo (so fora de partida) ---- */
-  var toMenu=document.createElement('button');
-  toMenu.id='ee-toMenu';toMenu.type='button';toMenu.className='pbtn';toMenu.textContent='\u2630 Menu';
-  toMenu.addEventListener('click',function(e){e.stopPropagation();showMenu()});
-  var bar=document.querySelector('.play-bar');
-  if(bar)bar.insertBefore(toMenu,bar.firstChild);
-  /* botao de voltar para a partida em andamento */
-  var toGame=document.createElement('button');
-  toGame.id='ee-toGame';toGame.type='button';toGame.textContent='\u2039 Voltar ao jogo';
-  toGame.addEventListener('click',function(){showGame()});
-  body.appendChild(toGame);
+  /* ---- 8. desafio diario vira um botao do menu no celular ---- */
+  var nav=document.querySelector('#uiMenu .menu-nav');
+  if(nav&&$('tabDaily')){
+    var db=document.createElement('button');db.type='button';db.className='mbtn ee-mob';db.id='mDaily';
+    db.innerHTML='<span class="rn" aria-hidden="true">✦</span><span data-i18n="daily">Desafio diário</span><small id="mDailyS"></small>';
+    db.addEventListener('click',function(){$('tabDaily').click()});
+    var opt=$('mOpt');nav.insertBefore(db,opt||null);
+    var syncD=function(){var n=$('mDailyName'),s=$('mDailyS');if(n&&s)s.textContent=n.textContent};syncD();
+    var dn=$('mDailyName');if(dn)new MutationObserver(syncD).observe(dn,{childList:true,characterData:true,subtree:true});
+  }
 
-  /* estado: em partida? (o botao de pausa so aparece durante a partida) */
-  var pb=document.getElementById('pauseBtn'),play=document.getElementById('playBtn');
-  setInterval(function(){
-    var running=pb&&!pb.hidden;
-    body.classList.toggle('ee-running',!!running);
-    body.classList.toggle('ee-idle',!!(play&&!play.hidden));
-  },300);
+  /* ---- 9. livro: tocar num item abre o detalhe como folha (celular) ---- */
+  var book=$('uiBook'),grid=$('bookGrid'),det=$('bookDetail');
+  if(book&&grid&&det){
+    var bg=document.createElement('div');bg.id='ee-sheetBg';book.appendChild(bg);
+    var closeSheet=function(){book.classList.remove('ee-sheet')};
+    bg.addEventListener('click',closeSheet);
+    var small=matchMedia('(max-width:760px)');
+    grid.addEventListener('click',function(e){if(small.matches&&e.target.closest&&e.target.closest('button,[role=option],.bitem,.bk'))setTimeout(function(){book.classList.add('ee-sheet');det.scrollTop=0},0)},true);
+    var addX=function(){if(det.querySelector('.ee-sheetX'))return;var x=document.createElement('button');x.type='button';x.className='ee-sheetX';x.textContent='Fechar';x.addEventListener('click',closeSheet);det.appendChild(x)};
+    addX();new MutationObserver(addX).observe(det,{childList:true});
+    addEventListener('keydown',function(e){if(e.key==='Escape'&&book.classList.contains('ee-sheet')){closeSheet()}});
+  }
 
-  /* ---- 8. comeca no menu principal, como um jogo de verdade ---- */
-  showMenu();
+  /* ---- 10. voltar para a partida em andamento ---- */
+  var pb=$('pauseBtn');
+  setInterval(function(){body.classList.toggle('ee-running',!!(pb&&!pb.hidden));onFrames()},300);
+
+  /* ---- 11. instalar como app ---- */
+  if(nav){
+    var ib=document.createElement('button');ib.type='button';ib.className='mbtn ee-install';ib.id='mInstall';ib.hidden=true;
+    ib.innerHTML='<span class="rn" aria-hidden="true">✦</span><span>Instalar o app</span><small>tela inicial</small>';
+    nav.appendChild(ib);
+    var standalone=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone;
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    var deferred=null;
+    addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;if(!standalone)ib.hidden=false});
+    addEventListener('appinstalled',function(){ib.hidden=true;deferred=null});
+    if(ios&&!standalone)ib.hidden=false;
+    ib.addEventListener('click',function(){
+      if(deferred){deferred.prompt();deferred.userChoice.then(function(){deferred=null;ib.hidden=true});return}
+      if($('ee-ios'))return;
+      var d=document.createElement('div');d.id='ee-ios';d.setAttribute('role','dialog');
+      d.innerHTML='<button type="button" aria-label="Fechar">✕</button>Para instalar no iPhone: toque em <b>Compartilhar</b> (o quadrado com a seta) e depois em <b>Adicionar à Tela de Início</b>.';
+      d.querySelector('button').addEventListener('click',function(){d.remove()});
+      body.appendChild(d);
+    });
+  }
+  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+    addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+  }
+
+  /* ---- 12. comeca no menu principal, como um jogo de verdade ---- */
+  if(tabMenu)tabMenu.click();
+  showMenu();onFrames();
   setTimeout(resize,60);
   setTimeout(function(){
     resize();
-    var b=document.getElementById('ee-boot');
+    var b=$('ee-boot');
     if(b){b.classList.add('gone');setTimeout(function(){b.remove()},420)}
   },280);
 }

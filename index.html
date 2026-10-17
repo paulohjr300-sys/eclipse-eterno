@@ -3,514 +3,546 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07050c">
-<title>Eclipse Eterno — roguelite de sobrevivência</title>
-<meta name="description" content="Dez reinos, oito heróis, relíquias amaldiçoadas e uma horda que nunca para. Jogue de graça no navegador, sem instalar nada.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Eclipse Eterno">
+<meta name="theme-color" content="#05030a">
+<title>Eclipse Eterno</title>
+<meta name="description" content="Roguelite de sobrevivência em pixel art. Dez reinos, oito heróis, relíquias e uma horda que nunca para. Grátis no navegador e instalável no celular.">
 <meta property="og:title" content="Eclipse Eterno">
-<meta property="og:description" content="Roguelite de sobrevivência com dez reinos, oito heróis e relíquias amaldiçoadas. Grátis no navegador.">
-<meta property="og:image" content="./shot-reino_brasa.webp">
+<meta property="og:description" content="Dez reinos, oito heróis e uma horda que nunca para. Grátis no navegador.">
+<meta property="og:image" content="./shot-reino_vazio.webp">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Chakra+Petch:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Chakra+Petch:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap">
 <style>
 :root{
-  --void:#07050c;
-  --panel:#120e1c;
-  --panel2:#191327;
-  --line:#2b2340;
-  --line2:#3a3054;
-  --ink:#ece6f6;
-  --mute:#a79cc0;
-  --dim:#7d7296;
-  --rune:#5ef0ff;
-  --gold:#f2c14e;
-  --ember:#ff7a3d;
+  --void:#05030a;--dusk:#120d1d;--dusk2:#1a1329;--line:#2c2342;--line2:#43375f;
+  --bone:#efe9f7;--ash:#a99fc2;--dim:#7c7295;
+  --gold:#f2c14e;--ember:#ff8a3d;--rune:#5ef0ff;
   --display:'Silkscreen','Pixelify Sans',ui-monospace,monospace;
   --body:'Chakra Petch',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --tale:'Cormorant Garamond','Iowan Old Style','Palatino Linotype',Georgia,serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
-html,body{margin:0;background:var(--void);color:var(--ink);font-family:var(--body);overflow-x:hidden}
-body{line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-::selection{background:rgba(94,240,255,.3)}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+html,body{margin:0;background:var(--void);color:var(--bone);font-family:var(--body);overflow-x:hidden}
+body{font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--rune);outline-offset:3px}
+::selection{background:rgba(94,240,255,.28)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+h2,h3,h4{font-family:var(--display);font-weight:700;line-height:1.15;margin:0;letter-spacing:.01em}
+h2{font-size:clamp(28px,3.6vw,44px)}
+h3{font-size:clamp(20px,2vw,24px)}
+p{margin:0}
+.lead{color:var(--ash);font-size:clamp(17px,1.5vw,19px);max-width:60ch}
 
-/* ---------- fundo ---------- */
-#fx{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55}
-.glow-a,.glow-b{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
-.glow-a{width:620px;height:620px;top:-180px;left:-160px;background:rgba(94,240,255,.10)}
-.glow-b{width:560px;height:560px;top:380px;right:-200px;background:rgba(255,122,61,.09)}
+/* ---------- topo ---------- */
+header{position:fixed;inset:0 0 auto;z-index:50;transition:background .25s,border-color .25s;border-bottom:1px solid transparent}
+header.solid{background:rgba(5,3,10,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-color:var(--line)}
+.hbar{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.06em;white-space:nowrap}
+.brand img{width:32px;height:32px;image-rendering:pixelated}
+nav.main{display:flex;gap:24px;margin-left:auto;font-size:15px}
+nav.main a{text-decoration:none;color:var(--ash);transition:color .15s}
+nav.main a:hover{color:var(--bone)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 26px;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.04em;text-decoration:none;cursor:pointer;border:0;transition:transform .15s,box-shadow .2s,background .2s}
+.btn-play{background:var(--gold);color:#170f02;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),0 0 0 1px #000}
+.btn-play:hover{transform:translateY(-2px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),0 0 0 1px #000,0 10px 30px rgba(242,193,78,.35)}
+.btn-line{background:transparent;color:var(--bone);box-shadow:inset 0 0 0 1px var(--line2)}
+.btn-line:hover{box-shadow:inset 0 0 0 1px var(--rune);color:#dffbff}
+.hbar .btn{min-height:40px;padding:8px 18px;font-size:14px}
+@media (max-width:900px){nav.main{display:none}.hbar .btn{margin-left:auto}}
 
-.wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:0 20px}
+/* ---------- abertura ---------- */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:grid;place-items:center;text-align:center;overflow:hidden;isolation:isolate;padding:96px 24px 72px}
+.hero-bg{position:absolute;inset:-4%;z-index:-2;background:#05030a url('./shot-reino_vazio.webp') center/cover no-repeat;filter:saturate(1.1);animation:drift 40s ease-in-out infinite alternate}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 42%,rgba(5,3,10,.35),rgba(5,3,10,.82) 55%,#05030a 92%),linear-gradient(180deg,rgba(5,3,10,.6),rgba(5,3,10,0) 30%,rgba(5,3,10,0) 70%,#05030a)}
+@keyframes drift{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,1%)}}
+.hero-in{display:flex;flex-direction:column;align-items:center;gap:22px;max-width:760px}
+#eclipse{width:min(300px,62vw);height:min(300px,62vw);margin-bottom:-18px}
+.wordmark{margin:0;font-family:var(--display);font-weight:700;line-height:.9;display:flex;flex-direction:column;align-items:center;gap:10px}
+.wordmark .w1{font-size:clamp(46px,10vw,112px);letter-spacing:.05em;color:#fff;text-shadow:0 0 30px rgba(94,240,255,.45),0 6px 0 #1a1030}
+.wordmark .w2{font-size:clamp(16px,2.6vw,28px);letter-spacing:.62em;margin-right:-.62em;color:var(--rune);text-shadow:0 0 16px rgba(94,240,255,.6)}
+.hero .tag{font-family:var(--tale);font-style:italic;font-weight:500;font-size:clamp(21px,2.4vw,28px);line-height:1.35;color:#e6dcf6;max-width:30ch;text-wrap:balance}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.hero .facts{color:var(--ash);font-size:15px}
+.reveal{opacity:0;transform:translateY(10px);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+.r1{animation-delay:1.5s}.r2{animation-delay:1.8s}.r3{animation-delay:2.05s}.r4{animation-delay:2.3s}
+@keyframes rise{to{opacity:1;transform:none}}
+.scrollhint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:22px;height:34px;border:1px solid rgba(239,233,247,.35);border-radius:12px}
+.scrollhint::after{content:"";position:absolute;left:50%;top:7px;width:2px;height:7px;margin-left:-1px;background:var(--bone);animation:wheel 1.8s infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(10px)}}
 
-/* ---------- header ---------- */
-header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(7,5,12,.82);border-bottom:1px solid rgba(43,35,64,.6)}
-.hbar{max-width:1180px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.06em;white-space:nowrap}
-.brand .orb{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#1a1430 45%,transparent 46%),radial-gradient(circle,var(--gold),#ff8a3d);box-shadow:0 0 12px rgba(242,193,78,.7);flex:none}
-nav.main{display:flex;gap:26px;font-size:14px;color:var(--mute)}
-nav.main a{transition:color .15s}
-nav.main a:hover{color:var(--rune)}
-.hcta{font-family:var(--display);font-weight:700;font-size:13px;padding:9px 18px;background:linear-gradient(180deg,#ffe38a,var(--gold));color:#1a1206;white-space:nowrap;transition:transform .15s,box-shadow .15s}
-.hcta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(242,193,78,.3)}
-@media (max-width:860px){nav.main{display:none}}
+section.block{padding:clamp(72px,10vw,128px) 0}
+.head{display:flex;flex-direction:column;gap:14px;margin-bottom:clamp(28px,4vw,44px)}
 
-/* ---------- hero ---------- */
-.hero{padding:76px 0 40px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px}
-.eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--rune);text-shadow:0 0 14px rgba(94,240,255,.45)}
-h1.logo{font-family:var(--display);font-weight:700;font-size:clamp(40px,9.5vw,96px);line-height:.95;margin:0;letter-spacing:.01em;
-  background:linear-gradient(100deg,#f3eeff 36%,#bff8ff 47%,#ffe9a8 56%,#f3eeff 68%);background-size:280% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 8s linear infinite;
-  filter:drop-shadow(0 4px 0 rgba(0,0,0,.5)) drop-shadow(0 0 40px rgba(94,240,255,.18))}
-@keyframes shimmer{from{background-position:0 0}to{background-position:-280% 0}}
-.tagline{max-width:56ch;color:var(--mute);font-size:clamp(15px,2vw,19px);margin:0}
-.tagline b{color:var(--ink);font-weight:600}
-.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px}
-.btn{font-family:var(--display);font-weight:700;font-size:17px;padding:16px 34px;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:transform .15s,box-shadow .15s;white-space:nowrap}
-.btn-gold{background:linear-gradient(180deg,#ffe38a,var(--gold));color:#1a1206;box-shadow:0 8px 0 #7a5812,0 16px 34px rgba(242,193,78,.22)}
-.btn-gold:hover{transform:translateY(-3px);box-shadow:0 11px 0 #7a5812,0 22px 40px rgba(242,193,78,.32)}
-.btn-gold:active{transform:translateY(2px);box-shadow:0 5px 0 #7a5812}
-.btn-ghost{background:rgba(255,255,255,.035);color:var(--ink);border:1px solid var(--line2);font-size:15px;padding:16px 26px}
-.btn-ghost:hover{border-color:var(--rune);color:#dffbff}
-.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
-.badge{font-family:var(--display);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);background:rgba(18,14,28,.8);border:1px solid var(--line);padding:7px 12px}
+/* ---------- cinemática ---------- */
+.film{position:relative;aspect-ratio:21/9;width:100%;overflow:hidden;background:#000;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.6);cursor:pointer;user-select:none}
+.film .shot{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
+.film .shot img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;transform:scale(1.04);filter:saturate(1.08) contrast(1.05)}
+.film .shot.on{opacity:1}
+.film .shot.on img{animation:kb 9s linear forwards}
+.film .shot:nth-child(even).on img{animation-name:kb2}
+@keyframes kb{from{transform:scale(1.04) translate(1%,0)}to{transform:scale(1.16) translate(-1.5%,-1%)}}
+@keyframes kb2{from{transform:scale(1.16) translate(-1%,1%)}to{transform:scale(1.04) translate(1%,0)}}
+.film::before,.film::after{content:"";position:absolute;left:0;right:0;height:9%;background:#000;z-index:3}
+.film::before{top:0}.film::after{bottom:0}
+.film .shade{position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 40%,rgba(0,0,0,.7)),linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.75))}
+.film .sub{position:absolute;left:0;right:0;bottom:12%;z-index:4;padding:0 8%;text-align:center;font-family:var(--tale);font-style:italic;font-weight:600;font-size:clamp(17px,2.4vw,32px);line-height:1.3;color:#fff;text-shadow:0 2px 12px #000,0 0 2px #000;text-wrap:balance;transition:opacity .8s}
+.film .sub.out{opacity:0}
+.film .card{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(circle at 50% 45%,#140b22,#030106 70%);opacity:0;pointer-events:none;transition:opacity 1.2s}
+.film .card.on{opacity:1;pointer-events:auto}
+.film .card img{width:clamp(64px,10vw,120px);image-rendering:pixelated}
+.film .card b{font-family:var(--display);font-size:clamp(26px,5vw,60px);letter-spacing:.06em;color:#fff;text-shadow:0 0 24px rgba(94,240,255,.5)}
+.film .card span{font-family:var(--display);color:var(--rune);letter-spacing:.5em;margin-right:-.5em;font-size:clamp(12px,1.5vw,18px)}
+.film .card .btn{margin-top:10px}
+.film .ctl{position:absolute;left:3%;top:2.5%;z-index:6;display:flex;gap:6px;align-items:center}
+.film .ctl i{width:clamp(18px,3vw,34px);height:3px;background:rgba(255,255,255,.2);position:relative;overflow:hidden}
+.film .ctl i b{position:absolute;inset:0;background:var(--gold);transform-origin:left;transform:scaleX(0)}
+.film .ctl i.done b{transform:scaleX(1)}
+.film .ctl i.cur b{animation:fill linear forwards;animation-duration:var(--d,8s)}
+.film.paused .ctl i.cur b,.film.paused .shot.on img{animation-play-state:paused}
+@keyframes fill{to{transform:scaleX(1)}}
+.film .pp{position:absolute;right:3%;top:2%;z-index:6;width:38px;height:38px;display:grid;place-items:center;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.25);cursor:pointer}
+@media (max-width:700px){.film{aspect-ratio:4/5}.film .sub{bottom:13%}.film::before,.film::after{height:7%}}
 
-/* moldura de tela */
-.screen{position:relative;width:100%;border:1px solid var(--line2);background:#05030a;overflow:hidden;
-  box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.03) inset}
-.screen img{width:100%;height:auto}
-.screen::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.09) 2px 4px)}
-.hero-screen{max-width:1000px;margin-top:26px;position:relative}
-.hero-screen .screen{border-color:rgba(94,240,255,.22);box-shadow:0 40px 110px rgba(0,0,0,.8),0 0 60px rgba(94,240,255,.09)}
+/* ---------- imagens que abrem grandes ---------- */
+.frame{position:relative;display:block;width:100%;padding:0;border:0;background:#000;cursor:zoom-in;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+.frame img{width:100%;aspect-ratio:16/9;object-fit:cover;image-rendering:pixelated;transition:transform .5s ease,filter .3s}
+.frame:hover img{transform:scale(1.04);filter:brightness(1.1)}
+.frame::after{content:"";position:absolute;right:10px;top:10px;width:30px;height:30px;background:rgba(5,3,10,.7) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23efe9f7' stroke-width='1.6'%3E%3Cpath d='M6 2H2v4M10 2h4v4M6 14H2v-4M10 14h4v-4'/%3E%3C/svg%3E") center/16px no-repeat;opacity:0;transition:opacity .2s}
+.frame:hover::after,.frame:focus-visible::after{opacity:1}
 
-/* ---------- seções ---------- */
-section{padding:84px 0;position:relative}
-.sec-head{text-align:center;max-width:660px;margin:0 auto 44px;display:flex;flex-direction:column;gap:12px}
-.sec-head h2{font-family:var(--display);font-weight:700;font-size:clamp(25px,4vw,38px);margin:0;line-height:1.15}
-.sec-head p{color:var(--mute);margin:0;font-size:16px}
+/* recursos: 3 / 2 / 1 colunas, nunca sobra um sozinho */
+.feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 22px}
+.feat figcaption{padding-top:14px;display:flex;flex-direction:column;gap:6px}
+.feat h3{font-size:19px}
+.feat p{color:var(--ash);font-size:16px}
+@media (max-width:980px){.feats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.feats{grid-template-columns:1fr}}
+figure{margin:0}
 
-/* galeria horizontal */
-.strip{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 18px;scroll-snap-type:x mandatory;margin:0 -20px}
-.strip::-webkit-scrollbar{height:7px}
-.strip::-webkit-scrollbar-thumb{background:var(--line2)}
-.shot{flex:none;width:min(440px,78vw);scroll-snap-align:center}
-.shot .screen{transition:border-color .2s,transform .2s}
-.shot:hover .screen{border-color:var(--rune);transform:translateY(-4px)}
-.shot b{display:block;font-family:var(--display);font-size:13px;margin-top:12px;color:#f3edff}
-.shot span{display:block;font-size:13px;color:var(--mute);line-height:1.45}
+/* reinos: carrossel */
+.car{position:relative}
+.car-track{display:grid;grid-auto-flow:column;grid-auto-columns:min(78%,560px);gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 24px;padding:4px 24px 18px;margin:0 -24px;scrollbar-width:thin;scrollbar-color:var(--line2) transparent;overscroll-behavior-x:contain}
+.car-track>figure{scroll-snap-align:start}
+.realm figcaption{display:flex;align-items:baseline;gap:12px;padding-top:12px}
+.realm .n{font-family:var(--display);font-size:13px;color:var(--c,var(--gold));min-width:3.2em}
+.realm h3{font-size:18px}
+.realm p{color:var(--ash);font-size:15px;padding-top:4px}
+.car-nav{display:flex;gap:8px;margin-left:auto}
+.car-nav button{width:46px;height:46px;background:var(--dusk);border:1px solid var(--line2);cursor:pointer;font-size:20px;display:grid;place-items:center}
+.car-nav button:hover{border-color:var(--gold);color:var(--gold)}
+.car-nav button:disabled{opacity:.35;cursor:default}
+.headrow{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
 
-/* linhas alternadas */
-.row{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:48px;align-items:center;margin-bottom:76px}
-.row:last-child{margin-bottom:0}
-.row.flip .rtext{order:2}
-.rtext{display:flex;flex-direction:column;gap:14px}
-.rtext h3{font-family:var(--display);font-size:clamp(20px,2.6vw,27px);margin:0;line-height:1.2}
-.rtext p{margin:0;color:var(--mute)}
-.rlist{display:flex;flex-direction:column;gap:9px;margin:4px 0 0;padding:0;list-style:none}
-.rlist li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:#d6cee8}
-.rlist i{color:var(--gold);font-style:normal;flex:none;line-height:1.5}
-@media (max-width:820px){.row{grid-template-columns:1fr;gap:24px;margin-bottom:56px}.row.flip .rtext{order:0}}
+/* heróis: 4 / 2 colunas */
+.heroes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;background:var(--line);box-shadow:0 0 0 1px var(--line)}
+.hero-t{background:var(--dusk);padding:22px 20px;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.hero-t b{font-family:var(--display);font-size:17px}
+.hero-t span{color:var(--ash);font-size:15px}
+.hero-t i{font-style:normal;font-family:var(--display);font-size:12px;color:var(--c,var(--gold))}
+@media (max-width:820px){.heroes{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
-/* reinos */
-.realms{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.realm{position:relative;border:1px solid var(--line);overflow:hidden;background:var(--panel);transition:border-color .2s,transform .2s}
-.realm:hover{border-color:var(--rune);transform:translateY(-4px)}
-.realm .pic{aspect-ratio:12/7;overflow:hidden;background:#05030a}
-.realm .pic img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
-.realm:hover .pic img{transform:scale(1.06)}
-.realm .cap{padding:13px 15px;display:flex;flex-direction:column;gap:2px;position:relative}
-.realm .num{font-family:var(--display);font-size:10px;letter-spacing:.2em;color:var(--dim)}
-.realm .nm{font-family:var(--display);font-size:15px;color:#f3edff;line-height:1.2}
-.realm .dot{position:absolute;right:14px;top:16px;width:8px;height:8px;border-radius:50%}
+/* sistemas: 3 / 2 / 1 */
+.sys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px 32px}
+.sys div{border-top:2px solid var(--c,var(--line2));padding-top:16px;display:flex;flex-direction:column;gap:8px}
+.sys h3{font-size:18px}
+.sys p{color:var(--ash);font-size:16px}
+@media (max-width:900px){.sys{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.sys{grid-template-columns:1fr}}
 
-/* heróis */
-.heroes{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px}
-.htile{background:var(--panel);border:1px solid var(--line);padding:18px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:9px;transition:border-color .2s,transform .2s}
-.htile:hover{border-color:var(--gold);transform:translateY(-3px)}
-.htile .gl{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:rgba(255,255,255,.04);border:1px solid var(--line2);color:var(--rune)}
-.htile b{font-family:var(--display);font-size:13px;color:#f3edff}
-.htile span{font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
-
-/* sistemas */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.12));border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,transform .2s}
-.card:hover{border-color:var(--line2);transform:translateY(-3px)}
-.card .ic{width:40px;height:40px;display:grid;place-items:center;font-size:19px;border:1px solid var(--line2);color:var(--gold)}
-.card h4{margin:0;font-family:var(--display);font-size:16px;font-weight:600;color:#f3edff}
-.card p{margin:0;color:var(--mute);font-size:14px;line-height:1.55}
-
-/* cta final */
-.final{text-align:center;padding:96px 0}
-.final h2{font-family:var(--display);font-size:clamp(26px,5vw,44px);margin:0 0 12px;line-height:1.15}
-.final p{color:var(--mute);margin:0 0 28px}
+/* chamada final + app */
+.final{position:relative;overflow:hidden;text-align:center;isolation:isolate;padding:clamp(80px,12vw,150px) 24px}
+.final::before{content:"";position:absolute;inset:0;z-index:-2;background:url('./shot-reino_brasa.webp') center/cover;opacity:.35;image-rendering:pixelated}
+.final::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at center,rgba(5,3,10,.4),#05030a 75%)}
+.final h2{font-size:clamp(32px,5vw,60px)}
+.final p{color:#ddd3ee;margin:14px auto 28px;max-width:46ch}
+.app{display:grid;grid-template-columns:auto 1fr auto;gap:28px;align-items:center;background:var(--dusk);box-shadow:0 0 0 1px var(--line);padding:28px}
+.app img{width:96px;height:96px;image-rendering:pixelated}
+.app p{color:var(--ash);margin-top:8px;max-width:58ch}
+.app .how{color:var(--bone);font-size:15px;margin-top:10px}
+@media (max-width:760px){.app{grid-template-columns:1fr;text-align:left}.app img{width:72px;height:72px}}
 
 /* doação */
-.donate{background:linear-gradient(180deg,rgba(242,193,78,.055),rgba(255,255,255,.015));border:1px solid var(--line2);padding:30px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
-.donate .qr{background:#fff;padding:9px;width:152px;height:152px;flex:none}
-.donate .qr img{width:100%;height:100%;image-rendering:pixelated}
-.dinfo{display:flex;flex-direction:column;gap:11px;min-width:0}
-.dinfo h3{margin:0;font-family:var(--display);font-size:19px;color:#f3edff}
-.dinfo p{margin:0;color:var(--mute);font-size:14.5px;max-width:50ch}
-.pix-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-.pix-key{font-family:var(--display);font-size:13px;background:#0d0a16;border:1px solid var(--line2);padding:10px 13px;color:#ffe9a8;word-break:break-all}
-.copy-btn{font-family:var(--display);font-weight:600;font-size:13px;padding:10px 15px;border:1px solid #5c4a1c;background:transparent;color:var(--gold);cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
-.copy-btn:hover{border-color:var(--gold);background:rgba(242,193,78,.08)}
-.copy-btn.ok{border-color:#7dffb8;color:#7dffb8}
-@media (max-width:620px){.donate{grid-template-columns:1fr;text-align:center;padding:24px}.donate .qr{margin:0 auto}.pix-row{justify-content:center}.dinfo p{max-width:none}}
+.donate{display:grid;grid-template-columns:200px 1fr;gap:36px;align-items:center}
+.qr{background:#fff;padding:12px;width:200px}
+.qr img{width:176px;height:176px;image-rendering:pixelated}
+.pix-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.pix-key{font-family:var(--display);font-size:15px;padding:12px 16px;background:var(--dusk);box-shadow:inset 0 0 0 1px var(--line2);word-break:break-all}
+.copy{min-height:46px}
+.copy.ok{background:#3b8f63;color:#fff}
+@media (max-width:640px){.donate{grid-template-columns:1fr}.qr{margin:0 auto}}
 
-footer{border-top:1px solid var(--line);padding:28px 0 46px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;color:var(--dim);font-size:13px}
-footer .fb{font-family:var(--display)}
+footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--dim);font-size:14px}
+footer .wrap{display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap;align-items:center}
+footer .fb{display:flex;align-items:center;gap:8px;font-family:var(--display);color:var(--ash)}
+footer img{width:22px;height:22px;image-rendering:pixelated}
 
-/* ---------- o jogo abrindo dentro da propria pagina ---------- */
-#playOv{position:fixed;inset:0;z-index:900;background:#05030a;display:none}
+/* ---------- visualizador de imagens ---------- */
+.lb{position:fixed;inset:0;z-index:2147483000;background:rgba(3,2,6,.94);display:none;flex-direction:column;align-items:center;justify-content:center;padding:56px 16px 24px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.lb.on{display:flex}
+.lb img{max-width:min(1600px,100%);max-height:calc(100vh - 170px);max-height:calc(100dvh - 170px);width:auto;height:auto;image-rendering:pixelated;box-shadow:0 0 0 1px var(--line2),0 30px 80px #000;animation:lbIn .25s ease}
+@keyframes lbIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.lb .cap{margin-top:16px;text-align:center;max-width:70ch}
+.lb .cap b{font-family:var(--display);display:block;font-size:17px}
+.lb .cap span{color:var(--ash);font-size:15px}
+.lb button{position:absolute;background:rgba(18,13,29,.85);border:1px solid var(--line2);width:48px;height:48px;display:grid;place-items:center;cursor:pointer;font-size:22px}
+.lb button:hover{border-color:var(--gold);color:var(--gold)}
+.lb .x{top:14px;right:14px}
+.lb .pv{left:14px;top:50%;transform:translateY(-50%)}
+.lb .nx{right:14px;top:50%;transform:translateY(-50%)}
+.lb .count{position:absolute;top:26px;left:20px;color:var(--dim);font-size:14px}
+@media (max-width:640px){.lb .pv,.lb .nx{top:auto;bottom:16px;transform:none}.lb{padding-bottom:84px}}
+
+/* ---------- jogo aberto dentro da página ---------- */
+#playOv{position:fixed;inset:0;z-index:2147483600;background:#05030a;display:none}
 #playOv.on{display:block}
-#playOv iframe{width:100%;height:100%;border:0;display:block}
-#playLoad{position:absolute;inset:0;display:grid;place-items:center;background:#05030a;transition:opacity .4s linear;z-index:2}
+#playOv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+#playBar{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;justify-content:flex-start;padding:max(10px,env(safe-area-inset-top)) 12px 10px;background:linear-gradient(180deg,rgba(5,3,10,.85),rgba(5,3,10,0));transform:translateY(-110%);transition:transform .25s ease;pointer-events:none}
+#playBar.show{transform:none}
+#playBar button{pointer-events:auto;min-height:40px;padding:8px 14px;background:rgba(18,13,29,.92);border:1px solid var(--line2);font-family:var(--display);font-size:13px;cursor:pointer}
+#playEdge{position:absolute;left:0;right:0;top:0;height:14px;z-index:2}
+#playLoad{position:absolute;inset:0;display:grid;place-items:center;z-index:1;background:#05030a;transition:opacity .4s}
 #playLoad.gone{opacity:0;pointer-events:none}
-#playLoad i{width:28px;height:28px;border:2px solid var(--line);border-top-color:var(--rune);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* barra de saida: aparece ao abrir e some sozinha; volta ao encostar no topo */
-#playBar{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:12px;
-  padding:10px 14px;background:linear-gradient(180deg,rgba(5,3,10,.92),rgba(5,3,10,0));
-  opacity:0;pointer-events:none;transition:opacity .3s ease}
-#playBar.show{opacity:1;pointer-events:auto}
-#playBar span{font-family:var(--display);font-size:11px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
-#playExit{font-family:var(--display);font-weight:600;font-size:13px;padding:8px 14px;border:1px solid var(--line2);
-  background:rgba(10,7,17,.9);color:var(--ink);cursor:pointer}
-#playExit:hover{border-color:var(--rune);color:#dffbff}
-#playEdge{position:absolute;left:0;right:0;top:0;height:46px;z-index:2}
+#playLoad img{width:88px;height:88px;image-rendering:pixelated;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5;transform:scale(.95)}}
 body.playing{overflow:hidden}
 
-/* revelar ao rolar */
-.rv{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
-.rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .rv{opacity:1;transform:none;transition:none}
-  h1.logo{animation:none}
-  .realm:hover .pic img{transform:none}
-}
-@media (max-width:640px){
-  .hero{padding:52px 0 28px}
-  section{padding:58px 0}
-  .btn{font-size:16px;padding:15px 26px}
+  .hero-bg,.film .shot.on img,.scrollhint::after,#playLoad img{animation:none}
+  .reveal{animation:none;opacity:1;transform:none}
+  .film .shot{transition:none}
 }
 </style>
 </head>
 <body>
-<canvas id="fx"></canvas>
-<div class="glow-a"></div><div class="glow-b"></div>
 
-<!-- o jogo roda aqui dentro, sem sair da pagina -->
 <div id="playOv" aria-hidden="true">
   <div id="playEdge"></div>
-  <div id="playBar">
-    <span>Eclipse Eterno</span>
-    <button id="playExit" type="button">‹ Voltar ao site</button>
-  </div>
-  <div id="playLoad"><i></i></div>
+  <div id="playBar"><button type="button" id="playExit">‹ Voltar ao site</button></div>
+  <div id="playLoad"><img src="./emblem-256.png" alt=""></div>
 </div>
 
-<header>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
+  <span class="count" id="lbN"></span>
+  <button type="button" class="x" id="lbX" aria-label="Fechar">✕</button>
+  <button type="button" class="pv" id="lbP" aria-label="Imagem anterior">‹</button>
+  <img id="lbI" alt="">
+  <div class="cap"><b id="lbT"></b><span id="lbS"></span></div>
+  <button type="button" class="nx" id="lbNx" aria-label="Próxima imagem">›</button>
+</div>
+
+<header id="top">
   <div class="hbar">
-    <a class="brand" href="#topo"><span class="orb"></span>ECLIPSE ETERNO</a>
-    <nav class="main">
+    <a class="brand" href="#inicio"><img src="./emblem-256.png" alt="" width="32" height="32">Eclipse Eterno</a>
+    <nav class="main" aria-label="Seções">
+      <a href="#prologo">Prólogo</a>
       <a href="#jogo">O jogo</a>
       <a href="#reinos">Reinos</a>
       <a href="#herois">Heróis</a>
-      <a href="#sistemas">Sistemas</a>
-      <a href="#apoie">Apoiar</a>
+      <a href="#apoiar">Apoiar</a>
     </nav>
-    <a class="hcta" href="./jogar.html" data-play>▶ Jogar</a>
+    <a class="btn btn-play" href="./jogar.html" data-play>▶ Jogar</a>
   </div>
 </header>
 
-<main class="wrap" id="topo">
-
+<main id="inicio">
   <section class="hero">
-    <span class="eyebrow">Roguelite de sobrevivência</span>
-    <h1 class="logo">ECLIPSE<br>ETERNO</h1>
-    <p class="tagline">A horda nunca para. Escolha seu herói, monte a build entre armas, relíquias e maldições, e atravesse os <b>dez reinos</b> antes que o Eclipse alcance você.</p>
-    <div class="cta-row">
-      <a class="btn btn-gold" href="./jogar.html" data-play>▶ JOGAR AGORA</a>
-      <a class="btn btn-ghost" href="#jogo">Ver o jogo</a>
-    </div>
-    <div class="badges">
-      <span class="badge">Grátis</span>
-      <span class="badge">Sem instalar</span>
-      <span class="badge">Celular e computador</span>
-      <span class="badge">8 heróis</span>
-      <span class="badge">10 reinos + 1 secreto</span>
-    </div>
-    <div class="hero-screen rv">
-      <div class="screen"><img src="./shot-reino_brasa.webp" width="1200" height="700" alt="Partida em andamento nas Ruínas em Brasa" fetchpriority="high"></div>
-    </div>
-  </section>
-
-  <section id="jogo">
-    <div class="sec-head rv">
-      <span class="eyebrow">Como é jogar</span>
-      <h2>Uma partida de verdade, do começo ao chefe</h2>
-      <p>Imagens reais do jogo rodando no navegador — nada aqui é montagem.</p>
-    </div>
-    <div class="strip rv">
-      <figure class="shot" style="margin:0">
-        <div class="screen"><img src="./shot-levelup.webp" width="1200" height="700" loading="lazy" alt="Tela de escolha de poder ao subir de nível"></div>
-        <b>Subiu de nível, o jogo para</b><span>Três cartas, uma escolha. Dá para rerrolar ou banir o que não serve.</span>
-      </figure>
-      <figure class="shot" style="margin:0">
-        <div class="screen"><img src="./shot-chefe.webp" width="1200" height="700" loading="lazy" alt="Luta contra o chefe do reino"></div>
-        <b>Dez chefes, dez padrões</b><span>Cada um com ataques próprios, telegrafados e esquiváveis.</span>
-      </figure>
-      <figure class="shot" style="margin:0">
-        <div class="screen"><img src="./shot-reliquia.webp" width="1200" height="700" loading="lazy" alt="Escolha de relíquia"></div>
-        <b>Relíquias mudam a partida</b><span>De ressuscitar monstros como aliados a devolver o dano que você leva.</span>
-      </figure>
-      <figure class="shot" style="margin:0">
-        <div class="screen"><img src="./shot-mapa.webp" width="1200" height="700" loading="lazy" alt="Mapa do reino com pontos de interesse"></div>
-        <b>O reino é grande</b><span>Ruínas, altares, pedras de desafio e portais espalhados pelo mapa.</span>
-      </figure>
-      <figure class="shot" style="margin:0">
-        <div class="screen"><img src="./shot-loja.webp" width="1200" height="700" loading="lazy" alt="Acampamento com mercador"></div>
-        <b>Acampamento no meio do caos</b><span>Um respiro para gastar ouro antes de voltar para a horda.</span>
-      </figure>
-      <figure class="shot" style="margin:0">
-        <div class="screen"><img src="./shot-menu.webp" width="1200" height="700" loading="lazy" alt="Tela de início de partida"></div>
-        <b>Escolha reino e herói</b><span>Campanha reino a reino, ou modo Infinito depois de vencer o Reino X.</span>
-      </figure>
-    </div>
-  </section>
-
-  <section>
-    <div class="row rv">
-      <div class="rtext">
-        <span class="eyebrow">Build</span>
-        <h3>Toda partida monta um personagem diferente</h3>
-        <p>São dezenas de armas e passivas que evoluem, se combinam e se transformam. A mesma arma na mão de heróis diferentes vira outra coisa.</p>
-        <ul class="rlist">
-          <li><i>◆</i><span>Armas evoluem ao chegar no nível máximo com a passiva certa</span></li>
-          <li><i>◆</i><span>Sinergias dão bônus reais de dano, vida, ouro e experiência</span></li>
-          <li><i>◆</i><span>Maldições aumentam o risco em troca de recompensa</span></li>
-        </ul>
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-in">
+      <canvas id="eclipse" aria-hidden="true"></canvas>
+      <h1 class="wordmark reveal r1"><span class="w1">ECLIPSE</span><span class="w2">ETERNO</span></h1>
+      <p class="tag reveal r2">O segundo sol se apagou. Atravesse dez reinos antes que a escuridão alcance você.</p>
+      <div class="hero-cta reveal r3">
+        <a class="btn btn-play" href="./jogar.html" data-play>▶ Jogar agora</a>
+        <a class="btn btn-line" href="#prologo">Assistir ao prólogo</a>
       </div>
-      <div class="screen"><img src="./shot-levelup.webp" width="1200" height="700" loading="lazy" alt="Cartas de poder"></div>
+      <p class="facts reveal r4">Grátis no navegador. Funciona no celular e no computador, e dá para instalar como app.</p>
     </div>
+    <span class="scrollhint" aria-hidden="true"></span>
+  </section>
 
-    <div class="row flip rv">
-      <div class="rtext">
-        <span class="eyebrow">Perigo</span>
-        <h3>E o Eclipsado está vindo atrás de você</h3>
-        <p>Cada reino tem objetivo, provação e chefe. Demore demais e o Eclipsado aparece — ele não tem barra de vida, só alcança.</p>
-        <ul class="rlist">
-          <li><i>◆</i><span>Elites com afixos, hordas periódicas e eventos de chefe</span></li>
-          <li><i>◆</i><span>Esquiva com recarga e uma suprema por personagem</span></li>
-          <li><i>◆</i><span>Dez reinos, mais um décimo primeiro escondido</span></li>
-        </ul>
+  <section class="block" id="prologo">
+    <div class="wrap">
+      <div class="head">
+        <h2>Prólogo</h2>
+        <p class="lead">Mil anos de luz terminaram numa só noite. É aqui que a sua partida começa.</p>
       </div>
-      <div class="screen"><img src="./shot-chefe.webp" width="1200" height="700" loading="lazy" alt="Chefe do reino"></div>
-    </div>
-
-    <div class="row rv">
-      <div class="rtext">
-        <span class="eyebrow">Progressão</span>
-        <h3>O que você conquista fica</h3>
-        <p>O ouro das partidas vira melhorias permanentes. O Livro de Descobertas registra cada monstro, e as conquistas liberam heróis novos.</p>
-        <ul class="rlist">
-          <li><i>◆</i><span>Melhorias permanentes para todos os personagens</span></li>
-          <li><i>◆</i><span>Desafio diário com regras fixas e sequência de dias</span></li>
-          <li><i>◆</i><span>Ascensão: dificuldade extra depois de zerar</span></li>
-        </ul>
+      <div class="film" id="film" role="region" aria-label="Prólogo do jogo em imagens" tabindex="0">
+        <div class="shot"><img src="./shot-reino_bosque.webp" alt="" loading="lazy"></div>
+        <div class="shot"><img src="./shot-reino_vazio.webp" alt="" loading="lazy"></div>
+        <div class="shot"><img src="./shot-reino_catacumbas.webp" alt="" loading="lazy"></div>
+        <div class="shot"><img src="./shot-reino_gelo.webp" alt="" loading="lazy"></div>
+        <div class="shot"><img src="./shot-reino_brasa.webp" alt="" loading="lazy"></div>
+        <div class="shade"></div>
+        <p class="sub" id="filmSub" aria-live="polite"></p>
+        <div class="card" id="filmCard"><img src="./emblem-256.png" alt=""><b>ECLIPSE</b><span>ETERNO</span><a class="btn btn-play" href="./jogar.html" data-play>▶ Começar a jornada</a></div>
+        <div class="ctl" id="filmCtl" aria-hidden="true"></div>
+        <button type="button" class="pp" id="filmPP" aria-label="Pausar">❚❚</button>
       </div>
-      <div class="screen"><img src="./shot-mapa.webp" width="1200" height="700" loading="lazy" alt="Mapa do reino"></div>
     </div>
   </section>
 
-  <section id="reinos">
-    <div class="sec-head rv">
-      <span class="eyebrow">O mundo</span>
-      <h2>Dez reinos que não se parecem em nada</h2>
-      <p>Clima, monstros, trilha sonora e provação próprios em cada um. E um décimo primeiro que você só encontra se procurar.</p>
-    </div>
-    <div class="realms rv">
-      <div class="realm"><div class="pic"><img src="./shot-reino_bosque.webp" width="1200" height="700" loading="lazy" alt="Bosque do Crepúsculo"></div><div class="cap"><span class="dot" style="background:#8fd98f"></span><span class="num">REINO I</span><span class="nm">Bosque do Crepúsculo</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_catacumbas.webp" width="1200" height="700" loading="lazy" alt="Catacumbas do Eclipse"></div><div class="cap"><span class="dot" style="background:#c08fe0"></span><span class="num">REINO II</span><span class="nm">Catacumbas do Eclipse</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_brasa.webp" width="1200" height="700" loading="lazy" alt="Ruínas em Brasa"></div><div class="cap"><span class="dot" style="background:#ff8a4a"></span><span class="num">REINO III</span><span class="nm">Ruínas em Brasa</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_gelo.webp" width="1200" height="700" loading="lazy" alt="Abismo Gélido"></div><div class="cap"><span class="dot" style="background:#7fd0ff"></span><span class="num">REINO IV</span><span class="nm">Abismo Gélido</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_pantano.webp" width="1200" height="700" loading="lazy" alt="Pântano das Lamentações"></div><div class="cap"><span class="dot" style="background:#9ad15a"></span><span class="num">REINO V</span><span class="nm">Pântano das Lamentações</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_deserto.webp" width="1200" height="700" loading="lazy" alt="Deserto de Vidro"></div><div class="cap"><span class="dot" style="background:#ffd27a"></span><span class="num">REINO VI</span><span class="nm">Deserto de Vidro</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_ceu.webp" width="1200" height="700" loading="lazy" alt="Céu Partido"></div><div class="cap"><span class="dot" style="background:#ffe08a"></span><span class="num">REINO VII</span><span class="nm">Céu Partido</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_fundicao.webp" width="1200" height="700" loading="lazy" alt="Fundição Esquecida"></div><div class="cap"><span class="dot" style="background:#ff9a5a"></span><span class="num">REINO VIII</span><span class="nm">Fundição Esquecida</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_recife.webp" width="1200" height="700" loading="lazy" alt="Recife Afogado"></div><div class="cap"><span class="dot" style="background:#7fc8e0"></span><span class="num">REINO IX</span><span class="nm">Recife Afogado</span></div></div>
-      <div class="realm"><div class="pic"><img src="./shot-reino_vazio.webp" width="1200" height="700" loading="lazy" alt="Cidadela do Vazio"></div><div class="cap"><span class="dot" style="background:#c9a8ff"></span><span class="num">REINO X</span><span class="nm">Cidadela do Vazio</span></div></div>
-    </div>
-  </section>
-
-  <section id="herois">
-    <div class="sec-head rv">
-      <span class="eyebrow">Escolha seu lado</span>
-      <h2>Oito heróis, oito jeitos de sobreviver</h2>
-      <p>Cada um começa com uma arma própria e muda completamente o ritmo da partida. Sete são liberados cumprindo missões.</p>
-    </div>
-    <div class="heroes rv">
-      <div class="htile"><span class="gl">◐</span><b>Vigia</b><span>Equilibrado</span></div>
-      <div class="htile"><span class="gl">➶</span><b>Caçadora</b><span>Velocidade</span></div>
-      <div class="htile"><span class="gl">☾</span><b>Ceifadora</b><span>Combos</span></div>
-      <div class="htile"><span class="gl">⛨</span><b>Guardião</b><span>Tanque</span></div>
-      <div class="htile"><span class="gl">♪</span><b>Bardo</b><span>Suporte</span></div>
-      <div class="htile"><span class="gl">☄</span><b>Alquimista</b><span>Risco</span></div>
-      <div class="htile"><span class="gl">✶</span><b>Domadora</b><span>Companheiro</span></div>
-      <div class="htile"><span class="gl">◉</span><b>Sem Rosto</b><span>Secreto</span></div>
+  <section class="block" id="jogo" style="padding-top:0">
+    <div class="wrap">
+      <div class="head">
+        <h2>Como é uma partida</h2>
+        <p class="lead">Imagens do jogo rodando de verdade. Toque em qualquer uma para ver grande.</p>
+      </div>
+      <div class="feats" data-gallery="jogo">
+        <figure class="feat"><button class="frame" type="button" data-full="./shot-chefe.webp" data-title="Dez chefes, dez lutas diferentes" data-sub="Cada chefe tem ataques próprios, avisados no chão, e uma segunda fase com fúria."><img src="./shot-chefe.webp" alt="Luta contra o Ancião da Mata" loading="lazy"></button>
+          <figcaption><h3>Dez chefes, dez lutas diferentes</h3><p>Ataques avisados no chão, segunda fase com fúria e uma trilha só dele.</p></figcaption></figure>
+        <figure class="feat"><button class="frame" type="button" data-full="./shot-levelup.webp" data-title="Subiu de nível, você escolhe" data-sub="Três cartas por vez. Dá para rerrolar, banir ou arriscar uma maldição em troca de ouro."><img src="./shot-levelup.webp" alt="Escolha de poder ao subir de nível" loading="lazy"></button>
+          <figcaption><h3>Subiu de nível, você escolhe</h3><p>Três cartas por vez: armas, passivas e maldições que pagam mais ouro.</p></figcaption></figure>
+        <figure class="feat"><button class="frame" type="button" data-full="./shot-reliquia.webp" data-title="Relíquias mudam as regras" data-sub="Ao vencer um guardião você escolhe uma relíquia. Ela vale até o fim da partida."><img src="./shot-reliquia.webp" alt="Escolha de relíquia do guardião" loading="lazy"></button>
+          <figcaption><h3>Relíquias mudam as regras</h3><p>Uma por guardião vencido, e ela vale até o fim da partida.</p></figcaption></figure>
+        <figure class="feat"><button class="frame" type="button" data-full="./shot-mapa.webp" data-title="Cada reino é um mapa para explorar" data-sub="Baús, altares, frutos de cura, elites e o objetivo que desperta o chefe."><img src="./shot-mapa.webp" alt="Mapa do Pântano das Lamentações" loading="lazy"></button>
+          <figcaption><h3>Cada reino é um mapa</h3><p>Baús, altares, elites e o objetivo que desperta o chefe.</p></figcaption></figure>
+        <figure class="feat"><button class="frame" type="button" data-full="./shot-loja.webp" data-title="O mercador aparece no meio do caos" data-sub="Gaste o ouro da partida em baús, óleos e amuletos antes de voltar para a horda."><img src="./shot-loja.webp" alt="Mercador do Eclipse" loading="lazy"></button>
+          <figcaption><h3>O mercador no meio do caos</h3><p>Um respiro para gastar o ouro da partida antes de voltar.</p></figcaption></figure>
+        <figure class="feat"><button class="frame" type="button" data-full="./shot-menu.webp" data-title="O que você conquista fica" data-sub="Melhorias permanentes, personagens para liberar, conquistas e um desafio novo todo dia."><img src="./shot-menu.webp" alt="Menu principal do jogo" loading="lazy"></button>
+          <figcaption><h3>O que você conquista fica</h3><p>Melhorias permanentes, heróis para liberar e um desafio novo por dia.</p></figcaption></figure>
+      </div>
     </div>
   </section>
 
-  <section id="sistemas">
-    <div class="sec-head rv">
-      <span class="eyebrow">A build é sua</span>
-      <h2>Sistemas que conversam entre si</h2>
-      <p>Nada aqui é enfeite: cada sistema muda como a próxima partida vai ser.</p>
-    </div>
-    <div class="grid rv">
-      <div class="card"><span class="ic">◆</span><h4>Relíquias</h4><p>Itens únicos por partida. A Lanterna dos Mortos ressuscita o monstro abatido como aliado, com a mesma força que ele tinha.</p></div>
-      <div class="card"><span class="ic">⚯</span><h4>Sinergias</h4><p>Pares específicos de arma e passiva dão bônus reais de dano, vida, ouro e experiência.</p></div>
-      <div class="card"><span class="ic">☠</span><h4>Maldições</h4><p>Aceite regras piores em troca de recompensas maiores — e um pacto do Alquimista por cima.</p></div>
-      <div class="card"><span class="ic">⟲</span><h4>Ascensão</h4><p>Zerou? Recomece com dificuldade extra em dez níveis de ascensão.</p></div>
-      <div class="card"><span class="ic">☼</span><h4>Desafio diário</h4><p>Uma partida por dia com regras fixas, igual para todo mundo, com sequência de dias.</p></div>
-      <div class="card"><span class="ic">⚑</span><h4>Livro e conquistas</h4><p>Cada monstro, chefe e item descoberto fica registrado. Conquistas liberam heróis e aspectos.</p></div>
-    </div>
-  </section>
-
-  <section class="final rv">
-    <h2>O Eclipse já começou.</h2>
-    <p>Abre direto no navegador. Sem conta, sem download, sem espera.</p>
-    <div class="cta-row"><a class="btn btn-gold" href="./jogar.html" data-play>▶ JOGAR AGORA</a></div>
-  </section>
-
-  <section id="apoie">
-    <div class="sec-head rv">
-      <span class="eyebrow">Apoie o projeto</span>
-      <h2>Gostou do jogo?</h2>
-      <p>Eclipse Eterno é de graça e feito nas horas vagas. Se quiser ajudar a manter o projeto vivo, qualquer valor via Pix ajuda.</p>
-    </div>
-    <div class="donate rv">
-      <div class="qr"><img src="./pix_qr.png" width="152" height="152" loading="lazy" alt="QR Code do Pix para doação"></div>
-      <div class="dinfo">
-        <h3>Doe via Pix</h3>
-        <p>Escaneie o QR Code com o app do seu banco ou copie a chave Pix (e-mail) abaixo. O valor é você quem escolhe.</p>
-        <div class="pix-row">
-          <span class="pix-key" id="pixKey">pauloh.jr@hotmail.com</span>
-          <button class="copy-btn" id="copyPix" type="button">Copiar chave</button>
+  <section class="block" id="reinos" style="padding-top:0">
+    <div class="wrap">
+      <div class="head">
+        <div class="headrow">
+          <h2>Dez reinos</h2>
+          <div class="car-nav"><button type="button" id="carP" aria-label="Reinos anteriores">‹</button><button type="button" id="carN" aria-label="Próximos reinos">›</button></div>
+        </div>
+        <p class="lead">Cada um com monstros, clima, trilha e chefe próprios. E existe um décimo primeiro, que só aparece para quem vence o último.</p>
+      </div>
+      <div class="car">
+        <div class="car-track" id="car" data-gallery="reinos">
+          <figure class="realm" style="--c:#8fd98f"><button class="frame" type="button" data-full="./shot-reino_bosque.webp" data-title="Reino I · Bosque do Crepúsculo" data-sub="A floresta onde os vaga-lumes guiavam viajantes. Agora eles guiam a horda."><img src="./shot-reino_bosque.webp" alt="Bosque do Crepúsculo" loading="lazy"></button><figcaption><span class="n">I</span><div><h3>Bosque do Crepúsculo</h3><p>Os vaga-lumes agora guiam a horda.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#c08fe0"><button class="frame" type="button" data-full="./shot-reino_catacumbas.webp" data-title="Reino II · Catacumbas do Eclipse" data-sub="Os mortos do reino foram acordados. Nenhum lembra o próprio nome."><img src="./shot-reino_catacumbas.webp" alt="Catacumbas do Eclipse" loading="lazy"></button><figcaption><span class="n">II</span><div><h3>Catacumbas do Eclipse</h3><p>Nenhum morto lembra o próprio nome.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#ff8a4a"><button class="frame" type="button" data-full="./shot-reino_brasa.webp" data-title="Reino III · Ruínas em Brasa" data-sub="A antiga forja transbordou, e as ruínas ainda queimam."><img src="./shot-reino_brasa.webp" alt="Ruínas em Brasa" loading="lazy"></button><figcaption><span class="n">III</span><div><h3>Ruínas em Brasa</h3><p>A forja transbordou e nunca mais esfriou.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#7fd0ff"><button class="frame" type="button" data-full="./shot-reino_gelo.webp" data-title="Reino IV · Abismo Gélido" data-sub="O frio subiu do fundo do abismo e congelou até a luz."><img src="./shot-reino_gelo.webp" alt="Abismo Gélido" loading="lazy"></button><figcaption><span class="n">IV</span><div><h3>Abismo Gélido</h3><p>O frio congelou até a luz.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#9ad15a"><button class="frame" type="button" data-full="./shot-reino_pantano.webp" data-title="Reino V · Pântano das Lamentações" data-sub="Quem se perde no lodo vira mais uma voz no lamento."><img src="./shot-reino_pantano.webp" alt="Pântano das Lamentações" loading="lazy"></button><figcaption><span class="n">V</span><div><h3>Pântano das Lamentações</h3><p>Quem se perde vira mais uma voz.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#ffd27a"><button class="frame" type="button" data-full="./shot-reino_deserto.webp" data-title="Reino VI · Deserto de Vidro" data-sub="O sol negro derreteu as dunas em vidro afiado."><img src="./shot-reino_deserto.webp" alt="Deserto de Vidro" loading="lazy"></button><figcaption><span class="n">VI</span><div><h3>Deserto de Vidro</h3><p>Dunas derretidas em vidro afiado.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#ffe08a"><button class="frame" type="button" data-full="./shot-reino_ceu.webp" data-title="Reino VII · Céu Partido" data-sub="As ilhas flutuantes racharam quando o céu se partiu."><img src="./shot-reino_ceu.webp" alt="Céu Partido" loading="lazy"></button><figcaption><span class="n">VII</span><div><h3>Céu Partido</h3><p>Ilhas que racharam junto com o céu.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#ff9a5a"><button class="frame" type="button" data-full="./shot-reino_fundicao.webp" data-title="Reino VIII · Fundição Esquecida" data-sub="As máquinas continuam trabalhando, sem ninguém para mandar parar."><img src="./shot-reino_fundicao.webp" alt="Fundição Esquecida" loading="lazy"></button><figcaption><span class="n">VIII</span><div><h3>Fundição Esquecida</h3><p>Máquinas que ninguém manda parar.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#7fc8e0"><button class="frame" type="button" data-full="./shot-reino_recife.webp" data-title="Reino IX · Recife Afogado" data-sub="O reino de cima afundou. O recife guarda o que restou."><img src="./shot-reino_recife.webp" alt="Recife Afogado" loading="lazy"></button><figcaption><span class="n">IX</span><div><h3>Recife Afogado</h3><p>O que restou do reino que afundou.</p></div></figcaption></figure>
+          <figure class="realm" style="--c:#c9a8ff"><button class="frame" type="button" data-full="./shot-reino_vazio.webp" data-title="Reino X · Cidadela do Vazio" data-sub="A origem do Eclipse. Do outro lado das correntes, o Arauto espera."><img src="./shot-reino_vazio.webp" alt="Cidadela do Vazio" loading="lazy"></button><figcaption><span class="n">X</span><div><h3>Cidadela do Vazio</h3><p>Onde o Arauto do Eclipse espera.</p></div></figcaption></figure>
         </div>
       </div>
     </div>
   </section>
 
-  <footer>
-    <span class="fb">ECLIPSE ETERNO</span>
-    <span>Arte, som e mundo gerados em código. Feito para jogar de graça.</span>
-  </footer>
+  <section class="block" id="herois" style="padding-top:0">
+    <div class="wrap">
+      <div class="head">
+        <h2>Oito heróis</h2>
+        <p class="lead">Você começa com a Vigia. Os outros sete são liberados cumprindo missões, e cada um muda o ritmo da partida.</p>
+      </div>
+      <div class="heroes">
+        <div class="hero-t" style="--c:#5ef0ff"><i>Disponível</i><b>Vigia do Eclipse</b><span>Enxerga mais longe e acende altares mais rápido.</span></div>
+        <div class="hero-t" style="--c:#8fd98f"><i>Missão</i><b>Caçadora de Runas</b><span>Rápida e frágil, feita para quem gosta de crítico.</span></div>
+        <div class="hero-t" style="--c:#c08fe0"><i>Missão</i><b>Ceifadora</b><span>Quanto mais derruba, mais forte golpeia.</span></div>
+        <div class="hero-t" style="--c:#8fdcff"><i>Missão</i><b>Guardião de Pedra</b><span>Lento e resistente. Aguenta o que os outros não aguentam.</span></div>
+        <div class="hero-t" style="--c:#ffd27a"><i>Missão</i><b>Bardo do Eclipse</b><span>Luta no ritmo da própria música.</span></div>
+        <div class="hero-t" style="--c:#ff8a4a"><i>Missão</i><b>Alquimista Errante</b><span>Para quem gosta de arriscar com maldições.</span></div>
+        <div class="hero-t" style="--c:#9ad15a"><i>Missão</i><b>Domadora de Feras</b><span>Nunca luta sozinha.</span></div>
+        <div class="hero-t" style="--c:#b066ff"><i>Segredo</i><b>???</b><span>Alguém sem rosto procura uma máscara.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" style="padding-top:0">
+    <div class="wrap">
+      <div class="head">
+        <h2>Toda partida é diferente</h2>
+        <p class="lead">Os sistemas se misturam. A mesma arma vira outra coisa com a passiva certa, e uma maldição pode ser a melhor escolha da partida.</p>
+      </div>
+      <div class="sys">
+        <div style="--c:#f2c14e"><h3>Armas que evoluem</h3><p>No nível máximo, com a passiva certa, a arma se transforma numa versão nova.</p></div>
+        <div style="--c:#5ef0ff"><h3>Relíquias</h3><p>A Lanterna dos Mortos, por exemplo, faz monstros abatidos lutarem do seu lado.</p></div>
+        <div style="--c:#ff5c7a"><h3>Maldições</h3><p>Regras piores em troca de mais ouro no fim. Vale o risco?</p></div>
+        <div style="--c:#c9a8ff"><h3>Ascensão</h3><p>Venceu um reino? Volte a ele com dificuldade extra, nível por nível.</p></div>
+        <div style="--c:#8fd98f"><h3>Desafio diário</h3><p>Uma partida por dia com regras fixas e recompensa por sequência.</p></div>
+        <div style="--c:#ffd27a"><h3>Livro de Descobertas</h3><p>Cada monstro, chefe e item que você encontra fica registrado.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <h2>O Eclipse já começou</h2>
+    <p>Abre na hora, sem conta e sem download. Seu progresso fica salvo no aparelho.</p>
+    <a class="btn btn-play" href="./jogar.html" data-play>▶ Jogar agora</a>
+  </section>
+
+  <section class="block" id="app" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="app">
+        <img src="./icon-192.png" alt="" width="96" height="96">
+        <div>
+          <h3>Leve o jogo para a tela inicial</h3>
+          <p>Instalado, ele abre em tela cheia como um app, direto no jogo, e continua funcionando sem internet depois da primeira vez.</p>
+          <p class="how" id="appHow">No iPhone: toque em Compartilhar e depois em Adicionar à Tela de Início.</p>
+        </div>
+        <button type="button" class="btn btn-line" id="installBtn" hidden>Instalar o app</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="apoiar">
+    <div class="wrap">
+      <div class="head">
+        <h2>Apoie o projeto</h2>
+        <p class="lead">Eclipse Eterno é gratuito e feito por uma pessoa só. Se o jogo te divertiu, qualquer valor via Pix ajuda a continuar.</p>
+      </div>
+      <div class="donate">
+        <div class="qr"><img src="./pix_qr.png" width="176" height="176" alt="QR Code do Pix para doação"></div>
+        <div>
+          <h3>Doe via Pix</h3>
+          <p class="lead" style="margin-top:8px">Aponte a câmera do app do seu banco para o QR Code ou copie a chave. Você escolhe o valor.</p>
+          <div class="pix-row">
+            <span class="pix-key" id="pixKey">pauloh.jr@hotmail.com</span>
+            <button class="btn btn-line copy" id="copyPix" type="button">Copiar chave</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
+<footer>
+  <div class="wrap">
+    <span class="fb"><img src="./emblem-256.png" alt="">Eclipse Eterno</span>
+    <span>Arte, música e mundo gerados em código.</span>
+  </div>
+</footer>
+
 <script>
-/* brasas subindo no fundo */
+/* ---------- topo fica sólido ao rolar ---------- */
+(function(){const h=document.getElementById('top');const f=()=>h.classList.toggle('solid',scrollY>40);f();addEventListener('scroll',f,{passive:true})})();
+
+/* ---------- abertura: a lua cobre o sol e a coroa acende ---------- */
 (function(){
-  const cv=document.getElementById('fx');if(!cv)return;
-  const ctx=cv.getContext('2d');
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let w=0,h=0,parts=[];
-  function size(){w=cv.width=innerWidth;h=cv.height=innerHeight;
-    const n=Math.min(70,Math.round(innerWidth/22));
-    parts=Array.from({length:n},()=>({x:Math.random()*w,y:Math.random()*h,s:Math.random()*1.6+.5,v:.12+Math.random()*.3,ph:Math.random()*6}));}
+  const cv=document.getElementById('eclipse');if(!cv)return;const ctx=cv.getContext('2d');
+  const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;let W=0,H=0,D=1,t0=performance.now(),vis=true;
+  function size(){D=Math.min(2,devicePixelRatio||1);const r=cv.getBoundingClientRect();W=Math.round(r.width*D);H=Math.round(r.height*D);cv.width=W;cv.height=H}
   size();addEventListener('resize',size);
-  if(reduce){ctx.fillStyle='rgba(255,170,90,.25)';parts.forEach(p=>ctx.fillRect(p.x,p.y,p.s,p.s));return}
-  let t=0;
-  (function loop(){
-    t+=1/60;ctx.clearRect(0,0,w,h);
-    for(const p of parts){
-      p.y-=p.v;if(p.y<-6){p.y=h+6;p.x=Math.random()*w}
-      ctx.globalAlpha=.25+.3*Math.sin(t*2+p.ph);
-      ctx.fillStyle=p.ph>3?'#ffb45c':'#5ef0ff';
-      ctx.fillRect(p.x+Math.sin(t+p.ph)*6,p.y,p.s,p.s);
-    }
-    ctx.globalAlpha=1;requestAnimationFrame(loop);
-  })();
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting}).observe(cv);
+  const ease=k=>1-Math.pow(1-k,3);
+  function draw(now){requestAnimationFrame(draw);if(!vis)return;const t=(now-t0)/1000;const cx=W/2,cy=H/2,R=W*.2;
+    ctx.clearRect(0,0,W,H);
+    const cover=RM?1:ease(Math.min(1,t/1.6));// 0 = sol aberto, 1 = eclipse total
+    const glow=RM?1:ease(Math.min(1,Math.max(0,(t-1)/1.2)));
+    // sol
+    ctx.save();ctx.globalCompositeOperation='lighter';
+    const g=ctx.createRadialGradient(cx,cy,R*.6,cx,cy,R*(2.3+.15*Math.sin(t*1.3)));g.addColorStop(0,`rgba(255,214,140,${.25+.4*glow})`);g.addColorStop(1,'rgba(255,140,50,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*2.6,0,Math.PI*2);ctx.fill();
+    for(let i=0;i<36;i++){const a=i/36*Math.PI*2+t*.05;const L=R*(1.06+(.35+.3*Math.sin(i*2.1+t*1.2))*glow*(i%2?.55:1));ctx.strokeStyle=`rgba(255,${205+Math.round(30*Math.sin(i))},130,${.12+.35*glow})`;ctx.lineWidth=Math.max(1,D*1.6);ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*R*1.02,cy+Math.sin(a)*R*1.02);ctx.lineTo(cx+Math.cos(a)*L,cy+Math.sin(a)*L);ctx.stroke()}
+    ctx.restore();
+    ctx.fillStyle=`rgba(255,226,150,${1-cover*.9})`;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
+    // lua
+    const mx=cx+(1-cover)*R*2.4;ctx.fillStyle='#05020a';ctx.beginPath();ctx.arc(mx,cy,R*.99,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=`rgba(255,230,165,${.3+.6*glow})`;ctx.lineWidth=Math.max(1.5,D*2);ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+    // fio de luz ciano (a luz que não se apaga)
+    const k=RM?1:Math.min(1,Math.max(0,(t-1.6)/1.2));if(k>0){ctx.save();ctx.strokeStyle='rgba(94,240,255,.95)';ctx.shadowColor='#5ef0ff';ctx.shadowBlur=14*D;ctx.lineWidth=Math.max(1.5,D*2.2);ctx.beginPath();const a0=Math.PI*.62+t*.08;ctx.arc(cx+R*.14,cy-R*.08,R*.84,a0,a0+Math.PI*.95*ease(k));ctx.stroke();ctx.restore()}
+  }
+  requestAnimationFrame(draw);
 })();
 
-/* revelar blocos ao rolar */
+/* ---------- cinemática do prólogo ---------- */
 (function(){
-  const els=document.querySelectorAll('.rv');
-  if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return}
-  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'-40px'});
-  els.forEach(e=>io.observe(e));
+  const film=document.getElementById('film');if(!film)return;
+  const shots=[...film.querySelectorAll('.shot')],sub=document.getElementById('filmSub'),card=document.getElementById('filmCard'),ctl=document.getElementById('filmCtl'),pp=document.getElementById('filmPP');
+  const LINES=['Por mil anos, dez reinos viveram sob dois sóis.','Até a noite em que o segundo sol se apagou. Começava o Eclipse Eterno.','A luz negra caiu sobre os reinos. Os guardiões viraram monstros, e os mortos esqueceram como descansar.','Na última torre do Bosque, uma Vigia acordou. O cajado dela ainda guarda um fio de luz.','Atravesse os dez reinos. Liberte os guardiões. Chegue à Cidadela do Vazio.'];
+  const DUR=[6500,7500,8500,8000,7500,9000];
+  for(let i=0;i<DUR.length;i++){const p=document.createElement('i');p.appendChild(document.createElement('b'));ctl.appendChild(p)}
+  const pips=[...ctl.children];
+  let i=-1,timer=null,left=0,startedAt=0,paused=false,started=false;
+  function show(n){i=n;clearTimeout(timer);
+    shots.forEach((s,k)=>s.classList.toggle('on',k===n));
+    card.classList.toggle('on',n===LINES.length);
+    sub.classList.add('out');setTimeout(()=>{sub.textContent=LINES[n]||'';sub.classList.remove('out')},n===0?0:500);
+    pips.forEach((p,k)=>{p.classList.toggle('done',k<n);p.classList.toggle('cur',k===n);p.style.setProperty('--d',DUR[k]+'ms');const b=p.firstChild;b.style.animation='none';void b.offsetWidth;b.style.animation=''});
+    left=DUR[n];startedAt=performance.now();if(!paused)timer=setTimeout(next,left)}
+  function next(){if(i>=LINES.length){paused=true;film.classList.add('paused');pp.textContent='↻';pp.setAttribute('aria-label','Ver de novo');return}show(i+1)}
+  function toggle(){if(i>=LINES.length&&paused){paused=false;film.classList.remove('paused');pp.textContent='❚❚';pp.setAttribute('aria-label','Pausar');show(0);return}
+    paused=!paused;film.classList.toggle('paused',paused);pp.textContent=paused?'▶':'❚❚';pp.setAttribute('aria-label',paused?'Continuar':'Pausar');
+    if(paused){clearTimeout(timer);left-=performance.now()-startedAt}else{startedAt=performance.now();timer=setTimeout(next,Math.max(300,left))}}
+  pp.addEventListener('click',e=>{e.stopPropagation();toggle()});
+  film.addEventListener('click',e=>{if(e.target.closest('a,button'))return;if(i<LINES.length){clearTimeout(timer);next()}});
+  film.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle()}else if(e.key==='ArrowRight'){clearTimeout(timer);next()}});
+  // começa quando aparece na tela e pausa quando sai
+  new IntersectionObserver(es=>{const on=es[0].isIntersecting;if(on&&!started){started=true;show(0)}else if(started&&!on&&!paused&&i<LINES.length)toggle()},{threshold:.45}).observe(film);
 })();
 
-/* abrir o jogo dentro da propria pagina (com link normal como reserva) */
+/* ---------- carrossel dos reinos ---------- */
 (function(){
-  const ov=document.getElementById('playOv'),bar=document.getElementById('playBar'),
-        load=document.getElementById('playLoad'),edge=document.getElementById('playEdge'),
-        exit=document.getElementById('playExit');
-  if(!ov)return;
-  const SRC='./jogar.html';
-  let frame=null,hideT=null,open=false;
+  const tr=document.getElementById('car'),p=document.getElementById('carP'),n=document.getElementById('carN');if(!tr)return;
+  const step=()=>{const f=tr.querySelector('figure');return f?f.getBoundingClientRect().width+18:300};
+  p.addEventListener('click',()=>tr.scrollBy({left:-step(),behavior:'smooth'}));
+  n.addEventListener('click',()=>tr.scrollBy({left:step(),behavior:'smooth'}));
+  const sync=()=>{p.disabled=tr.scrollLeft<8;n.disabled=tr.scrollLeft+tr.clientWidth>=tr.scrollWidth-8};sync();tr.addEventListener('scroll',sync,{passive:true});addEventListener('resize',sync);
+})();
 
-  function flashBar(ms){
-    bar.classList.add('show');clearTimeout(hideT);
-    hideT=setTimeout(()=>bar.classList.remove('show'),ms||3200);
-  }
-  function openGame(push){
-    if(open)return;open=true;
-    ov.classList.add('on');ov.setAttribute('aria-hidden','false');
-    document.body.classList.add('playing');
-    if(!frame){
-      frame=document.createElement('iframe');
-      frame.title='Eclipse Eterno';
-      frame.allow='fullscreen; autoplay; gamepad; screen-wake-lock';
-      frame.setAttribute('allowfullscreen','');
-      frame.src=SRC;
-      frame.addEventListener('load',()=>{load.classList.add('gone')});
-      ov.appendChild(frame);
-    }
-    flashBar(3600);
-    setTimeout(()=>{try{frame.focus()}catch(e){}},80);
-    if(push&&location.hash!=='#jogar'){try{history.pushState({jogo:1},'','#jogar')}catch(e){}}
-  }
-  function closeGame(pop){
-    if(!open)return;open=false;
-    ov.classList.remove('on');ov.setAttribute('aria-hidden','true');
-    document.body.classList.remove('playing');
-    bar.classList.remove('show');
-    if(!pop&&location.hash==='#jogar'){try{history.back()}catch(e){location.hash=''}}
-  }
+/* ---------- imagens abrem grandes ---------- */
+(function(){
+  const lb=document.getElementById('lb'),img=document.getElementById('lbI'),T=document.getElementById('lbT'),S=document.getElementById('lbS'),N=document.getElementById('lbN');
+  let list=[],k=0,back=null;
+  function set(n){k=(n+list.length)%list.length;const b=list[k];img.src=b.dataset.full;img.alt=b.querySelector('img').alt;T.textContent=b.dataset.title||'';S.textContent=b.dataset.sub||'';N.textContent=(k+1)+' de '+list.length;img.style.animation='none';void img.offsetWidth;img.style.animation=''}
+  function open(b){back=b;list=[...b.closest('[data-gallery]').querySelectorAll('.frame')];set(list.indexOf(b));lb.classList.add('on');document.body.style.overflow='hidden';document.getElementById('lbX').focus()}
+  function close(){lb.classList.remove('on');document.body.style.overflow='';if(back)back.focus()}
+  document.querySelectorAll('[data-gallery] .frame').forEach(b=>b.addEventListener('click',()=>open(b)));
+  document.getElementById('lbX').onclick=close;document.getElementById('lbP').onclick=()=>set(k-1);document.getElementById('lbNx').onclick=()=>set(k+1);
+  lb.addEventListener('click',e=>{if(e.target===lb)close()});
+  addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')set(k-1);else if(e.key==='ArrowRight')set(k+1)});
+  let sx=null;lb.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});lb.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)set(k+(d<0?1:-1));sx=null});
+})();
 
-  document.querySelectorAll('[data-play]').forEach(a=>{
-    a.addEventListener('click',e=>{
-      if(e.metaKey||e.ctrlKey||e.shiftKey||e.button!==0)return; /* abrir em outra aba continua funcionando */
-      e.preventDefault();openGame(true);
-    });
-  });
+/* ---------- instalar como app ---------- */
+(function(){
+  const b=document.getElementById('installBtn'),how=document.getElementById('appHow');let ev=null;
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(!ios)how.textContent='No Android e no computador: use o botão ao lado ou o menu do navegador, em "Instalar app".';
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;b.hidden=false});
+  addEventListener('appinstalled',()=>{b.hidden=true;how.textContent='Instalado. Procure o Eclipse Eterno na sua tela inicial.'});
+  b.addEventListener('click',()=>{if(!ev)return;ev.prompt();ev.userChoice.finally(()=>{ev=null;b.hidden=true})});
+  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+})();
+
+/* ---------- abrir o jogo dentro da própria página ---------- */
+(function(){
+  const ov=document.getElementById('playOv'),bar=document.getElementById('playBar'),load=document.getElementById('playLoad'),edge=document.getElementById('playEdge'),exit=document.getElementById('playExit');
+  if(!ov)return;const SRC='./jogar.html';let frame=null,hideT=null,open=false;
+  function flashBar(ms){bar.classList.add('show');clearTimeout(hideT);hideT=setTimeout(()=>bar.classList.remove('show'),ms||3200)}
+  function openGame(push){if(open)return;open=true;ov.classList.add('on');ov.setAttribute('aria-hidden','false');document.body.classList.add('playing');
+    if(!frame){frame=document.createElement('iframe');frame.title='Eclipse Eterno';frame.allow='fullscreen; autoplay; gamepad; screen-wake-lock';frame.setAttribute('allowfullscreen','');frame.src=SRC;frame.addEventListener('load',()=>load.classList.add('gone'));ov.appendChild(frame)}
+    flashBar(3600);setTimeout(()=>{try{frame.focus()}catch(e){}},80);
+    if(push&&location.hash!=='#jogar'){try{history.pushState({jogo:1},'','#jogar')}catch(e){}}}
+  function closeGame(pop){if(!open)return;open=false;ov.classList.remove('on');ov.setAttribute('aria-hidden','true');document.body.classList.remove('playing');bar.classList.remove('show');
+    try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
+    if(!pop&&location.hash==='#jogar'){try{history.back()}catch(e){location.hash=''}}}
+  document.querySelectorAll('[data-play]').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button!==0)return;e.preventDefault();openGame(true)}));
   exit.addEventListener('click',()=>closeGame(false));
   addEventListener('keydown',e=>{if(e.key==='Escape'&&open)flashBar(3600)});
-  /* encostar no topo (ou tocar ali) traz a barra de volta */
-  edge.addEventListener('mouseenter',()=>flashBar(2600));
-  edge.addEventListener('touchstart',()=>flashBar(3200),{passive:true});
+  edge.addEventListener('mouseenter',()=>flashBar(2600));edge.addEventListener('touchstart',()=>flashBar(3200),{passive:true});
   addEventListener('popstate',()=>{location.hash==='#jogar'?openGame(false):closeGame(true)});
   if(location.hash==='#jogar')openGame(false);
 })();
 
-/* copiar a chave Pix */
+/* ---------- copiar a chave Pix ---------- */
 (function(){
-  const btn=document.getElementById('copyPix'),key=document.getElementById('pixKey');
-  if(!btn||!key)return;
-  btn.addEventListener('click',async()=>{
-    const text=key.textContent.trim();
-    try{await navigator.clipboard.writeText(text)}
-    catch(e){try{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}catch(e2){}}
-    const old=btn.textContent;btn.textContent='Copiado!';btn.classList.add('ok');
-    setTimeout(()=>{btn.textContent=old;btn.classList.remove('ok')},1800);
-  });
+  const btn=document.getElementById('copyPix'),key=document.getElementById('pixKey');if(!btn||!key)return;
+  btn.addEventListener('click',async()=>{const text=key.textContent.trim();
+    try{await navigator.clipboard.writeText(text)}catch(e){try{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}catch(e2){}}
+    const old=btn.textContent;btn.textContent='Chave copiada';btn.classList.add('ok');setTimeout(()=>{btn.textContent=old;btn.classList.remove('ok')},1800)});
 })();
 </script>
 </body>
