@@ -3823,6 +3823,13 @@ function renderMedals(){const strip=$('realmStrip');strip.innerHTML='';const md=
 var META=(()=>{let d=null;try{d=JSON.parse(localStorage.getItem('ee_meta4')||'null')}catch(e){}
   return Object.assign({gold:0,upg:{},claimed:{},seen:{},daily:{streak:0,last:null,frags:0,wins:0,best:null},stats:{kills:0,bestCombo:0,maxCurses:0,elites:0,bosses:0,chests:0,nemSurv:0,altars:0,lairs:0},realmsOpen:1,stars:[0,0,0,0,0,0,0,0,0,0],cleared:[],unl:{},flags:{},tutDone:false,runs:0},d||{})})();
 function saveMeta(){try{localStorage.setItem('ee_meta4',JSON.stringify(META))}catch(e){}}
+// correção: a missão da Caçadora de Runas mudou de "vencer o Reino I" para "vencer o
+// Reino II sem cair da metade da vida" (flag flags.cac2). Quem já tinha a flag antiga
+// marcada (de uma versão anterior, sem ter de fato vencido o Reino II) ficava com a
+// missão mostrando 1/1 sem merecer — aqui a gente revalida contra o que o save
+// realmente registra (reinos vencidos) e corrige só quem ainda não desbloqueou a
+// personagem pra valer.
+if(META.flags.cac2&&!META.unl.cacadora&&!META.cleared.includes(1)){delete META.flags.cac2;saveMeta()}
 const fmt=n=>Math.round(n).toLocaleString('pt-BR');
 function upgLv(id){return (typeof META!=='undefined'&&META&&META.upg[id])||0}
 function setGold(n){META.gold=n;saveMeta();document.querySelectorAll('[data-gold]').forEach(el=>el.textContent='◆ '+fmt(META.gold)+' '+T('goldWord'));refreshMenuMeta()}
