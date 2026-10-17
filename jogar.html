@@ -884,7 +884,7 @@ const RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)'
 // versão publicada (site): sem textos e atalhos de teste da prévia
 const PROD=!!window.EE_PROD;
 // números de equilíbrio num lugar só (o bot de teste usa estes valores)
-const TUNE={bossBase:420,bossPer:95,dmg:1.35,dmgBoss:1,dmgTime:.35,dmgTimeT:1000,xpLate:1.9,xpFrom:6,dist:1,nemExtra:30,nemFar:12,nemSpeedUp:.15,campMax:20,campCd:45,hordeMin:48,hordeMax:70,hordeBase:10,hordeGrow:30,hordeCap:22,hordeFirst:70,grace:120,xpRealm:.06};
+const TUNE={bossBase:420,bossPer:95,dmg:1.35,dmgBoss:1,dmgTime:.35,dmgTimeT:1000,xpLate:1.9,xpFrom:6,dist:1,nemExtra:30,nemFar:12,nemSpeedUp:.15,campMax:20,campCd:45,hordeMin:48,hordeMax:70,hordeBase:10,hordeGrow:30,hordeCap:22,hordeFirst:70,grace:120,xpRealm:.06,realmDmg:.05};
 const FONT="'Silkscreen','Pixelify Sans', ui-monospace, monospace";
 
 /* ================= opções e idiomas ================= */
@@ -5444,7 +5444,11 @@ Object.assign(I18N,{horde:['A HORDA SE APROXIMA','THE HORDE APPROACHES','LA HORD
 // curva de experiência: igual no começo, bem mais lenta a partir do nível 7
 function xpNeedFor(L){const base=14+L*5;const late=L>TUNE.xpFrom?Math.pow(L-TUNE.xpFrom,2)*TUNE.xpLate:0;return Math.round(base+late)}
 // dano dos monstros: +35% (chefes +15%) e cresce até +35% a mais com o tempo de partida
-{const _hh=hurtHero;hurtHero=function(d){if(sc.mode==='play'&&sc.run){const tk=1+Math.min(TUNE.dmgTime,sc.run.t/TUNE.dmgTimeT);const ramp=Math.min(1,sc.run.t/TUNE.grace);const m=1+((sc.boss?TUNE.dmgBoss:TUNE.dmg*tk)-1)*ramp;d=Math.max(1,Math.ceil(d*m))}_hh(d)}}
+// dano dos monstros sobe com o reino (quem pula direto pro reino avançado sente mais), mas perto
+// da morte a dose do próximo golpe afrouxa: ainda machuca de verdade, só não executa de uma vez
+{const _hh=hurtHero;hurtHero=function(d){if(sc.mode==='play'&&sc.run){const H=sc.hero;const tk=1+Math.min(TUNE.dmgTime,sc.run.t/TUNE.dmgTimeT);const ramp=Math.min(1,sc.run.t/TUNE.grace);const rl=1+TUNE.realmDmg*sc.phase;const m=(1+((sc.boss?TUNE.dmgBoss:TUNE.dmg*tk)-1)*ramp)*rl;d=Math.max(1,Math.ceil(d*m));
+    const pct=H.hp/H.max;if(pct>0&&pct<.3)d=Math.min(d,Math.max(1,Math.floor(H.hp*(.4+.5*(pct/.3)))))}
+  _hh(d)}}
 // hordas
 const HORDE={t:TUNE.hordeFirst,act:null,n:0};
 function hordeTick(dt){const r=sc.run,H=sc.hero;if(!r||sc.boss&&!HORDE.act)return;if(typeof inCamp==='function'&&inCamp(H.x,H.y)){HORDE.t=Math.max(HORDE.t,6);return}
