@@ -1,5 +1,5 @@
 /* Eclipse Eterno: guarda o jogo no aparelho para abrir rapido e funcionar sem internet */
-const CACHE='eclipse-eterno-744e2f14f1';
+const CACHE='eclipse-eterno-fed64935a0';
 const CORE=["./", "./index.html", "./jogar.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./favicon-32.png", "./favicon.svg", "./logo.svg", "./emblem-256.png"];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('eclipse-eterno-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
