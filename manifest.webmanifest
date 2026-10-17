@@ -1,0 +1,41 @@
+{
+  "name": "Eclipse Eterno",
+  "short_name": "Eclipse Eterno",
+  "description": "Roguelite de sobrevivência: dez reinos, oito heróis e relíquias amaldiçoadas.",
+  "lang": "pt-BR",
+  "id": "./jogar.html",
+  "start_url": "./jogar.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "orientation": "any",
+  "background_color": "#05030a",
+  "theme_color": "#05030a",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
