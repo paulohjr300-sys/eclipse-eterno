@@ -884,7 +884,7 @@ const RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)'
 // versão publicada (site): sem textos e atalhos de teste da prévia
 const PROD=!!window.EE_PROD;
 // números de equilíbrio num lugar só (o bot de teste usa estes valores)
-const TUNE={bossBase:420,bossPer:95,dmg:1.35,dmgBoss:1,dmgTime:.35,dmgTimeT:1000,xpLate:1.9,xpFrom:6,dist:1,nemExtra:30,nemFar:12,nemSpeedUp:.15,campMax:20,campCd:45,hordeMin:48,hordeMax:70,hordeBase:10,hordeGrow:30,hordeCap:22,hordeFirst:70,grace:120,xpRealm:.06,realmDmg:.05};
+const TUNE={bossBase:600,bossPer:140,dmg:1.35,dmgBoss:1,dmgTime:.35,dmgTimeT:1000,xpLate:1.9,xpFrom:6,dist:1,nemExtra:30,nemFar:12,nemSpeedUp:.15,campMax:20,campCd:45,hordeMin:48,hordeMax:70,hordeBase:10,hordeGrow:30,hordeCap:22,hordeFirst:70,grace:120,xpRealm:.06,realmDmg:.05};
 const FONT="'Silkscreen','Pixelify Sans', ui-monospace, monospace";
 
 /* ================= opções e idiomas ================= */
@@ -921,7 +921,7 @@ const I18N={
  realmUnlocked:['Novo reino liberado','New realm unlocked','Nuevo reino desbloqueado','Nouveau royaume débloqué'],dailyDone:['Desafio diário concluído','Daily challenge complete','Desafío diario completado','Défi quotidien accompli'],
  achReady:['Conquista para coletar','Achievement ready','Logro listo','Succès à récupérer'],bookNew:['Novas páginas no Livro','New pages in the Book','Nuevas páginas en el Libro','Nouvelles pages dans le Livre'],
  victory:['VITÓRIA','VICTORY','VICTORIA','VICTOIRE'],victoryTxt:['O reino foi libertado do Eclipse','The realm is free from the Eclipse','El reino se libró del Eclipse','Le royaume est libéré de l’Éclipse'],
- nemCaught:['O ECLIPSADO TE ALCANÇOU','THE ECLIPSED CAUGHT YOU','EL ECLIPSADO TE ALCANZÓ','L’ÉCLIPSÉ VOUS A RATTRAPÉ'],nemCaughtTxt:['Ele não corre, mas nunca para','He never runs, but never stops','No corre, pero nunca se detiene','Il ne court pas, mais ne s’arrête jamais'],
+ nemCaught:['O ECLIPSADO TE MANTOU','THE ECLIPSED CAUGHT YOU','EL ECLIPSADO TE ALCANZÓ','L’ÉCLIPSÉ VOUS A RATTRAPÉ'],nemCaughtTxt:['Ele não corre, mas nunca para','He never runs, but never stops','No corre, pero nunca se detiene','Il ne court pas, mais ne s’arrête jamais'],
  defeatT:['DERROTA','DEFEAT','DERROTA','DÉFAITE'],defeatTxt:['A horda foi mais forte desta vez','The horde won this time','La horda ganó esta vez','La horde l’emporte cette fois'],gaveUp:['PARTIDA ENCERRADA','RUN ENDED','PARTIDA TERMINADA','PARTIE TERMINÉE'],endlessOver:['FIM DO INFINITO','ENDLESS OVER','FIN DEL INFINITO','FIN DE L’INFINI'],
  time:['Tempo','Time','Tiempo','Temps'],bestCombo:['Maior combo','Best combo','Mejor combo','Meilleur combo'],realmsDone:['Reinos vencidos','Realms cleared','Reinos superados','Royaumes vaincus'],gold:['de ouro','gold','de oro','d’or'],
  charUnlocked:['PERSONAGEM LIBERADO','CHARACTER UNLOCKED','PERSONAJE DESBLOQUEADO','PERSONNAGE DÉBLOQUÉ'],nextRealm:['Próximo reino','Next realm','Siguiente reino','Royaume suivant'],playAgain:['Jogar de novo','Play again','Jugar de nuevo','Rejouer'],
@@ -2321,7 +2321,10 @@ function makeObj(pi){const H=sc.hero;const P=PHASES[pi],K=P.objCfg;const ahead=(
   if(K.type==='carry'){const o={got:0,need:K.need,car:null,
       label(){return `${K.label} ${this.got}/${this.need}`},goal(){return this.car?{x:this.car.x,y:this.car.y,hold:8}:null},
       targets(){return this.car?[{x:this.car.x,y:this.car.y-30,c:C,t:tagName(K.tag)}]:[]},
-      update(dt){if(this.done)return;if(!this.car||this.car.hp<=0||!sc.ens.includes(this.car)){const e=spawnEnemy(K.carrier,{elite:true,x:sc.hero.x+Math.cos(this.ca=(this.ca==null?Math.random()*TAU:this.ca+2.1+Math.random()))*(300+Math.random()*120),y:sc.hero.y+Math.sin(this.ca)*(230+Math.random()*90)});e.carrier=true;e.hp=e.max=10;this.car=e}},
+      update(dt){if(this.done)return;if(!this.car||this.car.hp<=0||!sc.ens.includes(this.car)){
+        // ângulo bem aleatório e bem mais longe a cada portador novo: sem isso, o próximo nascia
+        // perto o bastante do ponto onde o anterior morreu pra parecer "o mesmo bicho de novo"
+        const a=Math.random()*TAU;const e=spawnEnemy(K.carrier,{elite:true,x:sc.hero.x+Math.cos(a)*(480+Math.random()*220),y:sc.hero.y+Math.sin(a)*(340+Math.random()*160)});e.carrier=true;e.hp=e.max=10;this.car=e}},
       onCarrier(e){this.got++;sc.rings.push({x:e.x,y:e.y-10,t:0,life:.7,max:36,c:C});sfxAltar('magnet');wisp(e.x,e.y-12,C,10);this.car=null;if(this.got>=this.need)completeObj(this,K.label)},
       draw(ctx,lights,S){const e=this.car;if(!e)return;const y=e.y-26+Math.sin(sc.t*4)*1.5;ctx.fillStyle=col(C[0],C[1],72);ctx.fillRect(Math.round(e.x)-1,Math.round(y)-3,2,6);ctx.fillRect(Math.round(e.x)-2,Math.round(y)-1,4,2);lights.push({x:e.x,y,r:26,a:.6,c:C,ta:.2})}};return o}
   if(K.type==='defend'){const b=Object.assign((()=>{const a=Math.random()*TAU;return ahead(Math.cos(a)*680*TUNE.dist,Math.sin(a)*500*TUNE.dist)})(),{hp:100,max:100});const brz=propsOf(2).brazier[0];const o={b,defend:true,wave:1,waves:3,wt:0,WT:22,
@@ -2416,7 +2419,7 @@ function bossAct(b,A,H,dm){const D=v=>Math.round(v*dm);sfxBossAtk(A.id);
 function updBoss(dt){const b=sc.boss;
   // poças e bombas lançadas continuam mesmo depois do chefe
   updLobs(dt);if(!b)return;const H=sc.hero;b.flash-=dt;b.hit.forEach((v,i)=>b.hit[i]=v-dt);if(b.fx){b.fx.t+=dt;if(b.fx.t>.6)b.fx=null}
-  const dx=H.x-b.x,dy=H.y-b.y,d=Math.hypot(dx,dy)||1;const dm=1+sc.phase*.06;const KIT=BOSS_KITS[b.bi];
+  const dx=H.x-b.x,dy=H.y-b.y,d=Math.hypot(dx,dy)||1;const dm=1.15+sc.phase*.07;const KIT=BOSS_KITS[b.bi];// chefes mais fortes: +15% de base e sobe mais rápido por reino
   if(b.st==='move'){const s=d>60?16:-8;b.x+=dx/d*s*dt;b.y+=dy/d*s*dt;b.cd-=dt;
     if(b.cd<=0){b.n++;const BP=BOSS_POWERS[b.bi];b.tx=null;b.tr=0;b.lineAtk=false;
       if(b.n%3===0){b.atk='cast';b.A=null;b.pw=(b.p2||b.p2b)?BP[(b.alt++)%2]:BP[0]}
@@ -3356,7 +3359,7 @@ function updNemesis(dt){const H=sc.hero;sc.nemT=(sc.nemT||0)+dt;if(!sc.nem&&sc.n
   if(!sc.lowfx&&Math.random()<dt*20)sc.gparts.push({x:n.x+rnd(-6,6),y:n.y-rnd(4,26),vx:-dx/d*14+rnd(-6,6),vy:-rnd(4,14),t:0,life:.9,c:[nemHue(),90,60]});
   if(d<10&&H.inv<=0&&!sc.paused){nemKill()}}
 function nemKill(){if(sc.mode==='play'&&onRunDeath('nemesis'))return;const H=sc.hero,n=sc.nem;H.hp=0;sc.hurtFlash=.8;shakeFx(9);sc.slow=1.2;burst(H.x,H.y-8,[nemHue(),90,55],40,110);ringFx(H.x,H.y-8,70,[nemHue(),90,55],.9);sfxHurt();sfxNem();
-  banner('O ECLIPSADO TE ALCANÇOU','No jogo a partida acabaria aqui. Na prévia você revive',[nemHue(),90,62]);H.hp=H.max;H.inv=3;sc.combo=0;n.x=H.x-200;n.y=H.y;n.st='rise';n.t=0}
+  banner('O ECLIPSADO TE MATOU','No jogo a partida acabaria aqui. Na prévia você revive',[nemHue(),90,62]);H.hp=H.max;H.inv=3;sc.combo=0;n.x=H.x-200;n.y=H.y;n.st='rise';n.t=0}
 function nemesisEscape(H){const n=sc.nem;if(!n)return null;const dx=H.x-n.x,dy=H.y-n.y,d=Math.hypot(dx,dy)||1;if(d<80)return {x:H.x+dx/d*60,y:H.y+dy/d*40,fast:true,hold:2};return null}
 function drawNemesis(ctx,S,lights,glows){const n=sc.nem;if(!n)return;const hue=nemHue();const sp=nemSpr(hue);const t=sc.t;const rise=n.st==='rise'?Math.min(1,n.t/1.4):1;const bob=Math.sin(t*1.3)*1.5;
   const x=n.x,y=n.y;// poça de sombra
@@ -4364,7 +4367,11 @@ function openPact(){sc.pact=null;sc.paused=true;sc.menuPause=true;const ov=$('pa
   ov.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{B.curses.push(C.id);markSeen('c_'+C.id);uiSfx&&uiSfx('curse');const r=b.dataset.r;const H=sc.hero;
     if(r==='gold')sc.chests.push({x:H.x+18,y:H.y,t:0,gold:true});if(r==='coins')sc.run.coins=(sc.run.coins||0)+150;close();if(r==='lv'){sc.pendingLv=2;setTimeout(()=>{sc.xp=sc.xpNeed},300)}flashScreen&&flashScreen('radial-gradient(circle,rgba(120,40,160,.35),rgba(20,0,30,.25) 70%)')});
   ov.querySelector('[data-r]').focus({preventScroll:true})}
-{const _pk=afterPick;afterPick=function(o){_pk(o);if(sc.pendingLv>0){sc.pendingLv--;if(sc.pendingLv>0)setTimeout(()=>{sc.xp=sc.xpNeed},250)}}}
+// corrige: antes, a próxima escolha de um combo de níveis só aparecia ~250ms depois de
+// escolher a atual, e nesse intervalo o jogo rodava destravado (sem pausa, levando dano)
+// até o loop perceber o XP forçado e pausar de novo. Agora a próxima escolha abre na hora,
+// sem deixar o jogo rodar destravado entre uma escolha e a outra.
+{const _pk=afterPick;afterPick=function(o){_pk(o);if(sc.pendingLv>0){sc.pendingLv--;if(sc.pendingLv>0)sceneLevelUp()}}}
 /* ================= objetivos completos: 3 etapas por reino ================= */
 // Etapa 1: o objetivo do reino. Etapa 2: uma provação com regra própria do reino. Etapa 3: o chefe.
 Object.assign(I18N,{stage:['Etapa','Stage','Etapa','Étape'],sealed:['selados','sealed','sellados','scellés'],stay:['Fique perto das fogueiras','Stay near the bonfires','Quédate cerca de las hogueras','Restez près des feux'],
@@ -4978,7 +4985,10 @@ function relicTick(dt){const H=sc.hero,r=sc.run;if(!r||!r.relics)return;
   for(const f of sc.relicFx.splice(0))f()}
 function drawRelicWorld(ctx){if(!sc.relWisps.length)return;sc._evGlow.push(()=>{ctx.save();ctx.globalCompositeOperation='lighter';ctx.imageSmoothingEnabled=true;for(const w of sc.relWisps){ctx.globalAlpha=.8;ctx.drawImage(dotOf([160,80,75]),w.x-7,w.y-7,14,14);ctx.fillStyle='#e8fff4';ctx.fillRect(Math.round(w.x),Math.round(w.y),1,1)}ctx.restore()})}
 function relicIcon(id,size){const R=RELICS[id];const c=R.c;return `<i class="rl-ic" style="--rc:${col(c[0],c[1],c[2])};--rs:${size||34}px"><b>${R.n[0][0]}</b></i>`}
-function offerRelic(){const r=sc.run;if(sc.mode!=='play'||!r||r.ended)return;r.relics=r.relics||[];const own=RELIC_IDS.find(id=>RELICS[id].r===(r.secret?10:sc.phase));const pool=RELIC_IDS.filter(id=>!r.relics.includes(id)&&id!==own);
+function offerRelic(){const r=sc.run;if(sc.mode!=='play'||!r||r.ended)return;
+  // nunca empilha por cima de uma escolha ainda aberta (nível, baú, etc.): espera fechar
+  if(sc.paused||!$('lvlOv').hidden||!$('chestOv').hidden||!$('startOv').hidden||!$('pauseOv').hidden||!$('endOv').hidden||!$('storyOv').hidden){setTimeout(()=>offerRelic(),400);return}
+  r.relics=r.relics||[];const own=RELIC_IDS.find(id=>RELICS[id].r===(r.secret?10:sc.phase));const pool=RELIC_IDS.filter(id=>!r.relics.includes(id)&&id!==own);
   const pick=[];if(own&&!r.relics.includes(own))pick.push(own);while(pick.length<3&&pool.length)pick.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);if(!pick.length)return;
   let ov=$('relicOv');if(!ov){ov=document.createElement('div');ov.id='relicOv';ov.className='run-ov relic-ov';document.querySelector('.stage').appendChild(ov)}
   sc.paused=true;sc.menuPause=true;ov.hidden=false;sfxEvolve&&sfxEvolve();
@@ -5444,10 +5454,9 @@ Object.assign(I18N,{horde:['A HORDA SE APROXIMA','THE HORDE APPROACHES','LA HORD
 // curva de experiência: igual no começo, bem mais lenta a partir do nível 7
 function xpNeedFor(L){const base=14+L*5;const late=L>TUNE.xpFrom?Math.pow(L-TUNE.xpFrom,2)*TUNE.xpLate:0;return Math.round(base+late)}
 // dano dos monstros: +35% (chefes +15%) e cresce até +35% a mais com o tempo de partida
-// dano dos monstros sobe com o reino (quem pula direto pro reino avançado sente mais), mas perto
-// da morte a dose do próximo golpe afrouxa: ainda machuca de verdade, só não executa de uma vez
-{const _hh=hurtHero;hurtHero=function(d){if(sc.mode==='play'&&sc.run){const H=sc.hero;const tk=1+Math.min(TUNE.dmgTime,sc.run.t/TUNE.dmgTimeT);const ramp=Math.min(1,sc.run.t/TUNE.grace);const rl=1+TUNE.realmDmg*sc.phase;const m=(1+((sc.boss?TUNE.dmgBoss:TUNE.dmg*tk)-1)*ramp)*rl;d=Math.max(1,Math.ceil(d*m));
-    const pct=H.hp/H.max;if(pct>0&&pct<.3)d=Math.min(d,Math.max(1,Math.floor(H.hp*(.4+.5*(pct/.3)))))}
+// dano dos monstros sobe com o reino: quem pula direto pro reino avançado sente mais.
+// (sem suavizar perto da morte — o jogo precisa continuar competitivo e a morte precisa valer)
+{const _hh=hurtHero;hurtHero=function(d){if(sc.mode==='play'&&sc.run){const tk=1+Math.min(TUNE.dmgTime,sc.run.t/TUNE.dmgTimeT);const ramp=Math.min(1,sc.run.t/TUNE.grace);const rl=1+TUNE.realmDmg*sc.phase;const m=(1+((sc.boss?TUNE.dmgBoss:TUNE.dmg*tk)-1)*ramp)*rl;d=Math.max(1,Math.ceil(d*m))}
   _hh(d)}}
 // hordas
 const HORDE={t:TUNE.hordeFirst,act:null,n:0};
@@ -6980,6 +6989,9 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;const t=now/1
   for(const f of parts){try{f()}catch(err){const m=String(err&&err.message);if(!loop.seen)loop.seen=new Set();if(!loop.seen.has(m)&&loop.seen.size<8){loop.seen.add(m);console.warn(err)}}}
   // vigia: se o jogo ficou pausado sem nenhuma tela aberta, ou preso numa escolha já feita, solta
   if(sc.paused&&$('lvlOv').hidden&&$('chestOv').hidden&&!sc.menuPause){sc.paused=false}
+  // vigia (sentido oposto): uma escolha ainda visível na tela, mas o jogo achou que podia destravar
+  // (acontecia quando uma relíquia aparecia por cima de um nível ainda aberto) — pausa de novo
+  {const rl=document.getElementById('relicOv');if(!sc.paused&&sc.mode==='play'&&(!$('lvlOv').hidden||!$('chestOv').hidden||(rl&&!rl.hidden)))sc.paused=true}
   if(sc.picking&&sc.pickT&&performance.now()-sc.pickT>3000){$('lvlOv').hidden=true;sc.paused=false;sc.picking=false}
   frame++;requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
