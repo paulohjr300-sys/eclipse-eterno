@@ -1642,17 +1642,17 @@ const PHASES=[
   stars:['Vencer o reino','Lanterna chega com menos de 10 golpes','Vencer sem regeneração'],unlock:'Reino V e o Desafio Diário'},
  {name:'Pântano das Lamentações',span:'14 min',base:[95,25,12],alt:[85,30,16],dark:[110,25,7],paved:[80,15,24],grout:[90,20,8],grass:[75,40,28],rune:[75,100,55],crack:[90,30,5],bark:[60,20,14],leaf:{c:[85,40,34],g:false},glowCrack:[75,100,50],
   paveT:.9,amb:[6,12,4],mote:'toxic',monsters:['toad','leech','leech','leech','drowned','rotfly','rotfly'],champ:'champ4',kind:'swamp',props:{swampTree:4,reeds:4,lily:3,toxShroom:2,sunkLog:2},boss:5,
-  objCfg:{type:'activate',label:'Nascentes purificadas',tag:'Nascente',c:[75,100,55],done:[185,100,70],spr:'spring'},
-  obj:['Purifique 3 Nascentes Envenenadas: fique ao lado de cada uma até a água clarear.','O gás do pântano sobe em ondas: quem fica parado no lodo afunda e fica lento.','Derrote a Matriarca do Lodo, que emerge quando a última nascente é purificada.'],
+  objCfg:{type:'activate',label:'Nascentes purificadas',tag:'Nascente',c:[75,100,55],done:[185,100,70],spr:'spring',ambush:true},
+  obj:['Purifique 3 Nascentes Envenenadas: fique ao lado de cada uma até a água clarear. Passe da metade e o lodo solta uma horda em cima de você.','O gás do pântano sobe em ondas: quem fica parado no lodo afunda e fica lento.','Derrote a Matriarca do Lodo, que emerge quando a última nascente é purificada.'],
   stars:['Vencer o reino','Purificar as nascentes sem ficar lento','Derrotar 500 Sanguessugas'],unlock:'Reino VI e o passivo Presa Vampírica'},
  {name:'Deserto de Vidro',span:'14 min',base:[38,45,40],alt:[42,50,50],dark:[30,35,28],paved:[38,40,50],grout:[30,30,28],grass:[45,30,55],rune:[180,100,62],crack:[30,30,22],bark:[30,30,25],leaf:{c:[60,30,40],g:false},glowCrack:[180,100,60],
   paveT:.9,amb:[14,9,3],mote:'sand',monsters:['scarab','scarab','sandworm','mummy','windspirit','windspirit'],champ:'champ5',kind:'desert',props:{glassShard:3,sandPillar:3,ribcage:2,sundial:1,buriedHead:2},boss:6,
-  objCfg:{type:'carry',label:'Fragmentos do Sol',tag:'Fragmento',need:4,carrier:'scarab',c:[45,95,60]},
-  obj:['Recupere 4 Fragmentos do Sol. Escaravelhos dourados fogem com eles pela areia.','Ao meio-dia o vidro do chão reflete o sol: fique na sombra das ruínas para não queimar.','Derrote a Esfinge Partida e responda ao enigma dela com a arma certa.'],
+  objCfg:{type:'carry',label:'Fragmentos do Sol',tag:'Fragmento',need:4,carrier:'scarab',c:[45,95,60],dual:true},
+  obj:['Recupere 4 Fragmentos do Sol. Dois escaravelhos dourados fogem ao mesmo tempo, cada um numa direção.','Ao meio-dia o vidro do chão reflete o sol: fique na sombra das ruínas para não queimar.','Derrote a Esfinge Partida e responda ao enigma dela com a arma certa.'],
   stars:['Vencer o reino','Pegar os fragmentos em menos de 5 minutos','Vencer sem pisar no vidro em brasa'],unlock:'Reino VII e a arma Bumerangue Rúnico'},
  {name:'Céu Partido',span:'15 min',base:[230,25,70],alt:[225,30,62],dark:[225,50,26],paved:[220,10,52],grout:[225,20,32],grass:[200,30,80],rune:[55,100,65],crack:[220,20,40],bark:[30,25,30],leaf:{c:[200,30,90],g:false},glowCrack:[55,100,62],
   paveT:.9,amb:[8,10,24],mote:'wind',monsters:['harpy','harpy','cloudgolem','herald','feather','feather','feather'],champ:'champ6',kind:'sky',props:{windPole:2,stormCrystal:3,cloudPuff:4,featherTotem:2,brokenBell:1},boss:7,
-  objCfg:{type:'defend',label:'Farol da Tempestade',tag:'Farol',c:[55,100,65],spr:'lighthouse'},
+  objCfg:{type:'defend',label:'Farol da Tempestade',tag:'Farol',c:[55,100,65],spr:'lighthouse',gust:true},
   obj:['Mantenha o Farol da Tempestade aceso por 3 ondas. As harpias tentam apagar a chama.','Rajadas de vento empurram tudo para a borda das ilhas: fique perto do Farol.','Derrote o Rei da Tempestade quando ele descer das nuvens.'],
   stars:['Vencer o reino','Farol acima de 50% de vida','Derrotar o Rei sem sair da ilha central'],unlock:'Reino VIII e o atributo Velocidade de Projétil'},
  {name:'Fundição Esquecida',span:'15 min',base:[25,10,16],alt:[30,12,20],dark:[25,15,8],paved:[210,8,30],grout:[210,10,10],grass:[30,15,30],rune:[28,100,58],crack:[20,20,6],bark:[25,20,15],leaf:{c:[28,100,58],g:true},glowCrack:[25,100,52],
@@ -1662,11 +1662,11 @@ const PHASES=[
   stars:['Vencer o reino','Destruir as fornalhas em ordem','Vencer sem ser atingido por um vagonete'],unlock:'Reino IX e a arma Minas de Gelo'},
  {name:'Recife Afogado',span:'16 min',base:[190,25,42],alt:[185,30,48],dark:[210,30,22],paved:[190,20,42],grout:[200,25,22],grass:[170,40,28],rune:[175,100,65],crack:[200,25,20],bark:[30,20,25],leaf:{c:[330,70,65],g:true},glowCrack:[175,100,62],
   paveT:.9,amb:[2,10,20],mote:'bubble',monsters:['jelly','jelly','angler','crab','octopus'],champ:'champ8',kind:'reef',props:{coral:4,kelp:4,giantShell:2,anchor:1,bubbleVent:2},boss:9,
-  objCfg:{type:'escort',label:'Pérola Viva',tag:'Concha-Mãe',c:[175,100,70],spr:'pearl'},
-  obj:['Guie a Pérola Viva até a Concha-Mãe. Ela só se move perto de você.','A maré sobe e desce: na maré alta os monstros nadam mais rápido.','Derrote o Leviatã Coroado no fundo do Recife.'],
+  objCfg:{type:'escort',label:'Pérola Viva',tag:'Concha-Mãe',c:[175,100,70],spr:'pearl',guard:true},
+  obj:['Guie a Pérola Viva até a Concha-Mãe. Ela só se move perto de você. De vez em quando algo mira nela direto: intercepte antes que a empurre pra trás.','A maré sobe e desce: na maré alta os monstros nadam mais rápido.','Derrote o Leviatã Coroado no fundo do Recife.'],
   stars:['Vencer o reino','A Pérola chega sem ser atingida','Derrotar o Leviatã em menos de 2 minutos'],unlock:'Reino X: a Cidadela do Vazio'},
  {name:'Cidadela do Vazio',span:'18 min',base:[250,20,8],alt:[255,25,11],dark:[250,30,4],paved:[245,12,15],grout:[250,20,4],grass:[270,20,18],rune:[45,95,62],crack:[250,30,3],bark:[260,15,10],leaf:{c:[45,95,62],g:true},glowCrack:[45,95,55],void:true,
-  paveT:.45,amb:[6,3,14],mote:'void',monsters:['sentinel','sentinel','voidknight','lesserherald','shardling','shardling'],champ:'champ9',objCfg:{type:'destroy',label:'Correntes do Eclipse',tag:'Corrente',c:[45,95,60],spr:'chain',n:4},kind:'void',props:{chain:2,voidShard:3,arch:2,goldObelisk:2,debris:3},boss:4,
+  paveT:.45,amb:[6,3,14],mote:'void',monsters:['sentinel','sentinel','voidknight','lesserherald','shardling','shardling'],champ:'champ9',objCfg:{type:'destroy',label:'Correntes do Eclipse',tag:'Corrente',c:[45,95,60],spr:'chain',n:4,guarded:true},kind:'void',props:{chain:2,voidShard:3,arch:2,goldObelisk:2,debris:3},boss:4,
   hud:'Correntes do Eclipse 1/4',
   obj:['Quebre as 4 Correntes do Eclipse. Cada uma é guardada por um chefe anterior renascido.','O Círculo do Eclipse encolhe sem parar: cada corrente quebrada dá mais 2 minutos.','Derrote o Arauto do Eclipse nas suas 3 formas.'],
   stars:['Vencer o reino','Vencer com 3 maldições','Vencer em menos de 13 min'],unlock:'Modo Eclipse Eterno e o final verdadeiro'}
@@ -2312,25 +2312,33 @@ function makeObj(pi){const H=sc.hero;const P=PHASES[pi],K=P.objCfg;const ahead=(
     return {pts,label(){return `${K.label} ${pts.filter(p=>p.done).length}/3`},goal(){const p=pts.find(p=>!p.done);return p?{x:p.x,y:p.y+9,hold:12}:null},
       targets(){return pts.filter(p=>!p.done).map(p=>({x:p.x,y:p.y-(K.spr==='spring'?14:34),c:C,t:tagName(K.tag)}))},
       update(dt){for(const p of pts){if(p.done)continue;const d=Math.hypot(sc.hero.x-p.x,sc.hero.y-(p.y+9));if(d<26){const pv=p.prog;p.prog=Math.min(1,p.prog+dt/5);sc.spawnBoost=true;if(Math.floor(p.prog*5)>Math.floor(pv*5)&&p.prog<1)sfxChargeTick(Math.floor(p.prog*5));
+        // a nascente reage: no meio da purificação, o lodo solta uma horda em cima de você
+        if(K.ambush&&!p.amb&&p.prog>=.5){p.amb=true;for(let k=0;k<2;k++)spawnEnemy(P.monsters[Math.floor(Math.random()*P.monsters.length)],{x:p.x+rnd(-20,20),y:p.y+rnd(-10,10)});banner(tagName(K.tag).toUpperCase(),T('ambush'),C);sfxWarn&&sfxWarn('fire')}
         if(p.prog>=1){p.done=true;sc.rings.push({x:p.x,y:p.y-14,t:0,life:.8,max:50,c:K.done||C});sfxAltar('speed');wisp(p.x,p.y-20,K.done||C,8)}}else p.prog=Math.max(0,p.prog-dt*.2)}
         if(!this.done&&pts.every(p=>p.done))completeObj(this,K.label)},
       draw(ctx,lights,S){for(const p of pts){const spr=sprOf(p);shadow(ctx,p.x+3,p.y,K.spr==='spring'?10:5);drawSpr(ctx,spr.c,p.x,p.y+1,S,false);const a=p.done?1:.25+p.prog*.6;sc._altarGlows.push(()=>drawGlow(ctx,spr.g,p.x,p.y+1,S,false,a));
         const lc=p.done?(K.done||C):C;lights.push({x:p.x,y:p.y-(K.spr==='spring'?6:26),r:p.done?70:30+p.prog*30,a:p.done?.9:.5,c:lc,ta:p.done?.25:.1});
         if(!p.done){ctx.strokeStyle=col(C[0],C[1],70,.4);ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(p.x,p.y+3,16,6,0,0,Math.PI*2);ctx.stroke();if(p.prog>0){ctx.strokeStyle=col(C[0],C[1],85);ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y+3,16,6,0,-Math.PI/2,-Math.PI/2+Math.PI*2*p.prog);ctx.stroke()}}
         else{ctx.save();ctx.globalCompositeOperation='lighter';const g=ctx.createLinearGradient(0,p.y-90,0,p.y-10);g.addColorStop(0,col(lc[0],lc[1],lc[2],0));g.addColorStop(1,col(lc[0],lc[1],lc[2],.35));ctx.fillStyle=g;ctx.fillRect(p.x-3,p.y-90,6,80);ctx.restore()}}}}}
-  if(K.type==='carry'){const o={got:0,need:K.need,car:null,
-      label(){return `${K.label} ${this.got}/${this.need}`},goal(){return this.car?{x:this.car.x,y:this.car.y,hold:8}:null},
-      targets(){return this.car?[{x:this.car.x,y:this.car.y-30,c:C,t:tagName(K.tag)}]:[]},
-      update(dt){if(this.done)return;if(!this.car||this.car.hp<=0||!sc.ens.includes(this.car)){
+  if(K.type==='carry'){const cap=K.dual?2:1;const o={got:0,need:K.need,cars:[],
+      label(){return `${K.label} ${this.got}/${this.need}`},goal(){const c=this.cars[0];return c?{x:c.x,y:c.y,hold:8}:null},
+      targets(){return this.cars.map(c=>({x:c.x,y:c.y-30,c:C,t:tagName(K.tag)}))},
+      update(dt){if(this.done)return;this.cars=this.cars.filter(c=>c.hp>0&&sc.ens.includes(c));
         // ângulo bem aleatório e bem mais longe a cada portador novo: sem isso, o próximo nascia
-        // perto o bastante do ponto onde o anterior morreu pra parecer "o mesmo bicho de novo"
-        const a=Math.random()*TAU;const e=spawnEnemy(K.carrier,{elite:true,x:sc.hero.x+Math.cos(a)*(480+Math.random()*220),y:sc.hero.y+Math.sin(a)*(340+Math.random()*160)});e.carrier=true;e.hp=e.max=10;this.car=e}},
-      onCarrier(e){this.got++;sc.rings.push({x:e.x,y:e.y-10,t:0,life:.7,max:36,c:C});sfxAltar('magnet');wisp(e.x,e.y-12,C,10);this.car=null;if(this.got>=this.need)completeObj(this,K.label)},
-      draw(ctx,lights,S){const e=this.car;if(!e)return;const y=e.y-26+Math.sin(sc.t*4)*1.5;ctx.fillStyle=col(C[0],C[1],72);ctx.fillRect(Math.round(e.x)-1,Math.round(y)-3,2,6);ctx.fillRect(Math.round(e.x)-2,Math.round(y)-1,4,2);lights.push({x:e.x,y,r:26,a:.6,c:C,ta:.2})}};return o}
+        // perto o bastante do ponto onde o anterior morreu pra parecer "o mesmo bicho de novo".
+        // com K.dual, até 2 portadores fogem ao mesmo tempo: precisa dividir a atenção entre os dois
+        while(this.cars.length<cap&&this.got+this.cars.length<this.need){
+          const a=Math.random()*TAU;const e=spawnEnemy(K.carrier,{elite:true,x:sc.hero.x+Math.cos(a)*(480+Math.random()*220),y:sc.hero.y+Math.sin(a)*(340+Math.random()*160)});
+          e.carrier=true;e.hp=e.max=10;this.cars.push(e)}},
+      onCarrier(e){this.got++;sc.rings.push({x:e.x,y:e.y-10,t:0,life:.7,max:36,c:C});sfxAltar('magnet');wisp(e.x,e.y-12,C,10);this.cars=this.cars.filter(c=>c!==e);if(this.got>=this.need)completeObj(this,K.label)},
+      draw(ctx,lights,S){for(const e of this.cars){const y=e.y-26+Math.sin(sc.t*4)*1.5;ctx.fillStyle=col(C[0],C[1],72);ctx.fillRect(Math.round(e.x)-1,Math.round(y)-3,2,6);ctx.fillRect(Math.round(e.x)-2,Math.round(y)-1,4,2);lights.push({x:e.x,y,r:26,a:.6,c:C,ta:.2})}}};return o}
   if(K.type==='defend'){const b=Object.assign((()=>{const a=Math.random()*TAU;return ahead(Math.cos(a)*680*TUNE.dist,Math.sin(a)*500*TUNE.dist)})(),{hp:100,max:100});const brz=propsOf(2).brazier[0];const o={b,defend:true,wave:1,waves:3,wt:0,WT:22,
       label(){return `${K.label}: onda ${Math.min(this.wave,3)}/3 · ${Math.max(0,Math.ceil(this.WT-this.wt))}s`},goal(){return {x:b.x,y:b.y+20,hold:20}},
       targets(){return [{x:b.x,y:b.y-34,c:C,t:tagName(K.tag)}]},
       update(dt){if(this.done)return;sc.spawnBoost=true;this.wt+=dt;if(this.wt>=this.WT){this.wt=0;this.wave++;if(this.wave>this.waves){completeObj(this,K.label+' protegido');return}banner(T('wave')+' '+this.wave,T('defend')+' · '+tagName(K.tag),C);sfxWarn('fire');this.warned=false}
+        // rajadas de vento de verdade: empurram você pra longe do farol, não só na letra da missão
+        if(K.gust){this.gt=(this.gt||0)+dt;if(this.gt>=7&&!(this.gustOn>0)){this.gustOn=1.1;this.gt=0;banner(T('gust').toUpperCase(),T('gustTxt'),C);sfxWarn&&sfxWarn('fire')}
+          if(this.gustOn>0){this.gustOn-=dt;const H=sc.hero;const gx=H.x-b.x,gy=H.y-b.y,gd=Math.hypot(gx,gy)||1;H.x+=gx/gd*60*dt;H.y+=gy/gd*60*dt}}
         for(const e of sc.ens)if(Math.hypot(e.x-b.x,e.y-b.y)<14)b.hp-=3*dt;
         // avisa antes de apagar: assim o dano não pega o jogador de surpresa sem saber de onde veio
         if(!this.warned&&b.hp<b.max*.35){this.warned=true;banner(T('flameLow').toUpperCase(),T('flameLowTxt')+' · '+tagName(K.tag),[28,100,58]);sfxWarn&&sfxWarn('fire')}
@@ -2345,6 +2353,10 @@ function makeObj(pi){const H=sc.hero;const P=PHASES[pi],K=P.objCfg;const ahead=(
       targets(){return [{x:dest.x,y:dest.y-20,c:C,t:tagName(K.tag)}]},
       update(dt){if(this.done)return;const H=sc.hero;const d=Math.hypot(H.x-L.x,H.y-L.y);if(d<45){const dx=dest.x-L.x,dy=dest.y-L.y,dd=Math.hypot(dx,dy)||1;L.x+=dx/dd*27*dt;L.y+=dy/dd*27*dt}
         this.prog=Math.max(0,Math.min(1,1-Math.hypot(dest.x-L.x,dest.y-L.y)/start));if(!pearl){sc.cold=d>75?Math.min(1,(sc.cold||0)+dt*2):Math.max(0,(sc.cold||0)-dt*2);if(d>75)H.hp=Math.max(1,H.hp-3*dt)}
+        // um bicho da maré mira direto na Pérola, não em você: se chegar perto, empurra ela pra trás no caminho
+        if(K.guard){this.gt=(this.gt||0)+dt;if(this.gt>=10&&!this.guardE){this.gt=0;const a=Math.random()*TAU;const e=spawnEnemy(P.monsters[Math.floor(Math.random()*P.monsters.length)],{elite:true,x:L.x+Math.cos(a)*220,y:L.y+Math.sin(a)*160});e.tgt=L;this.guardE=e;banner(T('tideGuard').toUpperCase(),T('tideGuardTxt'),C);sfxWarn&&sfxWarn('fire')}
+          if(this.guardE){if(this.guardE.hp<=0||!sc.ens.includes(this.guardE))this.guardE=null;
+            else{const gd=Math.hypot(this.guardE.x-L.x,this.guardE.y-L.y);if(gd<16){const dx=dest.x-L.x,dy=dest.y-L.y,dd=Math.hypot(dx,dy)||1;L.x-=dx/dd*70;L.y-=dy/dd*70;this.prog=Math.max(0,Math.min(1,1-Math.hypot(dest.x-L.x,dest.y-L.y)/start));sc.rings.push({x:L.x,y:L.y-10,t:0,life:.6,max:30,c:[0,80,55]});sfxHurt&&sfxHurt();this.guardE.tgt=null;this.guardE=null}}}}
         if(Math.hypot(dest.x-L.x,dest.y-L.y)<10)completeObj(this,pearl?'A Pérola chegou à Concha-Mãe':'A Lanterna chegou ao Portal')},
       draw(ctx,lights,S){const lift=6+Math.sin(sc.t*2)*2;const spr=pearl?PEARL:LANTERN;shadow(ctx,L.x,L.y,5);drawSpr(ctx,spr.c,L.x,L.y-lift,S,false);sc._altarGlows.push(()=>drawGlow(ctx,spr.g,L.x,L.y-lift,S,false,.9));lights.push({x:L.x,y:L.y-14,r:110,a:.95,c:C,ta:.18});
         if(pearl){shadow(ctx,dest.x,dest.y,16);drawSpr(ctx,SHELLMOM.c,dest.x,dest.y+1,S,false);sc._altarGlows.push(()=>drawGlow(ctx,SHELLMOM.g,dest.x,dest.y+1,S,false,.8))}
@@ -2352,6 +2364,8 @@ function makeObj(pi){const H=sc.hero;const P=PHASES[pi],K=P.objCfg;const ahead=(
         lights.push({x:dest.x,y:dest.y-16,r:50,a:.7,c:C,ta:.2})}};return o}
   // destroy
   const isFurn=K.spr==='furnace';const spr=isFurn?FURNACE:propsOf(9).chain[0];const pts=spreadPts(4,700,1150,700).map(([a,b])=>Object.assign(ahead(a,b),{hp:isFurn?30:24,max:isFurn?30:24,done:false,fl:0}));
+  // cada corrente é guardada por um elite de verdade (combina com a lenda: "guardada por um chefe renascido")
+  if(K.guarded)for(const p of pts)spawnEnemy(P.champ,{elite:true,x:p.x+rnd(-30,30),y:p.y+rnd(-20,20)});
   return {pts,destroy:true,label(){return `${K.label} ${pts.filter(p=>p.done).length}/4`},goal(){const p=pts.find(p=>!p.done);return p?{x:p.x,y:p.y+12,hold:12}:null},
     targets(){return pts.filter(p=>!p.done).map(p=>({x:p.x,y:p.y-(isFurn?34:50),c:C,t:tagName(K.tag)}))},
     hit(p,dmg){p.hp-=dmg;p.fl=.08;burst(p.x,p.y-14,C,4,40);if(p.hp<=0&&!p.done){p.done=true;burst(p.x,p.y-20,C,sc.lowfx?10:36,100);sc.rings.push({x:p.x,y:p.y-20,t:0,life:.7,max:44,c:C});sfxShatter();sfxBoom();if(!this.done&&pts.every(q=>q.done))completeObj(this,K.label)}},
@@ -4566,7 +4580,12 @@ function wrapText(ctx,txt,x,y,maxW,lh){const words=txt.split(' ');let line='',yy
 sc.cv.addEventListener('pointerdown',()=>{if(sc.rintro)skipIntro()});addEventListener('keydown',e=>{if(sc.rintro&&!STORY_ST)skipIntro()});
 
 $('oStory').addEventListener('click',()=>{document.querySelector('.stage').scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});setTimeout(()=>openStory(null),RM?0:400)});
-Object.assign(I18N,{shopBeforeNext:['Comprar melhorias','Buy upgrades','Comprar mejoras','Acheter des améliorations'],
+Object.assign(I18N,{ambush:['O lodo solta uma horda!','The swamp unleashes a horde!','¡El fango suelta una horda!','La boue lâche une horde !'],
+  gust:['RAJADA DE VENTO','WIND GUST','RÁFAGA DE VIENTO','RAFALE DE VENT'],
+  gustTxt:['Segure firme perto do Farol','Hold steady near the Lighthouse','Aguanta firme cerca del Faro','Tenez bon près du Phare'],
+  tideGuard:['ALGO MIRA NA PÉROLA','SOMETHING TARGETS THE PEARL','ALGO APUNTA A LA PERLA','QUELQUE CHOSE VISE LA PERLE'],
+  tideGuardTxt:['Intercepte antes que ela seja empurrada','Intercept it before the Pearl gets pushed back','Intercepta antes de que la empujen','Interceptez-le avant qu’elle ne soit repoussée'],
+  shopBeforeNext:['Comprar melhorias','Buy upgrades','Comprar mejoras','Acheter des améliorations'],
   continueToRealm:['Continuar para o Reino {n} · {name}','Continue to Realm {n} · {name}','Continuar al Reino {n} · {name}','Continuer vers le Royaume {n} · {name}'],
   dangerZone:['Progresso salvo','Saved progress','Progreso guardado','Progression enregistrée'],
   resetNote:['Apaga ouro, melhorias, personagens desbloqueados, estrelas e conquistas deste navegador. Não tem como desfazer.','Erases gold, upgrades, unlocked characters, stars and achievements saved in this browser. This cannot be undone.','Borra el oro, las mejoras, los personajes desbloqueados, las estrellas y los logros guardados en este navegador. No se puede deshacer.','Efface l’or, les améliorations, les personnages débloqués, les étoiles et les succès enregistrés dans ce navigateur. Impossible à annuler.'],
