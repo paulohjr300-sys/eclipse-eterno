@@ -2291,7 +2291,7 @@ function drawFlame(ctx,x,y,h,t,sd){x=Math.round(x);y=Math.round(y);for(let i=-3;
 const ALTAR_TYPES=[
   {k:'speed',name:'VELOCIDADE +60%',sub:'8 segundos correndo mais rápido',dur:8,c:[185,100,62],icon:["x..x...",".x..x..","..x..x.",".x..x..","x..x..."]},
   {k:'magnet',name:'ÍMÃ TOTAL',sub:'Todas as gemas do mapa vêm até você',dur:3,c:[150,100,55],icon:["xx...xx","xx...xx","xx...xx","xx...xx",".x...x.",".xxxxx.","..xxx.."]},
-  {k:'fury',name:'FÚRIA',sub:'+2 lâminas e órbita maior por 8 segundos',dur:8,c:[355,100,62],icon:["......x",".....x.","x...x..",".x.x...","..x....",".x.x...","x......"]}
+  {k:'fury',name:'FÚRIA',sub:'Ataque 40% mais rápido por 8 segundos',dur:8,c:[355,100,62],icon:["......x",".....x.","x...x..",".x.x...","..x....",".x.x...","x......"]}
 ];
 ALTAR_TYPES.forEach(a=>{const rows=a.icon.map(r=>r.replace(/x/g,'a'));a.spr=raster(rows,{a:col(a.c[0],a.c[1],a.c[2]+12)},true);a.g=blur(a.spr)});
 const altarBaseCache={};
@@ -2946,7 +2946,8 @@ function render(dt){
   ctx.font=`500 12px ${FONT}`;ctx.fillStyle='#d9d1e8';ctx.fillText('◆ '+(sc.boss?T('stage')+' 3/3 · '+T('defeat')+' '+sc.boss.name:sc.stage?stageLabel():sc.obj&&!sc.obj.done?sc.obj.label():T('objDone')),14,40);
   ctx.textAlign='right';ctx.font=`700 13px ${FONT}`;ctx.fillStyle='#ece6f6';ctx.fillText(`${sc.kills} ${T('kills')} · ${T('lv')} ${sc.level}`,w-14,22);let ry=w<560?64:40;
   if(sc.buff){ctx.font=`700 12px ${FONT}`;ctx.fillStyle=C3(sc.buff.c,10);ctx.fillText(`${sc.buff.name} · ${Math.ceil(sc.buff.t)}s`,w-14,ry);ry+=16}
-  {const left=Math.max(0,nemTime()-(sc.nemT||0));ctx.font=`600 11px ${FONT}`;if(sc.nem){ctx.fillStyle=Math.floor(sc.t*3)%2?'#ff7ab0':'#ffd0e4';ctx.fillText('☾ '+T('nemHunt'),w-14,ry)}else{const fast=(sc.nemRate||1)>1.05;ctx.fillStyle=left<30?'#ff9ab8':fast?'#ffb07a':'rgba(220,210,235,.7)';const m=Math.floor(left/60),s2=Math.floor(left%60);ctx.fillText(`☾ ${T('nemIn')} ${m}:${String(s2).padStart(2,'0')}${fast?' »':''}`,w-14,ry)}ry+=16}
+  // sem contagem regressiva: o Eclipsado chega de surpresa (na metade da missão); só avisa enquanto ele caça
+  if(sc.nem){ctx.font=`600 11px ${FONT}`;ctx.fillStyle=Math.floor(sc.t*3)%2?'#ff7ab0':'#ffd0e4';ctx.fillText('☾ '+T('nemHunt'),w-14,ry);ry+=16}
   if(false&&sc.nem){const n=sc.nem;const sx=(n.x-cx)*S,sy=(n.y-20-cy)*S;if(sx<0||sy<0||sx>w||sy>h){const ax=Math.max(22,Math.min(w-22,sx)),ay=Math.max(70,Math.min(h-22,sy));const an=Math.atan2(sy-ay,sx-ax);ctx.save();ctx.translate(ax,ay);ctx.rotate(an);ctx.fillStyle=Math.floor(sc.t*4)%2?'#ff7ab0':'#ffd0e4';ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-6,-8);ctx.lineTo(-6,8);ctx.closePath();ctx.fill();ctx.restore();ctx.font=`700 13px ${FONT}`;ctx.textAlign='center';ctx.fillStyle='#ffd0e4';ctx.fillText('☾',ax-Math.cos(an)*16,ay-Math.sin(an)*16+4);ctx.textAlign='right'}}
   if(sc.echo){ctx.font=`700 12px ${FONT}`;ctx.fillStyle='#d59bff';ctx.fillText(`Eco: ${(WEAPONS.find(x=>x.id===sc.echo.id)||{}).name} · ${Math.ceil(sc.echo.t)}s`,w-14,ry);ry+=16}
   // combo
@@ -4879,7 +4880,15 @@ function drawCharFx(ctx,S,glows,lights){const H=sc.hero;
   if(id==='xama'&&!sc.lowfx){ctx.save();ctx.strokeStyle='rgba(140,180,70,.22)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(H.x,H.y,55,30,0,0,TAU);ctx.stroke();ctx.restore()}}
 {const _u=update;update=function(dt){_u(dt);try{charPassives(dt)}catch(e){}}}
 {const _dw=drawWeapons;drawWeapons=function(ctx,S,glows,lights){_dw(ctx,S,glows,lights);try{drawCharFx(ctx,S,glows,lights)}catch(e){}}}
-{const _c=cdMul;cdMul=function(){return _c()*((sc.overT||0)>0?.7:1)}}
+// Fúria (altar): antes só dava +2 lâminas, o que não fazia nada para quem não usava Lâminas Orbitais.
+// Agora acelera o ataque de todas as armas (mantendo as lâminas extras de brinde para quem as tem).
+{const _c=cdMul;cdMul=function(){return _c()*((sc.overT||0)>0?.7:1)*(sc.buff&&sc.buff.k==='fury'?.6:1)}}
+// traduz o nome/descrição dos altares (o texto estava fixo em português)
+{const ALT_T={speed:[['VELOCIDADE +60%','8 segundos correndo mais rápido'],['SPEED +60%','8 seconds running faster'],['VELOCIDAD +60%','8 segundos corriendo más rápido'],['VITESSE +60%','8 secondes à courir plus vite']],
+  magnet:[['ÍMÃ TOTAL','Todas as gemas do mapa vêm até você'],['FULL MAGNET','Every gem on the map comes to you'],['IMÁN TOTAL','Todas las gemas del mapa vienen a ti'],['AIMANT TOTAL','Toutes les gemmes de la carte viennent à vous']],
+  fury:[['FÚRIA','Ataque 40% mais rápido por 8 segundos'],['FURY','Attack 40% faster for 8 seconds'],['FURIA','Ataque 40% más rápido durante 8 segundos'],['FUREUR','Attaque 40% plus rapide pendant 8 secondes']]};
+  const applyAlt=()=>{for(const a of ALTAR_TYPES){const v=ALT_T[a.k]&&ALT_T[a.k][LI()];if(v){a.name=v[0];a.sub=v[1]}}};
+  {const _al=applyLang;applyLang=function(){_al();try{applyAlt()}catch(e){}}}applyAlt()}
 {const _ac=applyChar;applyChar=function(i){_ac(i);sc.souls=[];sc.cfx=[];sc.bubble=false;sc.bubCd=0;sc.overT=0;sc.overCd=null;sc.solCd=null}}
 // Carpideira: a alma voa do morto até o inimigo mais próximo; no Coro dos Mortos, cada morte explode
 {const _k=kill;kill=function(e){try{const H=sc.hero;if(heroC().id==='carpideira'){if(Math.hypot(e.x-H.x,e.y-H.y)<90&&Math.random()<.25){const t=nearestFrom(e.x,e.y,110,new Set([e]));if(t)sc.souls.push({x:e.x,y:e.y-8,tgt:t,t:0})}
@@ -5937,9 +5946,15 @@ function missionFrac(){const o=sc.obj,S=sc.stage,b=sc.boss;
 function nemRate(){const r=sc.run;if(sc.mode!=='play'||!r||sc.nem)return 1;const span=(parseFloat(PHASES[sc.phase]&&PHASES[sc.phase].span)||12)*60;
   const behind=(r.t-(r.realmT||0))/span-missionFrac();return behind>.05?1+Math.min(1.5,(behind-.05)*4):1}
 {const _un=updNemesis;updNemesis=function(dt){if(!sc.paused){const k=nemRate();sc.nemRate=k;if(k>1&&!sc.nem)sc.nemT=(sc.nemT||0)+dt*(k-1);
-    if(sc._nemWPh!==sc.phase){sc._nemWPh=sc.phase;sc._nemWarned=false}
-    if(k>1.3&&!sc._nemWarned&&!sc.nem&&sc.mode==='play'){sc._nemWarned=true;banner(T('nemFaster').toUpperCase(),T('nemFasterTxt'),[nemHue(),90,62])}}
+    if(sc._nemWPh!==sc.phase){sc._nemWPh=sc.phase;sc._nemWarned=false;sc._nemProg=false}
+    if(k>1.3&&!sc._nemWarned&&!sc.nem&&sc.mode==='play'){sc._nemWarned=true;banner(T('nemFaster').toUpperCase(),T('nemFasterTxt'),[nemHue(),90,62])}
+    // chegou na metade da missão (sempre antes do chefe, que só acorda em 2/3): o Eclipsado aparece
+    if(sc.mode==='play'&&sc.run&&!sc.nem&&!sc._nemProg&&missionFrac()>=.5){sc._nemProg=true;sc.nemT=Math.max(sc.nemT||0,nemTime())}}
   _un(dt)}}
+// garante que ele venha antes do chefe: se o chefe acordar sem o Eclipsado ter aparecido nesse reino, ele surge junto
+{const _sn=spawnNemesis;spawnNemesis=function(){const had=!!sc.nem;_sn();if(!had&&sc.nem)sc._nemSeenPh=sc.phase}}
+{const _sb=spawnBoss;spawnBoss=function(){const had=!!sc.boss;_sb();if(!had&&sc.boss&&sc.mode==='play'&&sc.run&&!sc.nem&&sc._nemSeenPh!==sc.phase){sc._nemProg=true;spawnNemesis()}}}
+{const _sr=startRun;startRun=function(a,b){sc._nemProg=false;sc._nemSeenPh=null;sc._nemWPh=null;_sr(a,b)}}
 Object.assign(I18N,{nemFaster:['O Eclipsado sente sua demora','The Eclipsed senses your delay','El Eclipsado siente tu demora','L’Éclipsé sent votre lenteur'],nemFasterTxt:['A missão está atrasada: ele vai chegar mais cedo','The mission is behind: he will arrive sooner','La misión va atrasada: llegará antes','La mission prend du retard : il arrivera plus tôt']});
 // o abrigo protege por um tempo; depois fica fechado por um tempo
 {const _ic=inCamp;inCamp=function(x,y){const c=sc.camp;if(c&&c.closed>0)return false;return _ic(x,y)}}
