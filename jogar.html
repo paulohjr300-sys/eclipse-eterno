@@ -6782,6 +6782,34 @@ function openAlqPact(){const r=sc.run;if(!r||r.alq)return;r.alq=true;if(r.t>25)r
 addEventListener('keydown',e=>{const ov=$('alqOv');if(!ov||ov.hidden||!'123'.includes(e.key)||!e.key)return;const b=ov.querySelectorAll('.pcard')[+e.key-1];if(b){b.click();e.preventDefault()}});
 {const _u=update;update=function(dt){_u(dt);try{const r=sc.run;if(sc.mode==='play'&&r&&!r.alq&&!sc.rintro&&!sc.cine&&!sc.paused&&heroC().id==='alquimista'&&!document.querySelector('#lvlOv:not([hidden]),#relicOv:not([hidden]),#storyOv:not([hidden])'))openAlqPact()}catch(e){}}}
 {const _oo=openOverlay;openOverlay=function(){const o=$('alqOv');if(o&&!o.hidden)return o;return _oo()}}
+// --- Baú Amaldiçoado: por fora é igual a um baú comum; ao abrir, obriga a escolher 1 de 3 maldições ---
+// (quase ninguém escolhia maldição por vontade própria). Sem recusar e sem rerrolar.
+const CURS_T={t:['BAÚ AMALDIÇOADO','CURSED CHEST','COFRE MALDITO','COFFRE MAUDIT'],
+  s:['Era uma armadilha! Escolha uma maldição: não dá para recusar nem rerrolar.','It was a trap! Pick a curse: you can’t refuse or reroll.','¡Era una trampa! Elige una maldición: no puedes rechazar ni volver a tirar.','C’était un piège ! Choisissez une malédiction : impossible de refuser ou de relancer.'],
+  rr:['🔒 Rerrolar bloqueado','🔒 Reroll locked','🔒 Volver a tirar bloqueado','🔒 Relance bloquée'],
+  h:['O baú escolheu por você: uma destas fica','The chest chose for you: one of these stays','El cofre eligió por ti: una de estas se queda','Le coffre a choisi pour vous : l’une d’elles reste']};
+function cursedRoll(c){const r=sc.run;if(c.gold||sc.mode!=='play'||!r||r.ended||r.t<40)return false;const B=sc.build;
+  if(B.curses.length>=3||!CURSES.some(k=>!B.curses.includes(k.id)))return false;
+  // fica mais provável a cada baú comum seguido: 20%, 30%, 40%... até 60%
+  const ch=Math.min(.6,.2+.1*(r.curK||0));if(Math.random()<ch){r.curK=0;return true}r.curK=(r.curK||0)+1;return false}
+function openCursedChest(c){const r=sc.run,B=sc.build,H=sc.hero;sc.chests=sc.chests.filter(x=>x!==c);sc.chestCount=(sc.chestCount||0)+1;r.chests=(r.chests||0)+1;r.cursedChests=(r.cursedChests||0)+1;META.stats.chests++;saveMeta();
+  const pool=CURSES.filter(k=>!B.curses.includes(k.id)).map(k=>k.id);const pick=[];while(pick.length<3&&pool.length)pick.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+  if(typeof BOT!=='undefined'&&BOT.on){applyPick(B,{kind:'curse',id:pick[0]});return}
+  shakeFx(7);ringFx(c.x,c.y-6,46,CURSE_C,.7);splashP(c.x,c.y-8,CURSE_C,30,130);if(typeof flashScreen==='function')flashScreen('radial-gradient(circle,rgba(170,20,40,.45),rgba(30,0,10,.3) 70%)');if(typeof uiSfx==='function')uiSfx('curse');sfxNem&&sfxNem();
+  let ov=$('cursOv');if(!ov){ov=document.createElement('div');ov.id='cursOv';ov.className='run-ov relic-ov';document.querySelector('.stage').appendChild(ov)}
+  sc.paused=true;sc.menuPause=true;ov.hidden=false;
+  ov.innerHTML=`<div class="ro-box wide curs-box"><span class="ro-k" style="color:#ff6b7d">${CURS_T.t[LI()]}</span><span class="ro-t">${CURS_T.s[LI()]}</span><div class="cards3 compact" id="cursCards"></div><button type="button" class="lo-reroll" disabled aria-disabled="true" style="opacity:.45;cursor:not-allowed;align-self:center">${CURS_T.rr[LI()]}</button></div>`;
+  const box=$('cursCards');let done=false;
+  pick.forEach((id,i)=>{const o={kind:'curse',id};const el=makeCard(o,i,B,()=>{if(done)return;done=true;applyPick(B,o);if(typeof markSeen==='function')markSeen('c_'+id);ov.hidden=true;sc.paused=false;sc.menuPause=false;H.inv=Math.max(H.inv,1);
+      ringFx(H.x,H.y-8,60,CURSE_C,.7);splashP(H.x,H.y-10,CURSE_C,24,120);if(typeof tlPush==='function'){const k=CURSES.find(x=>x.id===id);if(k)tlPush('curse',k.name)}});
+    el.style.animationDelay=(.25+i*.12)+'s';placeCard(el,i,box);const h=el.querySelector('.hint');if(h)h.textContent=CURS_T.h[LI()]});
+  setTimeout(()=>{const f=box.querySelector('.pcard');f&&f.focus({preventScroll:true})},80)}
+{const _oc=openChest;openChest=function(c){try{if(cursedRoll(c)){openCursedChest(c);return}}catch(e){console.warn(e)}return _oc(c)}}
+addEventListener('keydown',e=>{const ov=$('cursOv');if(!ov||ov.hidden||!e.key||!'123'.includes(e.key))return;const b=ov.querySelectorAll('.pcard')[+e.key-1];if(b){b.click();e.preventDefault()}});
+{const _oo=openOverlay;openOverlay=function(){const o=$('cursOv');if(o&&!o.hidden)return o;return _oo()}}
+{const st=document.createElement('style');st.textContent=`.curs-box{border-color:#7a1f2c!important;box-shadow:0 0 0 1px #000,0 0 40px rgba(200,30,60,.35),0 20px 60px rgba(0,0,0,.6)!important;animation:roIn .35s both,cursShake .5s .05s both}
+@keyframes cursShake{0%,100%{transform:none}20%{transform:translateX(-6px) rotate(-.6deg)}40%{transform:translateX(6px) rotate(.6deg)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@media (prefers-reduced-motion:reduce){.curs-box{animation:none}}`;document.head.appendChild(st)}
 if(window.__dbg)Object.assign(window.__dbg,{pEff,pDesc,openAlqPact,wBonus,RAR_F});
 // --- Baú: só sorteia o que você já tem e ainda pode subir; senão dá ouro ou cura (antes o prêmio nem era aplicado) ---
 const CH_T={gold:['+{n} de ouro','+{n} gold','+{n} de oro','+{n} d’or'],up:['{name} · nível {lv}','{name} · level {lv}','{name} · nivel {lv}','{name} · niveau {lv}'],heal:['Cura de {n}','Heals {n}','Cura {n}','Soigne {n}']};
@@ -7328,7 +7356,7 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;const t=now/1
   if(sc.paused&&$('lvlOv').hidden&&$('chestOv').hidden&&!sc.menuPause){sc.paused=false}
   // vigia (sentido oposto): uma escolha ainda visível na tela, mas o jogo achou que podia destravar
   // (acontecia quando uma relíquia aparecia por cima de um nível ainda aberto) — pausa de novo
-  {const rl=document.getElementById('relicOv');if(!sc.paused&&sc.mode==='play'&&(!$('lvlOv').hidden||!$('chestOv').hidden||(rl&&!rl.hidden)))sc.paused=true}
+  {const vis=id=>{const o=document.getElementById(id);return o&&!o.hidden};if(!sc.paused&&sc.mode==='play'&&(vis('lvlOv')||vis('chestOv')||vis('relicOv')||vis('cursOv')||vis('alqOv')))sc.paused=true}
   if(sc.picking&&sc.pickT&&performance.now()-sc.pickT>3000){$('lvlOv').hidden=true;sc.paused=false;sc.picking=false}
   frame++;requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
