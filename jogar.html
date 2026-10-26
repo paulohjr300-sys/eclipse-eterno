@@ -1082,14 +1082,12 @@ const CHARS=[
  {id:'semrosto',name:'O Sem-Rosto',weapon:'flame',secret:true,diff:'Eco',diffTxt:'Ao derrotar um elite, absorve o eco dele: ganha uma arma extra (sorteada) por 30 segundos e luta com as duas ao mesmo tempo.',stats:{Vida:3,Velocidade:4,Dano:4,Sorte:1},hpMul:1,spdMul:1.05,crit:.12,
   mission:'Segredo: encontre a máscara partida na Cidadela do Vazio',prog:null,
   pal:{o:[260,30,4,1],h:[260,10,20],d:[45,10,90],e:[0,0,6,1],c:[262,30,12],C:[262,35,8],g:[280,60,50,1],r:[280,100,65,1],k:[260,20,14,1],w:[260,10,30,1],q:[280,90,55,1],Q:[285,100,72,1]},glow:'rqQ',item:'void'},
- // sprite provisório: reaproveita a silhueta da Alquimista (só paleta nova) até termos arte própria
  {id:'druida',name:'Druida das Raízes',weapon:'thornring',secret:true,diff:'Raízes Vivas',diffTxt:'A cada poucos segundos, raízes brotam ao seu redor, ferem e prendem quem estiver perto.',stats:{Vida:3,Velocidade:3,Dano:3,Sorte:1},hpMul:1,spdMul:1,crit:.08,
   mission:'Sobreviva 10 minutos seguidos no Reino I durante o Modo Eclipse Eterno',prog:[0,1],
-  pal:{o:[95,30,5,1],h:[95,35,28],d:[90,30,12],e:[95,100,65,1],c:[90,28,20],C:[90,32,12],g:[42,85,58,1],r:[95,100,55,1],k:[28,22,20,1],w:[90,20,30,1],q:[95,90,55,1],Q:[95,100,85,1]},glow:'erqQ',item:'flask'},
- // sprite provisório: reaproveita a silhueta do Guardião (só paleta nova) até termos arte própria
+  pal:{o:[100,35,5,1],h:[110,32,24],d:[100,30,12],s:[28,38,56],e:[95,100,70,1],c:[95,30,26],C:[30,32,16],l:[100,60,40],m:[30,40,24],g:[42,85,58,1],r:[95,100,58,1],k:[28,25,18,1],w:[28,42,30,1],q:[75,100,62,1],Q:[75,100,88,1]},glow:'erq',item:'branch'},
  {id:'gelida',name:'Gélida do Núcleo',weapon:'chakram',secret:true,diff:'Núcleo Gelado',diffTxt:'Sempre que leva dano, tem chance de congelar quem estiver perto de você.',stats:{Vida:5,Velocidade:2,Dano:3,Sorte:3},hpMul:1.3,spdMul:.85,crit:.08,
   mission:'Sobreviva 10 minutos seguidos no Reino IV durante o Modo Eclipse Eterno',prog:[0,1],
-  pal:{o:[200,25,6,1],h:[195,30,46],d:[195,25,20],e:[195,100,75,1],c:[195,20,32],C:[195,25,22],g:[195,15,60,1],r:[195,100,66,1],k:[195,20,24,1],w:[195,15,42,1],q:[195,100,65,1],Q:[195,100,92,1]},glow:'erqQ',item:'shield'}
+  pal:{o:[215,45,8,1],h:[200,35,86],d:[210,30,30],s:[18,38,74],e:[190,100,62,1],c:[205,55,42],C:[212,55,26],g:[195,15,60,1],r:[190,100,66,1],k:[210,25,30,1],w:[200,25,72,1],q:[190,100,68,1],Q:[190,100,92,1]},glow:'erqQ',item:'scepter'}
 ];
 const ITEM_PIX={
  staff:[...[3,4,5,6,7,8,9,10,11,12,13,14,15].map(y=>[18,y,'w']),[18,0,'q'],[17,1,'q'],[18,1,'Q'],[19,1,'q'],[18,2,'q'],[17,9,'k'],[16,9,'o']],
@@ -1117,8 +1115,17 @@ const CHAR_ART={
    hems:{base:"..oCCCCCCCCCCo..",L:".oCCCCCCCCCCo...",R:"...oCCCCCCCCCCo."},legs:{idle:["....oko..oko....","....ooo..ooo...."],a:["...oko....oko...","...ooo.....oo..."],b:[".....oko.oko....",".....ooo.ooo...."]},pal:{s:[25,40,58],f:[30,25,62],n:[0,0,8,1]}},
  semrosto:{top:["....q..q","........",".....ooo","....oddd","...odddd","...odddd","...odddr","...odddd","....oddd","..ohhhhh",".ohcccch",".occcccc","..occccc"],
    hems:{base:"..oCCCCCCCCCCo..",L:".oCCCCCCCCCCo...",R:"...oCCCCCCCCCCo."},legs:{idle:["...oC.oCCo.Co...","....r..rr..r...."],a:["..oC.oCCo.Co....","...r..rr..r....."],b:["....oC.oCCo.Co..",".....r..rr..r..."]},pal:{d:[262,40,5]}}};
-// Druida e Gélida ainda não têm silhueta própria: reaproveitam a da Alquimista/Guardião (só muda a paleta)
-CHAR_ART.druida=CHAR_ART.alquimista;CHAR_ART.gelida=CHAR_ART.guardiao;
+// Druida: chifres de galho, coroa de folhas, manto de musgo com barra rasgada e pés de raiz
+CHAR_ART.druida={top:[".w..w...",".ww.w...","..www...","....wooo","...ollhh","...ohhss","...ohses","...ohsss","..olllcc",".ollcccl",".occcmmr","..occccc","..occccc"],
+  hems:{base:".olCCCCCCCCCClo.",L:"olCCCCCCCCCClo..",R:"..olCCCCCCCCCClo"},
+  legs:{idle:["...owwo..owwo...","...oo.o..o.oo..."],a:["..owwo....owwo..","..oo.o....o.oo.."],b:["....owwo.owwo...","....oo.o.o.oo..."]},pal:{}};
+// Gélida: coroa de cristal, cabelo branco longo até os ombros, broches de gelo e vestido com barra de pingentes
+CHAR_ART.gelida={top:[".....q.q",".....qQq","....oqqq","...ohhhh","..ohhsss","..ohhses","..ohhsss",".ohhhscc",".ohhcccq","ohhccccc","ohhccccc",".ohccccc",".occcccc"],
+  hems:{base:".oCQCCQCCQCCQCo.",L:"oCQCCQCCQCCQCo..",R:"..oCQCCQCCQCCQCo"},
+  legs:{idle:["...oCCo..oCCo...","....oo....oo...."],a:["..oCCo....oCCo..","...oo......oo..."],b:["....oCCo.oCCo...","....oo.....oo..."]},pal:{}};
+// item na mão de cada um: galho torto com semente brilhante / cetro com cristal de gelo
+ITEM_PIX.branch=[...[2,3,4,5,6,7,8,9,10,11,12,13,14,15].map(y=>[18,y,'w']),[19,6,'w'],[17,1,'l'],[19,1,'l'],[18,0,'l'],[17,2,'l'],[19,2,'l'],[18,1,'q'],[17,9,'k'],[16,9,'o']];
+ITEM_PIX.scepter=[...[5,6,7,8,9,10,11,12,13,14,15].map(y=>[18,y,'w']),[18,0,'q'],[17,1,'q'],[18,1,'Q'],[19,1,'q'],[17,2,'Q'],[18,2,'Q'],[19,2,'q'],[17,3,'q'],[18,3,'Q'],[19,3,'q'],[18,4,'q'],[17,9,'k']];
 function charRows(C,leg,hem){const A=CHAR_ART[C.id];const top=A?mirror(A.top):heroTop;const H=A?A.hems:HEMS,L=A?A.legs:LEGS;const rows=[...top,H[hem],...L[leg]].map(r=>('..'+r+'..').split(''));for(const [x,y,ch] of ITEM_PIX[C.item]){if(rows[y])rows[y][x]=ch}return rows.map(r=>r.join(''))}
 const charCache={};
 function charFrames(i){if(charCache[i])return charCache[i];const C=CHARS[i];const A=CHAR_ART[C.id];const pal=buildPal(Object.assign({s:[25,40,60],m:[30,8,46],f:[30,20,70],n:[0,0,8,1]},C.pal,A?A.pal:{}),0,0);
@@ -4685,7 +4692,7 @@ ULTS.gelida={c:[195,100,72],dur:3,n:['Nova Glacial','Glacial Nova','Nova Glacial
  start(u,H){for(const e of sc.ens)e.frozen=Math.max(e.frozen,3.2);areaHit(H.x,H.y-8,240,8,'ult',.4);sc.shake=sc.lowfx?2:6},
  tick(){}};
 // Gélida: sempre que leva dano, chance de congelar quem está perto dela
-{const _hh=hurtHero;hurtHero=function(d){_hh(d);try{if(sc.mode==='play'&&heroC().id==='gelida'&&Math.random()<.35){const H=sc.hero;for(const e of enemiesNear(H.x,H.y,38))e.frozen=Math.max(e.frozen,1.6)}}catch(e){}}}
+{const _hh=hurtHero;hurtHero=function(d){_hh(d);try{if(sc.mode==='play'&&heroC().id==='gelida'&&Math.random()<.35){const H=sc.hero;ringFx(H.x,H.y-8,38,[195,100,75],.4);for(const e of enemiesNear(H.x,H.y,38))e.frozen=Math.max(e.frozen,1.6)}}catch(e){}}}
 function ultOf(){return ULTS[heroC().id]||ULTS.vigia}
 {const _dm=dmgMul;dmgMul=function(){return _dm()*(sc.ult&&sc.ult.id==='semrosto'?2:1)}}
 {const _k=kill;kill=function(e){const r=sc.run;if(sc.mode==='play'&&r&&!sc.ult){const was=r.ult||0;r.ult=Math.min(100,was+(e.elite?10:1.1));if(was<100&&r.ult>=100){banner(T('ultReady'),matchMedia('(pointer:coarse)').matches?T('ultReadySubT'):T('ultReadySub'),ultOf().c);sfxUltReady()}}return _k(e)}}
@@ -5650,7 +5657,17 @@ const ULT_LOOK={
   world(ctx,u,H,k){const CF=charFrames(CHAR_SEL);const f=CF.walk[H.fi];for(let i=0;i<3;i++){const a=i/3*TAU+u.t*2.2;const x=H.x+Math.cos(a)*26,y=H.y+Math.sin(a)*12;ctx.globalAlpha=.55*k;drawSpr(ctx,tinted(f.c,'rgba(200,120,255,.75)'),x,y,3,Math.cos(a)<0);ctx.globalAlpha=1}
     ctx.save();for(let i=0;i<14;i++){const a=i/14*TAU+u.t*3;const r=18+Math.sin(u.t*6+i)*4;ctx.fillStyle=`rgba(190,110,255,${.7*k})`;ctx.fillRect(Math.round(H.x+Math.cos(a)*r),Math.round(H.y-8+Math.sin(a)*r*.7-Math.abs(Math.sin(u.t*5+i))*6),2,3)}ctx.restore()},
   screen(ctx,u,w,h,hx,hy,k){ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle=`rgba(80,0,120,${.12*k})`;ctx.fillRect(0,0,w,h);ctx.restore();const g=ctx.createRadialGradient(hx,hy,50,hx,hy,Math.max(w,h)*.7);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,`rgba(20,0,35,${.5*k})`);ctx.fillStyle=g;ctx.fillRect(0,0,w,h)},
-  sfx(t,M){vChoir([M.key,M.key+1,M.key+6,M.key+11],t,2.6,.05,AU.sfx,'oo');const g=G(AU.sfx,0);perc(g,t,.2,2);O('sawtooth',mf(M.key-24),t,t+2,F('lowpass',220,6,g))}}};
+  sfx(t,M){vChoir([M.key,M.key+1,M.key+6,M.key+11],t,2.6,.05,AU.sfx,'oo');const g=G(AU.sfx,0);perc(g,t,.2,2);O('sawtooth',mf(M.key-24),t,t+2,F('lowpass',220,6,g))}},
+ druida:{icon:'✿',
+  world(ctx,u,H,k){ctx.save();ctx.lineWidth=2;for(let i=0;i<12;i++){const a=i/12*TAU+Math.sin(u.t*2+i)*.15;const L=60+40*Math.abs(Math.sin(u.t*3+i*1.7));ctx.strokeStyle=`rgba(120,200,70,${.75*k})`;ctx.beginPath();ctx.moveTo(H.x,H.y);let x=H.x,y=H.y;
+    for(let s=1;s<=5;s++){const r=L*s/5,b=a+Math.sin(s*1.3+i)*.25;x=H.x+Math.cos(b)*r;y=H.y+Math.sin(b)*r*.55;ctx.lineTo(x,y)}ctx.stroke();ctx.fillStyle=`rgba(200,255,140,${.9*k})`;ctx.fillRect(Math.round(x)-1,Math.round(y)-1,3,3)}ctx.restore()},
+  screen(ctx,u,w,h,hx,hy,k){const g=ctx.createRadialGradient(hx,hy,50,hx,hy,Math.max(w,h)*.7);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,`rgba(10,40,5,${.5*k})`);ctx.fillStyle=g;ctx.fillRect(0,0,w,h)},
+  sfx(t,M){for(let i=0;i<8;i++){const tt=t+i*.5;const g=G(AU.sfx,0);perc(g,tt,.14,.5);const f=F('lowpass',400,2,g);f.frequency.exponentialRampToValueAtTime(1600,tt+.3);N(tt,.5,f)}vChoir([M.key,M.key+7],t,3,.035,AU.sfx,'oo')}},
+ gelida:{icon:'❄',
+  world(ctx,u,H,k){ctx.save();const R=30+Math.min(1,u.t/.3)*200;ctx.strokeStyle=`rgba(190,240,255,${.7*k})`;ctx.lineWidth=2;ctx.beginPath();for(let i=0;i<=6;i++){const a=i/6*TAU;const x=H.x+Math.cos(a)*R,y=H.y+Math.sin(a)*R*.55;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();
+    for(let i=0;i<18;i++){const a=i/18*TAU+u.t*.5;const r=R*(.4+.6*((i*37)%10)/10);const x=H.x+Math.cos(a)*r,y=H.y+Math.sin(a)*r*.55-((u.t*25+i*9)%24);ctx.fillStyle=`rgba(230,250,255,${.85*k})`;ctx.fillRect(Math.round(x),Math.round(y)-1,1,3);ctx.fillRect(Math.round(x)-1,Math.round(y),3,1)}ctx.restore()},
+  screen(ctx,u,w,h,hx,hy,k){ctx.fillStyle=`rgba(170,225,255,${.14*k})`;ctx.fillRect(0,0,w,h);ctx.strokeStyle=`rgba(220,245,255,${.4*k})`;ctx.lineWidth=4;ctx.strokeRect(2,2,w-4,h-4)},
+  sfx(t,M){[0,7,12,19,24].forEach((n,i)=>vGlass(M.key+36+n,t+i*.07,.6,.04,AU.sfx));const g=G(AU.sfx,0);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.4);g.gain.exponentialRampToValueAtTime(.0001,t+2.5);O('sine',mf(M.key),t,t+2.5,g)}}};
 for(const id in ULT_LOOK)if(ULTS[id])ULTS[id].look=ULT_LOOK[id];
 // desenho no mundo e na tela
 {const _du=drawUlt;drawUlt=function(ctx){_du(ctx);const u=sc.ult;if(!u)return;const L=ULT_LOOK[u.id];if(!L)return;const U=ULTS[u.id];const k=Math.min(1,u.t/.25)*Math.min(1,(U.dur-u.t)/.4);try{L.world(ctx,u,sc.hero,Math.max(0,k))}catch(e){}}}
